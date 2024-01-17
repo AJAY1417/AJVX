@@ -1,0 +1,78 @@
+<%- include('../layouts/user/header.ejs') %>
+
+<body>
+
+    <div class="full-page">
+        <div class="container">
+            <div class="text-center center-div">
+                <div class="container col-6 py-5 p-4">
+                    <div class="title pb-3">
+                        <h1>OTP Verification</h1>
+                        <% if (typeof messages !== 'undefined') { %>
+                            <% messages.forEach(message => { %>
+                                <h5 class="text-<%= message.type %> text-center"><%= message.text %></h5>
+                            <% }); %>
+                        <% } %>
+                    </div>
+
+                    <form action="/otp" method="post">
+                        <div class="form-group mt-3">
+                            <input type="text" class="form-control" name="otp" placeholder="Enter OTP" id="otp" required>
+                        </div>
+                        <br>
+                        <input type="submit" class="btn btn-primary" value="Verify & Proceed">
+                        <p class="text-danger mt-3">Time left: <span id="timer">60</span></p>
+                    </form>
+
+                    <form action="/resendOtp" method="post">
+                        <div class="lost-password mt-3">
+                            <input type="submit" value="Resend OTP" id="resendButton">
+                        </div>
+                    </form>
+
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Set the initial value of the timer
+            var timeLeft = 60;
+
+            // Function to update the timer every second
+            function updateTimer() {
+                // Display the current time
+                $('#timer').text(timeLeft);
+
+                // Decrease the time left
+                timeLeft--;
+
+                // Check if the time has reached 0
+                if (timeLeft < 0) {
+                    // Time is up, you can perform any action here
+                    // For example, you might want to disable the submit button or trigger another action
+
+                    // Clear the interval to stop the countdown
+                    clearInterval(timerInterval);
+                }
+            }
+
+            // Initial call to set up the timer
+            updateTimer();
+
+            // Set up an interval to update the timer every second
+            var timerInterval = setInterval(updateTimer, 1000);
+        });
+    </script>
+    
+    <!-- Your existing JavaScript code if needed -->
+
+</body>
+
+</html>
+<%- include('../layouts/user/footer.ejs') %>

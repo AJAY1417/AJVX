@@ -1,0 +1,69 @@
+<!-- views/users/register.ejs -->
+
+<%- include('../layouts/user/header.ejs') %>
+<main class="main">
+  <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+    <!-- Breadcrumb HTML content -->
+  </nav>
+
+  <div class="register-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17" style="background-image: url('/assets/images/backgrounds/login-bg.jpg')">
+    <div class="container">
+      <div class="form-box">
+        <div class="form-tab">
+          <ul class="nav nav-pills nav-fill" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="register-tab-2" data-toggle="tab" href="#register-2" role="tab" aria-controls="register-2" aria-selected="true">Register</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="register-2" role="tabpanel" aria-labelledby="register-tab-2">
+              <form action="/register" method="POST">
+                <div class="form-group">
+                  <label for="firstName">First Name *</label>
+                  <input type="text" class="form-control" id="firstName" name="firstName" required>
+                </div><!-- End .form-group -->
+
+                <div class="form-group">
+                  <label for="lastName">Last Name *</label>
+                  <input type="text" class="form-control" id="lastName" name="lastName" required>
+                </div><!-- End .form-group -->
+
+                <div class="form-group">
+                  <label for="email">E-mail Address *</label>
+                  <input type="email" class="form-control" id="email" name="email" required>
+                </div><!-- End .form-group -->
+
+                <div class="form-group">
+                  <label for="mobile">Mobile *</label>
+                  <input type="tel" class="form-control" id="mobile" name="mobile" required>
+                </div><!-- End .form-group -->
+
+                <div class="form-group">
+                  <label for="password">Password *</label>
+                  <input type="password" class="form-control" id="password" name="password" required>
+                </div><!-- End .form-group -->
+
+                <div class="form-group">
+                  <label for="confirm_password">Confirm Password *</label>
+                  <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                </div><!-- End .form-group -->
+
+                <div class="form-footer">
+                  <button type="submit" class="btn btn-outline-primary-2">
+                    <span>REGISTER</span>
+                    <i class="icon-long-arrow-right"></i>
+                  </button>
+                </div><!-- End .form-footer -->
+              </form>
+            </div><!-- .End .tab-pane -->
+
+            <!-- Other tabs or content -->
+
+          </div><!-- End .tab-content -->
+        </div><!-- End .form-tab -->
+      </div><!-- End .form-box -->
+    </div><!-- End .container -->
+  </div><!-- End .register-page section-bg -->
+</main><!-- End .main -->
+
+<%- include('../layouts/user/footer.ejs') %>
