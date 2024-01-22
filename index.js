@@ -1,12 +1,15 @@
-// index.js
-
 const mongoose = require("mongoose");
 mongoose.connect("mongodb://127.0.0.1:27017/AJVX");
-const nocache = require("nocache");
 const express = require("express");
-const session = require("express-session"); // Import express-session
+const session = require("express-session");
+const nocache = require("nocache");
 const app = express();
-const config = require('./config/config')
+const config = require("./config/config");
+const path = require("path");
+
+// Import userRoutes
+const userRoute = require("./routes/userRoute");
+
 // Session configuration
 app.use(
   session({
@@ -33,20 +36,20 @@ app.use(nocache());
 // Use disableBackButton middleware for all routes
 app.use(disableBackButton);
 
-// Import userRoutes
-const user_Route = require("./routes/userRoute");
+// Set view engine and views directory for EJS
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views/users")); // Specify the correct path
 
 // Use userRoutes for the root path
-app.use("/", user_Route);
+app.use("/", userRoute);
 
 // For admin routes
 const adminRoute = require("./routes/adminRoute");
 app.use("/admin", adminRoute);
 
-const path = require("path");
 app.use("/public", express.static(path.join(__dirname, "public")));
 
-const PORT = 3002;
+const PORT = 3004;
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

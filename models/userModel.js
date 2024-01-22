@@ -33,6 +33,10 @@ const UserSchema = new mongoose.Schema({
   otp: {
     type: Number,
   },
+  is_block:{
+    type:Boolean,
+    default:"false"
+  }
 });
 
 // Create the User model based on the schema

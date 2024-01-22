@@ -42,4 +42,8 @@ user_route.post("/otp", userController.verifyOtp);
 //resend otp
 user_route.post("/resendOtp", userController.resendOtp);
 
+user_route.get("/productDetail",userController.productDetailLoad)
+
 module.exports = user_route;
+
+

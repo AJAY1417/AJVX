@@ -1,0 +1,88 @@
+<%- include('../layouts/admin/header.ejs') %>
+
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <!-- sidebar start-->
+    <%- include('../layouts/admin/sideBar.ejs') %>
+    <!-- sidebar end-->
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+      <!--  Header Start -->
+      <%- include('../layouts/admin/headerBar.ejs') %>
+      <!--  Header End -->
+
+      <!-- Categories Content Start -->
+      <div class="container-fluid">
+        <div class="container-fluid">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title fw-semibold mb-4">Add Category</h5>
+
+              <div class="card">
+                <% if (typeof message !== 'undefined') { %>
+                  <p id="flashMessage" style="color: red;"><%= message %></p>  
+                  <script>
+                    // Set timeout to hide the message after 5000 milliseconds (5 seconds)
+                    setTimeout(function() {
+                      var flashMessage = document.getElementById('flashMessage');
+                      if (flashMessage) {
+                        flashMessage.style.display = 'none';
+                      }
+                    }, 5000);
+                  </script>
+                <% } %>
+                <div class="card-body"> 
+                  <form action="/admin/addProduct" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                      <label for="exampleInputEmail1" class="form-label">Product name</label>
+                      <input type="text" name="productName"  class="form-control" id="name" required >
+                    
+                    </div>
+                    <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">Category </label>
+                      <select class="form-control" id="category" name="category" required>
+                        <option value="" disabled selected>Select category</option>
+                        <% category.forEach(category => { %>
+                          <option value="<%= category._id %>"><%= category.name %></option>
+                        <% }); %>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">Description </label>
+                      <input type="text" name="description" class="form-control" id="Description" required>
+                    </div>
+                    
+                    
+                    <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">Quantity </label>
+                      <input type="number" name="quantity" class="form-control" id="Description" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">Price </label>
+                      <input type="number" name="price" class="form-control" id="Description" required>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="exampleInputPassword1" class="form-label">images</label>
+                      <input type="file" multiple accept="image/*" name="images" class="form-control" id="image" required >
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </form>
+                </div>
+              </div>
+              
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Categories Content End -->
+
+     
+    </div>
+  </div>
+
+<%- include('../layouts/admin/footer.ejs') %>

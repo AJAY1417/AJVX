@@ -1,0 +1,89 @@
+<%- include('../layouts/admin/header.ejs') %>
+
+<!--  Body Wrapper -->
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+  data-sidebar-position="fixed" data-header-position="fixed">
+  <!-- sidebar start-->
+  <%- include('../layouts/admin/sideBar.ejs') %>
+  <!-- sidebar end-->
+  <!--  Main wrapper -->
+  <div class="body-wrapper">
+    <!--  Header Start -->
+    <%- include('../layouts/admin/headerBar.ejs') %>
+    <!--  Header End -->
+
+    <!-- Edit Product Content Start -->
+    <div class="container-fluid">
+      <div class="container-fluid">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title fw-semibold mb-4">Edit Product</h5>
+
+            <div class="card">
+              <% if (typeof message !== 'undefined') { %>
+                <p id="flashMessage" style="color: red;"><%= message %></p>
+                <script>
+                  // Set timeout to hide the message after 5000 milliseconds (5 seconds)
+                  setTimeout(function() {
+                    var flashMessage = document.getElementById('flashMessage');
+                    if (flashMessage) {
+                      flashMessage.style.display = 'none';
+                    }
+                  }, 5000);
+                </script>
+              <% } %>
+              <div class="card-body">
+                <!-- Update the form action and method for editing -->
+                <form action="/admin/editProduct/<%= product._id %>" method="post" enctype="multipart/form-data">
+                  <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Product name</label>
+                    <!-- Populate the input with existing product name -->
+                    <input type="text" name="productName" class="form-control" id="name" value="<%= product.name %>" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Category </label>
+                    <select class="form-control" id="category" name="category" required>
+                      <option value="" disabled>Select category</option>
+                      <!-- Loop through categories and mark the selected category -->
+                      <% category.forEach(cat => { %>
+                        <option value="<%= cat._id %>" <%= (cat._id.toString() === product.category.toString()) ? 'selected' : '' %>><%= cat.name %></option>
+                      <% }); %>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Description </label>
+                    <!-- Populate the input with existing product description -->
+                    <input type="text" name="description" class="form-control" id="Description" value="<%= product.description %>" required>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Quantity </label>
+                    <!-- Populate the input with existing product quantity -->
+                    <input type="number" name="quantity" class="form-control" id="Description" value="<%= product.quantity %>" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Price </label>
+                    <!-- Populate the input with existing product price -->
+                    <input type="number" name="price" class="form-control" id="Description" value="<%= product.price %>" required>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Images</label>
+                    <!-- Add logic to display existing images and allow for new uploads -->
+                    <input type="file" multiple accept="image/*" name="images" class="form-control" id="image">
+                  </div>
+
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Edit Product Content End -->
+  </div>
+</div>
+
+<%- include('../layouts/admin/footer.ejs') %>

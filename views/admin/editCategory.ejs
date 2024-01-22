@@ -1,0 +1,56 @@
+<%- include('../layouts/admin/header.ejs') %>
+
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <!-- sidebar start-->
+    <%- include('../layouts/admin/sideBar.ejs') %>
+    <!-- sidebar end-->
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+      <!--  Header Start -->
+      <%- include('../layouts/admin/headerBar.ejs') %>
+      <!--  Header End -->
+
+      <!-- Categories Content Start -->
+      <div class="container-fluid">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title fw-semibold mb-4">Edit Category</h5>
+            <div class="card">
+              <div class="card-body">
+                <form action="/admin/editCategory" method="post"  enctype="multipart/form-data">
+
+
+                  <input type="text" name="_id" class="form-control" id="name" value="<%= category._id%>" hidden>
+                  <div class="mb-3">
+                    <label for="name" class="form-label">Category Name</label>
+                    <input type="text" name="name" class="form-control" id="name" value="<%= category.name %>" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="description" class="form-label">Category Description</label>
+                    <input type="text" name="description" class="form-control" id="description"
+                      value="<%= category.description %>" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="image" class="form-label">Current Image</label>
+                    <img src="/public/images/category/<%=category.image%>" alt="" width="35" height="35"
+                    class="rounded-circle">
+                    <br><br>
+                    <input type="file" name="image" class="form-control" id="image">
+                    <small class="form-text text-muted">Leave it blank if you don't want to change the image.</small>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Update Category</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Categories Content End -->
+
+     
+    </div>
+  </div>
+
+<%- include('../layouts/admin/footer.ejs') %>

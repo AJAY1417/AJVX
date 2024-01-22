@@ -1,10 +1,12 @@
 const User = require("../models/userModel");
+const productSchema = require("../models/productModel");
+const categorySchema = require("../models/categoryModel");
 const bcrypt = require("bcrypt");
 const config = require("../config/config");
 
 const nodemailer = require("nodemailer");
-const randomString = require("randomstring");
-const flash = require("express-flash");
+
+
 
 
 
@@ -19,6 +21,7 @@ const securePassword = async (password) => {
   try {
     const passwordHash = await bcrypt.hash(password, 10);
     return passwordHash;
+
   } catch (error) {
     console.log(error.message);
     throw error; // Make sure to propagate the error to the calling function
@@ -28,10 +31,12 @@ const securePassword = async (password) => {
 // ============================ HOMEPAGE RENDERING =======================================
 const loadHome = async (req, res) => {
   try {
-    res.render("home");
+    const products = await productSchema.find().populate("category").exec();//to get product in home 
+    res.render("home",{products:products});
   } catch (error) {
     console.log(error.message);
   }
+  
 };
  
 
@@ -150,9 +155,9 @@ console.log(userData);
           );
           console.log("Redirecting to OTP page");
           res.render("otp", { user: userData.email });
-        } else if (2 == 1) {
+        } else if (userData.is_block==true) {
           console.log("Account is blocked");
-          res.render("register", {
+          res.render("login", {
             status: "failed",
             message: "Your Account Has Been Blocked!",
           });
@@ -304,6 +309,39 @@ const productList = async (req, res) => {
   res.render("productList", { ProductDB: [] });
 };
 
+
+// ============================ PRODUCT DETAIL LOAD  =======================================
+
+const productDetailLoad = async (req, res) => {
+  try {
+    // Assuming the product ID is passed in the query parameters as productId
+    const productId = req.query.productId;
+
+    // Fetch product details from the database based on the product ID
+    const product = await Product.findById(productId)
+      .populate("category")
+      .exec();
+
+    if (!product) {
+      // If the product is not found, handle the error and send an appropriate response
+      return res
+        .status(404)
+        .json({ success: false, error: "Product not found" });
+    }
+
+    // Render the product details page or send the product data as JSON
+    // For example, if using a template engine like EJS:
+    res.render('productDetail', { product });
+
+    // If sending JSON:
+    res.json({ success: true, data: product });
+  } catch (error) {
+    console.error("Error fetching product details:", error);
+    // Handle the error and send an appropriate response
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   loadRegister,
   loadHome,
@@ -316,4 +354,5 @@ module.exports = {
   logoutUser,
   productList,
   resendOtp,
+  productDetailLoad,
 };

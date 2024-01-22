@@ -17,35 +17,41 @@
           </ul>
           <div class="tab-content">
             <div class="tab-pane fade show active" id="register-2" role="tabpanel" aria-labelledby="register-tab-2">
-              <form action="/register" method="POST">
+              <form id="registrationForm" action="/register" method="POST" onsubmit="return validateForm()">
                 <div class="form-group">
                   <label for="firstName">First Name *</label>
                   <input type="text" class="form-control" id="firstName" name="firstName" required>
+                  <span id="firstNameError" class="error-message"></span>
                 </div><!-- End .form-group -->
 
                 <div class="form-group">
                   <label for="lastName">Last Name *</label>
                   <input type="text" class="form-control" id="lastName" name="lastName" required>
+                  <span id="lastNameError" class="error-message"></span>
                 </div><!-- End .form-group -->
 
                 <div class="form-group">
                   <label for="email">E-mail Address *</label>
                   <input type="email" class="form-control" id="email" name="email" required>
+                  <span id="emailError" class="error-message"></span>
                 </div><!-- End .form-group -->
 
                 <div class="form-group">
                   <label for="mobile">Mobile *</label>
                   <input type="tel" class="form-control" id="mobile" name="mobile" required>
+                  <span id="mobileError" class="error-message"></span>
                 </div><!-- End .form-group -->
 
                 <div class="form-group">
                   <label for="password">Password *</label>
                   <input type="password" class="form-control" id="password" name="password" required>
+                  <span id="passwordError" class="error-message"></span>
                 </div><!-- End .form-group -->
 
                 <div class="form-group">
                   <label for="confirm_password">Confirm Password *</label>
                   <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                  <span id="confirmPasswordError" class="error-message"></span>
                 </div><!-- End .form-group -->
 
                 <div class="form-footer">
@@ -54,6 +60,8 @@
                     <i class="icon-long-arrow-right"></i>
                   </button>
                 </div><!-- End .form-footer -->
+
+                <p class="mt-3 mb-0">Already have an account? <a href="/login">Log in</a></p>
               </form>
             </div><!-- .End .tab-pane -->
 
@@ -67,3 +75,65 @@
 </main><!-- End .main -->
 
 <%- include('../layouts/user/footer.ejs') %>
+
+<!-- Add the following JavaScript code for validation -->
+<script>
+  function validateForm() {
+    var firstName = document.getElementById("firstName").value;
+    var lastName = document.getElementById("lastName").value;
+    var email = document.getElementById("email").value;
+    var mobile = document.getElementById("mobile").value;
+    var password = document.getElementById("password").value;
+    var confirm_password = document.getElementById("confirm_password").value;
+
+    // Reset previous error messages
+    document.getElementById("firstNameError").innerHTML = "";
+    document.getElementById("lastNameError").innerHTML = "";
+    document.getElementById("emailError").innerHTML = "";
+    document.getElementById("mobileError").innerHTML = "";
+    document.getElementById("passwordError").innerHTML = "";
+    document.getElementById("confirmPasswordError").innerHTML = "";
+
+    // Check individual fields and display error messages
+    if (firstName.trim() === "") {
+      document.getElementById("firstNameError").innerHTML = "Please enter your first name.";
+      return false;
+    }
+
+    if (lastName.trim() === "") {
+      document.getElementById("lastNameError").innerHTML = "Please enter your last name.";
+      return false;
+    }
+
+    // Validate email format
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      document.getElementById("emailError").innerHTML = "Please enter a valid email address.";
+      return false;
+    }
+
+    // Validate mobile number format
+    var mobileRegex = /^\d{10}$/;
+    if (!mobileRegex.test(mobile)) {
+      document.getElementById("mobileError").innerHTML = "Please enter a valid 10-digit mobile number.";
+      return false;
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      document.getElementById("passwordError").innerHTML = "Password must be at least 6 characters.";
+      return false;
+    }
+
+    // Validate password match
+    if (password !== confirm_password) {
+      document.getElementById("passwordError").innerHTML = "Passwords do not match.";
+      document.getElementById("confirmPasswordError").innerHTML = "Passwords do not match.";
+      return false;
+    }
+
+    // You can add more validation logic here for other fields
+
+    return true;
+  }
+</script>
