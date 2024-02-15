@@ -1,0 +1,411 @@
+<%- include('../layouts/user/header.ejs') %>
+
+	<main class="main">
+		<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+			<div class="container">
+				<h1 class="page-title">Checkout<span>Shop</span></h1>
+			</div><!-- End .container -->
+		</div><!-- End .page-header -->
+		<nav aria-label="breadcrumb" class="breadcrumb-nav">
+			<div class="container">
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="index.html">Home</a></li>
+					<li class="breadcrumb-item"><a href="#">Shop</a></li>
+					<li class="breadcrumb-item active" aria-current="page">Checkout</li>
+				</ol>
+			</div><!-- End .container -->
+		</nav><!-- End .breadcrumb-nav -->
+
+		<div class="page-content">
+			<div class="checkout">
+				<div class="container">
+					<!-- add address -->
+					<a href="/addAddress">
+						<button type="submit" class="btn btn-outline-primary-2 float-right">
+							<span>+ ADD ADDRESS</span>
+							<i class="icon-long-arrow-right"></i>
+						</button>
+					</a>
+					<i class="bi bi-plus-square-dotted" data-toggle="modal" data-target="#couponModal"></i>
+
+
+
+					<!-- add coupons -->
+					<div class="checkout-discount">
+						<form action="/applyCoupon" id="applyCouponForm" method="post">
+							<input type="text" class="form-control" required id="checkout-discount-input"
+								name="couponCode">
+							<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here
+									to enter your code</span></label>
+							<button type="submit" class="btn btn-primary">Apply Coupon</button>
+						</form>
+					</div><!-- End .checkout-discount -->
+
+
+					<!-- Filters Modal -->
+
+					<div class="modal fade" id="filtersModal" tabindex="-1" role="dialog"
+						aria-labelledby="filtersModalLabel" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="filtersModalLabel">Available Coupons</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-body">
+									<!-- Coupon List -->
+
+									<% for(let i=0; i< coupon.length; i++) { %>
+										<div class="card mb-3">
+											<div class="card-body">
+												<h5 class="card-title">
+													<%= coupon[i].couponname %>
+												</h5>
+												<p class="card-text">Code: <%= coupon[i].couponcode %>
+												</p>
+												<p class="card-text">Discount: ₹<%= coupon[i].discountamount %>
+												</p>
+												<p class="card-text">
+													<%= coupon[i].description %>
+												</p>
+												<p class="card-text">Minimum Purchase: <%= coupon[i].criteriaamount %>
+												</p>
+
+											</div>
+										</div>
+										<% } %>
+								</div>
+								<div class="modal-footer">
+
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+
+
+
+
+
+					<!-- ordaer place -->
+
+					<form action="/orderPlace?id=<%= %>" method="post" id="myform">
+						<div class="row">
+							<div class="col-lg-9">
+								<p>The following addresses will be used on the checkout page by default.</p>
+
+								<!-- billing address -->
+								<div class="row">
+									<% if (UserAddress && UserAddress.length> 0) { %>
+										<% for (let i=0; i < UserAddress.length; i++) { %>
+											<div class="col-lg-6">
+												<div class="card card-dashboard">
+													<div class="card-body">
+														<input type="radio" name="selectedAddress"
+															value="<%= UserAddress[i]._id %>" id="address<%= i %>"
+															class="address-checkbox">
+														<label for="address<%= i %>" class="address-label">Billing
+															Address</label>
+														<% if (UserAddress[i].address && UserAddress[i].address.length>
+															0) { %>
+															<% for (let j=0; j < UserAddress[i].address.length; j++) {
+																%>
+																<p>
+																	<%= UserAddress[i].address[j].fullname %><br>
+																		<%= UserAddress[i].address[j].mobile %><br>
+																			<%= UserAddress[i].address[j].email %><br>
+																				<%= UserAddress[i].address[j].houseNo %>
+																					<br>
+																					<%= UserAddress[i].address[j].city
+																						%><br>
+																						<%= UserAddress[i].address[j].state
+																							%><br>
+																							<%= UserAddress[i].address[j].zipcode
+																								%><br>
+																								<%= UserAddress[i].address[j].additionalDetails
+																									%><br>
+																</p>
+																<a href="/editAddress?id=<%= UserAddress[i]._id %>">Edit
+																	<i class="icon-edit"></i></a>
+																<% } %>
+																	<% } else { %>
+																		<p>No billing address found.</p>
+																		<% } %>
+													</div>
+												</div>
+											</div>
+											<% } %>
+												<% } else { %>
+													<p>No user addresses found.</p>
+													<% } %>
+								</div>
+							</div><!-- End .col-lg-9 -->
+
+							<aside class="col-lg-3">
+								<div class="summary">
+									<h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+									<!-- order summary -->
+									<table class="table table-summary">
+										<thead>
+											<tr>
+												<th>Product</th>
+												<th>Total</th>
+											</tr>
+										</thead>
+
+										<tbody>
+											<% let product=cartData?.products || [] %>
+												<% for (let i=0; i < product.length; i++) { %>
+													<% const value=product[i].productId; %>
+														<tr>
+															<td><a href="#">
+																	<%= value.name %>
+																</a></td>
+															<td>$<%= datatotal[i] %>
+															</td>
+														</tr>
+														<% } %>
+
+															<tr class="summary-subtotal">
+																<td>Subtotal:</td>
+																<td>$<%= totalSum %>
+																</td>
+															</tr><!-- End .summary-subtotal -->
+															<tr>
+																<td id="couponDiscount">Coupon Discount</td>
+																<td id="couponDiscountAmount">-₹<%coupon.discountamount
+																		%>
+																</td>
+															</tr>
+															<tr class="summary-total">
+																<td>Total:</td>
+																<td id="total">$<%= totalSum %>
+																</td>
+															</tr><!-- End .summary-total -->
+										</tbody>
+									</table><!-- End .table table-summary -->
+
+
+									<div class="accordion-summary" id="accordion-payment">
+										<!-- Your payment options here -->
+										<div class="payment-options">
+											<h3 class="summary-title">Select Payment Method</h3>
+											<!-- End .summary-title -->
+											<!-- Payment methods -->
+
+											<div class="card">
+												<div class="custom-control custom-radio">
+													<input type="radio" id="payment-cod" name="payment-method"
+														class="custom-control-input" value="cod">
+													<label class="custom-control-label" for="payment-cod">Cash on
+														Delivery</label>
+												</div>
+											</div><!-- End .card -->
+
+											<div class="card">
+												<div class="custom-control custom-radio">
+													<input type="radio" id="payment-online" name="payment-method"
+														class="custom-control-input" value="online">
+													<label class="custom-control-label" for="payment-online">Online
+														Payment (Razorpay)</label>
+												</div>
+											</div><!-- End .card -->
+
+											<div class="card">
+												<div class="custom-control custom-radio">
+													<input type="radio" id="payment-Wallet" name="payment-method"
+														class="custom-control-input" value="Wallet">
+													<label class="custom-control-label"
+														for="payment-Wallet">Wallet</label>
+												</div>
+											</div><!-- End .card -->
+										</div><!-- End .accordion -->
+
+										<input type="hidden" id="total" name="total">
+										<% if (cartData) { %>
+											<button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
+												<span class="btn-text">Place Order</span>
+												<span class="btn-hover-text">Order Now</span>
+											</button>
+											<% } %>
+									</div><!-- End .summary -->
+							</aside><!-- End .col-lg-3 -->
+						</div><!-- End .row -->
+					</form>
+				</div><!-- End .container -->
+			</div><!-- End .checkout -->
+		</div><!-- End .page-content -->
+	</main><!-- End .main -->
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+	<script>
+		$(document).ready(function () {
+			$('#myform').submit(function (event) {
+				event.preventDefault();
+				var formData = $(this).serializeArray();
+
+				// Check if an address and payment method are selected
+				var selectedAddress = $('input[name="selectedAddress"]:checked').val();
+				var selectedPaymentMethod = $('input[name="payment-method"]:checked').val();
+				console.log(selectedPaymentMethod)
+
+				if (!selectedAddress) {
+					// Show a SweetAlert if an address is not selected
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: 'Please select an address!',
+					});
+				} else if (!selectedPaymentMethod) {
+					// Show a different SweetAlert if a payment method is not selected
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: 'Please select a payment method!',
+					});
+				} else {
+					$.ajax({
+						url: '/orderPlace',
+						method: 'POST',
+						data: formData,
+						success: function (response) {
+							console.log(response, "responseorder vann");
+							if (response.success === true) {
+								console.log('hi');
+								window.location.href = '/orderSuccess';
+							} else if (response.online === true) {
+								console.log('online');
+								// razorpayPayment(response.order);
+								window.location.href = '/orderSuccess';
+							} else if (response.error === 'Insufficient funds in wallet') {
+								// Display SweetAlert for insufficient funds
+								Swal.fire({
+									icon: 'error',
+									title: 'Oops...',
+									text: 'Insufficient funds in wallet. Please add funds.',
+								});
+							} else {
+								console.log('HO');
+								razorpayPayment(response.order);
+							}
+						},
+						error: function (error) {
+							console.error('Error:', error);
+						}
+					});
+				}
+			});
+
+			function razorpayPayment(order) {
+				console.log(order, "hello");
+				var options = {
+					"key": "rzp_test_ykdEV4zuE7mjJQ", // Enter the Key ID generated from the Dashboard
+					"amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+					"currency": "INR",
+					"name": "Stylo Fashion", //your business name
+					"description": "Test Transaction",
+					"image": "userAssets/images/stylologo.png",
+					"order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+					handler: function (response) {
+						verifyPayment(response, order);
+					},
+					"prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+						"name": "Stylo Fashion", //your customer's name
+						"email": "info@stylo.com",
+						"contact": "9000090000" //Provide the customer's phone number for better conversion rates 
+					},
+					"notes": {
+						"address": "Stylo Fashion"
+					},
+					"theme": {
+						"color": "#3399cc"
+					}
+				};
+				var rzp1 = new Razorpay(options);
+				rzp1.open();
+			}
+			function verifyPayment(payment, order) {
+				console.log("verifyPayment kk keri");
+				const amount2 = document.getElementById("total").value;
+				console.log(amount2, "amount 2 :");
+				$.ajax({
+					url: '/verifyPayment',
+					method: "post",
+					data: {
+						payment: payment,
+						order: order,
+						amount2: amount2,
+					},
+					success: (response) => {
+						if (response.placed == true) {
+							window.location.href = '/orderSuccess';
+						} else {
+							swal.fire({
+								positon: "center",
+								icon: "error",
+								title: "Payment failed",
+								showConfirmButton: false,
+								timer: 1500,
+							});
+						}
+					}
+				})
+			}
+
+		});
+
+		// In your client-side script
+		$(document).ready(function () {
+			$('#applyCouponForm').submit(function (event) {
+				event.preventDefault();
+				var formData = $(this).serializeArray();
+
+				$.ajax({
+					url: '/applyCoupon',
+					method: 'POST',
+					data: formData,
+					success: function (response) {
+						if (response.success === true) {
+							// Update the total amount on the page
+							$('#total').text('$' + response.discountedTotal);
+							$('#couponDiscountAmount').text('- ₹' + response.couponDiscountAmount);
+							Swal.fire({
+								icon: 'success',
+								title: 'Coupon Applied!',
+								text: 'The coupon has been applied successfully.',
+							});
+						} else if (response.alreadyClaimed === true) {
+							// Show a SweetAlert for already claimed coupon
+							Swal.fire({
+								icon: 'error',
+								title: 'Oops...',
+								text: 'You have already claimed this coupon.',
+							});
+						} else {
+							// Show a SweetAlert for other errors
+							Swal.fire({
+								icon: 'error',
+								title: 'Oops...',
+								text: response.message,
+							});
+						}
+					},
+					error: function (error) {
+						console.error('Error:', error);
+					}
+				});
+			});
+		});
+
+
+
+
+	</script>
+
+	<%- include('../layouts/user/footer.ejs') %>

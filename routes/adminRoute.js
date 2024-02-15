@@ -1,6 +1,8 @@
 const express = require("express");
 const imageUploader = require("../config/multer");
 const admin_route = express();
+
+
 const adminController = require("../controllers/adminController");
 const productController = require("../controllers/productController");
 
@@ -51,7 +53,8 @@ admin_route.post(
   adminController.editCategory
 );
 
-admin_route.get("/unlistCategory", adminController.unlistCategory);
+admin_route.get("/block-category", adminController.unlistCategory);
+
 
 // =================== PRODUCT MANAGEMENT ===============================
 admin_route.get("/addProduct", productController.addProductLoad);
@@ -64,15 +67,31 @@ admin_route.post(
 );
 
 admin_route.get("/block-product", productController.blockProduct);
-// Edit product page (GET)
-admin_route.get("/editProduct/:productId", productController.editProductLoad);
+admin_route.get("/editProduct/:productId", productController.editProduct);
 
-// Edit product (POST)
 admin_route.post(
   "/editProduct/:productId",
   imageUploader.uploadProduct.array("images", 5),
   imageUploader.productImgResize,
-  productController.editProduct
+  productController.updateProduct
 );
 
+
+
+
+
+
+//============================= ORDER MANAGEMENT ROUTES ==================================
+
+
+admin_route.get('/orderManagement', adminController.loadOrder);
+admin_route.post("/updateOrderStatus", adminController.updateOrderStatus);
+
+
+
+
+
+
+
+//============================= EXPORTING ==================================
 module.exports = admin_route;

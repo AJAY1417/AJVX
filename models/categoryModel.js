@@ -15,7 +15,7 @@ const categorySchema = new mongoose.Schema({
   },
   is_block: {
     type: Boolean,
-    default: false,
+    default: "false",
   },
 });
 

@@ -16,6 +16,7 @@ app.use(
     secret: config.sessionSecret, // replace with a secure secret
     resave: false,
     saveUninitialized: true,
+  
   })
 );
 
@@ -54,3 +55,4 @@ const PORT = 3004;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+

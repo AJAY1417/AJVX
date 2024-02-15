@@ -53,9 +53,6 @@
                       <th class="border-bottom-0">
                         <h6 class="fw-semibold mb-0">Action</h6>
                       </th>
-                      <th class="border-bottom-0">
-                        <h6 class="fw-semibold mb-0">Action</h6>
-                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -66,7 +63,7 @@
                         <h6 class="fw-semibold mb-1"><%= products[i].name %></h6>
                       </td>
                       <td class="border-bottom-0">
-                        <p class="mb-0 fw-normal"><%= products[i].category.name%></p>
+                        <p class="mb-0 fw-normal"><%= products[i].category ? products[i].category.name : 'N/A' %></p>
                       </td>
                       <td class="border-bottom-0">
                         <div class="d-flex align-items-center gap-2">
@@ -86,10 +83,11 @@
                         <%}%>
                       </td>
                       <td class="border-bottom-0">
-                        <button type="button" class="btn btn-danger" onclick="handleUserAction('<%= products[i]._id %>', 'block')">Block</button>
-                      </td>
-                      <td class="border-bottom-0">
-                        <button type="button" class="btn btn-success" onclick="handleUserAction('<%= products[i]._id %>', 'unblock')">Unblock</button>
+                        <% if (products[i].is_deleted == false) { %>
+                          <button type="button" class="btn btn-danger" onclick="handleUserAction('<%= products[i]._id %>', 'block')">Block</button>
+                        <% } else { %>
+                          <button type="button" class="btn btn-success" onclick="handleUserAction('<%= products[i]._id %>', 'unblock')">Unblock</button>
+                        <% } %>
                       </td>
                       <td class="border-bottom-0">
                         <a href="/admin/editProduct/<%= products[i]._id %>" class="btn btn-primary">Edit</a>
@@ -110,6 +108,7 @@
 
   <script>
     function handleUserAction(productId, actionType) {
+      console.log(productId);
       Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -122,7 +121,7 @@
         if (result.isConfirmed) {
           Swal.fire({
             title: "Success!",
-            text: "Product has been " + actionType + "ed.",
+            text: "product has been " + actionType + "ed.",
             icon: "success"
           }).then(() => {
             performUserAction(productId, actionType);
@@ -130,10 +129,10 @@
         }
       });
     }
-
+    
     function performUserAction(productId, actionType) {
       var url = "/admin/block-product?id=" + productId;
-
+  
       fetch(url, {
         method: 'GET',
         headers: {
@@ -144,6 +143,8 @@
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
+  
+        // Reload the page after successful action
         location.reload();
       })
       .then(data => {
@@ -156,5 +157,6 @@
       });
     }
   </script>
+  
 
   <%- include('../layouts/admin/footer.ejs') %>

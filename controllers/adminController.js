@@ -1,7 +1,7 @@
 const admin = require("../models/adminModel");
 const User = require("../models/userModel");
 const Category = require("../models/categoryModel")
-
+const Order = require("../models/orderModel");
 const bcrypt = require("bcrypt"); //  line to import the 'bcrypt' module
 
 //=================================  ADMIN LOGIN PAGE    ============================================//
@@ -84,19 +84,20 @@ const loadAddCategory = async (req, res) => {
 const addCategory = async (req, res) => {
   const { name, description } = req.body;
   const coverPic = req.file.filename;
-  console.log(req.body);
 
   try {
-    const existCategory = await Category.findOne({ name: req.body.name });
+    // Check if the category already exists
+    const existingCategory = await Category.findOne({ name });
 
-    if (existCategory) {
+    if (existingCategory) {
       return res.render("addCategory", {
         status: "failed",
-        message: "Category already Exists",
+        message: "Category already exists",
       });
     }
 
-    const newCategory = await Category.create({
+    // Create and save the new category
+    const newCategory = new Category({
       name,
       description,
       image: coverPic,
@@ -184,6 +185,8 @@ const editCategoryLoad= async (req, res) => {
 //===================================== EDIT CATEGORY  ================================================//
 const editCategory = async (req, res) => {
   const { _id, name, description } = req.body;
+
+  console.log(req.body);
   let coverPic; // Declare the variable outside the conditional scope
 
   if (req.file) {
@@ -229,7 +232,7 @@ const editCategory = async (req, res) => {
 const unlistCategory = async (req, res, next) => {
   try {
     const id = req.query.id;
-    const category = await Category.findById(_id);
+    const category = await Category.findById(id);
 
     if (category) {
       category.is_block = !category.is_block;
@@ -240,6 +243,51 @@ const unlistCategory = async (req, res, next) => {
     res.redirect("/admin/categories");
   } catch (error) {
     next(error);
+  }
+};
+
+//===================================== LOAD ORDER MANAGEMENT PAGE  ================================================//
+
+const loadOrder = async (req, res) => {
+
+  console.log("entered the function ");
+  try {
+    const orderDat = await Order.find({})
+      .populate({
+        path: "userId",
+        select: "firstName",
+      })
+      .populate("products.product")
+      .sort({ purchaseDate: -1 });
+
+      
+    console.log(orderDat);
+
+    if (orderDat.length > 0) {
+      res.render("orderMangement", { orderDat }); // Removed the leading slash
+    } else {
+      res.render("orderMangement", { orderDat: [] }); // Removed the leading slash
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
+//===================================== UPDATING THE ORDER STATUS  ================================================//
+
+const updateOrderStatus = async (req, res) => {
+  try {
+    const { orderId, newStatus } = req.body;
+    console.log("here");
+    const orderStatus = await Order.updateOne(
+      { _id: orderId },
+      { status: newStatus }
+    );
+    console.log(orderStatus);
+  } catch (error) {
+    console.log(error.mesaage);
   }
 };
 
@@ -256,5 +304,7 @@ module.exports = {
   addCategory,
   editCategoryLoad,
   editCategory,
-  unlistCategory
+  unlistCategory,
+  loadOrder,
+  updateOrderStatus,
 };

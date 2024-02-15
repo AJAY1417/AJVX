@@ -31,6 +31,7 @@
     <!-- Main CSS File -->
     <link rel="stylesheet" href="/public/user/assets/css/style.css">
     <link rel="stylesheet" href="/public/user/assets/css/skins/skin-demo-5.css">
+    <link rel="stylesheet" href="/public/user/assets/css/plugins/nouislider/nouislider.css">
     <link rel="stylesheet" href="/public/user/assets/css/demos/demo-5.css">
 </head>
 <body>
@@ -50,7 +51,7 @@
                     <nav class="main-nav">
                         <ul class="menu sf-arrows">
                             <li class="megamenu-container active">
-                                <a href="index.html" class="sf-with-ul">Home</a>
+                                <a href="/" class="sf-with-ul">Home</a>
 
                                     
                             </li>    
@@ -65,21 +66,11 @@
                                
                             </li>
                             <li>
-                               <a href="#" class="sf-with-ul">About</a>
-
+                                <a href="#" class="sf-with-ul">About</a>
                                 <ul>
                                     <li>
                                         <a href="about.html" class="sf-with-ul">Contact us</a>
-
-                                    <!-- <li>
-                                        <a href="contact.html" class="sf-with-ul">Contact</a>
-
-                                      
                                     </li>
-                                    <li><a href="login.html">Login</a></li> -->
-                                   
-                                </ul>
-                            </li>
                             <li>
                    
                                 <ul>
@@ -107,7 +98,7 @@
                     </a>
 
                     <div class="dropdown cart-dropdown">
-                        <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                        <a href="/cart" class="dropdown-toggle"  data-display="static">
                             <i class="icon-shopping-cart"></i>
                             <span class="cart-count">2</span>
                         </a>
@@ -115,14 +106,28 @@
                         
                     </div>
                     <div class="header-profile">
-                        <a href="/login" class="profile-link">
+                        <% if (typeof user !== 'undefined' && user) { %>
+                          <!-- User is logged in, show dropdown menu -->
+                          <a class="profile-link" href="#" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="icon-user"></i>
-                        </a>
-                    </div>
+                          </a>
+                          <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                            <a class="dropdown-item" href="/profile" style="font-size: 18px">Profile</a>
+                            <a class="dropdown-item" href="/logout" style="font-size: 18px">Logout</a>
+                          </div>
+                        <% } else { %>
+                          <!-- User is not logged in, show login link -->
+                          <a href="/login" class="profile-link">
+                            <i class="icon-user"></i>
+                          </a>
+                        <% } %>
+                      </div>
+                      
+                      
                 </div><!-- End .header-right -->
             </div><!-- End .container-fluid -->
         </div><!-- End .header-middle -->
     </header><!-- End .header -->
-</body>
+
 
     

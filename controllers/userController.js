@@ -31,14 +31,16 @@ const securePassword = async (password) => {
 // ============================ HOMEPAGE RENDERING =======================================
 const loadHome = async (req, res) => {
   try {
-    const products = await productSchema.find().populate("category").exec();//to get product in home 
-    res.render("home",{products:products});
+    const products = await productSchema.find().populate("category").exec();
+    // Pass the user information to the template
+    res.render("home", { products: products, user: req.session.user_id });
   } catch (error) {
     console.log(error.message);
+    // Handle errors appropriately
+    res.status(500).send("Internal Server Error");
   }
-  
 };
- 
+
 
 // ============================  USER REGISTER  =======================================
 const insertUser = async (req, res, next) => {
@@ -129,11 +131,29 @@ const loadRegister = async (req, res) => {
 // ============================  LOGIN PAGE  RENDER  =======================================
 const loginLoad = async (req, res) => {
   try {
-    res.render("login");
+    // Pass the user information to the template
+    res.render("login", { user: req.session.user_id });
   } catch (error) {
     console.log(error.message);
+    // Handle errors appropriately
+    res.status(500).send("Internal Server Error");
   }
 };
+
+// ============================  LOGOUT =======================================
+
+
+const logout = (req, res) => {
+  // Clear the session or perform any other logout actions
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error destroying session:", err);
+    }
+    // Redirect to the home page or any other page after logout
+    res.redirect("/");
+  });
+};
+
 
 // ============================  VERIFY LOGIN  =======================================
 
@@ -215,12 +235,12 @@ const verifyOtp = async (req, res, next) => {
         console.log("User saved:", savedUser);
 
         // Clear sensitive data from the session
-        delete req.session.otpsend;
-        delete req.session.firstName;
-        delete req.session.lastName;
-        delete req.session.email;
-        delete req.session.mobile;
-        delete req.session.password;
+        // delete req.session.otpsend;
+        // delete req.session.firstName;
+        // delete req.session.lastName;
+        // delete req.session.email;
+        // delete req.session.mobile;
+        // delete req.session.password;
 
         // Render the login page with a success message
         return res.render("login", {
@@ -235,6 +255,8 @@ const verifyOtp = async (req, res, next) => {
         });
       }
     } else {
+      
+
       // Handle the case where req.session.otpsend or req.session.otpsend.code is not defined
       return res.render("otp", {
         status: "error",
@@ -310,37 +332,114 @@ const productList = async (req, res) => {
 };
 
 
-// ============================ PRODUCT DETAIL LOAD  =======================================
 
+// ============================ SHOPLOAD =======================================
+// Product list or category page or shop
+// const shopLoad = async (req, res) => {
+//     try {
+//         // Fetch categories for dropdown or filtering
+//         const categories = await categorySchema.find();
+
+//         // Search product
+//         var search = '';
+//         if (req.query.search) {
+//             search = req.query.search;
+//         }
+
+//         // Pagination in product
+//         var page = 1;
+//         if (req.query.page) {
+//             page = req.query.page;
+//         }
+
+//         const limit = 3;
+
+//         // Query to find products based on search criteria
+//         const query = {
+//             is_deleted: false,
+//             $or: [
+//                 { name: { $regex: new RegExp(search, 'i') } },
+//                 { category: { $regex: new RegExp(search, 'i') } },
+//             ]
+//         };
+
+//         // Fetch products based on the query and pagination parameters
+//         const ProductDB = await productSchema.find(query)
+//             .limit(limit * 1)
+//             .skip((page - 1) * limit)
+//             .populate("category")
+//             .exec();
+
+//         // Count the total number of products matching the search criteria
+//         const count = await productSchema.find(query).countDocuments();
+
+//         res.render('shop', {
+//             ProductDB,
+//             categories,
+//             totalPages: Math.ceil(count / limit),
+//             currentPage: page,
+//             title: 'shop'
+//         });
+
+//     } catch (error) {
+//         console.log(error.message);
+//         // Handle the error and send an appropriate response
+//         res.status(500).send("Internal Server Error");
+//     }
+// };
+const shopLoad = async (req, res) => {
+  try {
+    const products = await productSchema.find().populate("category").exec();
+    const categories = await categorySchema.find();
+    res.render("shop", { products: products, categories: categories });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
+
+
+
+// ============================ PRODUCT DETAIL LOAD  =======================================
 const productDetailLoad = async (req, res) => {
   try {
     // Assuming the product ID is passed in the query parameters as productId
-    const productId = req.query.productId;
-
+    const productId = req.query.id;
+    console.log(productId);
     // Fetch product details from the database based on the product ID
-    const product = await Product.findById(productId)
+    const fetchedProduct = await productSchema.findById(productId)
       .populate("category")
       .exec();
 
-    if (!product) {
+    if (!fetchedProduct) {
       // If the product is not found, handle the error and send an appropriate response
       return res
         .status(404)
         .json({ success: false, error: "Product not found" });
     }
+    console.log(fetchedProduct)
 
     // Render the product details page or send the product data as JSON
     // For example, if using a template engine like EJS:
-    res.render('productDetail', { product });
+    res.render("productDetail", { product: fetchedProduct });//from her goes to frontend
 
     // If sending JSON:
-    res.json({ success: true, data: product });
+    // res.json({ success: true, data: fetchedProduct });
   } catch (error) {
     console.error("Error fetching product details:", error);
     // Handle the error and send an appropriate response
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
+
+
+
+
+
+
+// =====================================================================================================================================
 
 module.exports = {
   loadRegister,
@@ -350,9 +449,12 @@ module.exports = {
   sendVerifyMail,
   verifyOtp,
   loginLoad,
+  logout,
   verifyLogin,
   logoutUser,
   productList,
   resendOtp,
+  shopLoad,
   productDetailLoad,
+
 };

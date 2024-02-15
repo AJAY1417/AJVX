@@ -62,52 +62,95 @@ const addProduct = async (req, res) => {
     res.status(500).render("addProduct", { message: "Internal Server Error" });
   }
 };
-
 const blockProduct = async (req, res) => {
   try {
-    const blockedProduct = await productSchema.findOne({ _id: req.query.id });
+    const productId = req.query.id;
 
-    if (!blockedProduct) {
+    // Check if the product ID is valid
+    if (!productId) {
+      return res.status(400).send("Invalid product ID");
+    }
+
+    // Find the product in the database by ID
+    const product = await productSchema.findById(productId); // <-- Corrected here
+
+    // Check if the product exists
+    if (!product) {
       return res.status(404).send("Product not found");
     }
 
-    const is_deleted = blockedProduct.is_deleted;
+    // Toggle the block status
+    product.is_deleted = !product.is_deleted; // <-- Updated property name
 
-    // Update the 'is_deleted' field to block or unblock the product
-    await productSchema.updateOne(
-      { _id: req.query.id },
-      { $set: { is_deleted: !is_deleted } }
-    );
+    // Save the updated product
+    await product.save();
 
-    res.redirect("/admin/products");
+    // Redirect or respond as needed
+    res.redirect("/admin/products"); // Adjust the redirect path as needed
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error");
   }
 };
 
+
+
+
+
 const editProduct = async (req, res) => {
   try {
     const productId = req.params.productId;
-    // Find the product based on the ID
     const productData = await productSchema.findOne({ _id: productId });
+    const categoryList = await categorySchema.find();
 
     if (!productData) {
       return res.status(404).render("error", { message: "Product not found" });
     }
 
-    if (req.method === "POST") {
-      // Handle the form submission for updating the product
-      return res.redirect(`/admin/product/${productId}`);
-    }
-
-    // Render the 'editProduct' view with the existing product data
-    res.render("editProduct", { product: productData });
+    // Render the 'editProduct' view with the existing product data and category list
+    res.render("editProduct", { product: productData, category: categoryList });
   } catch (error) {
     console.log(error.message);
     res.status(500).render("error", { message: "Internal Server Error" });
   }
 };
+
+
+
+const updateProduct = async (req, res) => {
+  try {
+    const productId = req.params.productId;
+
+    // Extract relevant information from the request body
+    const { productName, description, category, price, quantity } = req.body;
+
+    // Find the product in the database by ID
+    const product = await productSchema.findById(productId);
+
+    // Check if the product exists
+    if (!product) {
+      return res.status(404).send("Product not found");
+    }
+
+    // Update the product information
+    product.name = productName;
+    product.description = description;
+    product.category = category;
+    product.price = price;
+    product.quantity = quantity;
+
+    // Save the updated product
+    await product.save();
+
+    // Redirect to the main Products page after updating the product
+    return res.redirect("/admin/product");
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).render("error", { message: "Internal Server Error" });
+  }
+};
+
+
 const editProductLoad = async (req, res) => {
   try {
     const productId = req.params.productId;
@@ -138,4 +181,5 @@ module.exports = {
   blockProduct,
   editProductLoad,
   editProduct,
+  updateProduct
 };
