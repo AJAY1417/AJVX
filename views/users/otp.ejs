@@ -26,7 +26,7 @@
 
                     <form action="/resendOtp" method="post">
                         <div class="lost-password mt-3">
-                            <input type="submit" value="Resend OTP" id="resendButton">
+                            <input type="submit" value="Resend OTP" id="resendButton" disabled>
                         </div>
                     </form>
 
@@ -39,6 +39,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+   
     <script>
         $(document).ready(function () {
             // Set the initial value of the timer
@@ -51,6 +52,11 @@
 
                 // Decrease the time left
                 timeLeft--;
+
+                // Enable the Resend OTP button when the timer reaches zero
+                if (timeLeft === 0) {
+                    $('#resendButton').prop('disabled', false);
+                }
 
                 // Check if the time has reached 0
                 if (timeLeft < 0) {
@@ -69,6 +75,7 @@
             var timerInterval = setInterval(updateTimer, 1000);
         });
     </script>
+    
     
     <!-- Your existing JavaScript code if needed -->
 

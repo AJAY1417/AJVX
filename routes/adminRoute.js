@@ -57,6 +57,15 @@ admin_route.get("/block-category", adminController.unlistCategory);
 
 
 // =================== PRODUCT MANAGEMENT ===============================
+
+admin_route.delete(
+  "/deleteProductImage/:productId/:imageIndex",
+  productController.deleteProductImage
+);
+
+
+
+
 admin_route.get("/addProduct", productController.addProductLoad);
 
 admin_route.post(
@@ -66,15 +75,28 @@ admin_route.post(
   productController.addProduct
 );
 
+
 admin_route.get("/block-product", productController.blockProduct);
 admin_route.get("/editProduct/:productId", productController.editProduct);
-
+// Route for handling image uploads for a product
 admin_route.post(
   "/editProduct/:productId",
-  imageUploader.uploadProduct.array("images", 5),
+  imageUploader.uploadProduct.array("newImages", 5), // Update to "newImages" to match form field name
   imageUploader.productImgResize,
   productController.updateProduct
 );
+
+// Add a new route for handling image uploads
+admin_route.post(
+  "/uploadProductImages/:productId",
+  imageUploader.uploadProduct.array("newImages", 5),
+  imageUploader.productImgResize,
+  productController.uploadProductImages
+);
+
+
+
+
 
 
 

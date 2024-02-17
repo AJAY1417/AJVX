@@ -211,6 +211,26 @@
       </aside>
     </div>
   </div>
+    <!-- Pagination Section -->
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="<%= currentPage === 1 ? '#' : '/shop?page=' + (currentPage - 1) %>" tabindex="-1">Previous</a>
+        </li>
+
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+            <a class="page-link" href="/shop?page=<%= i %>"><%= i %></a>
+          </li>
+        <% } %>
+
+        <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="<%= currentPage === totalPages ? '#' : '/shop?page=' + (currentPage + 1) %>">Next</a>
+        </li>
+      </ul>
+    </nav>
+    <!-- End Pagination Section -->
+
 </div>
 
 

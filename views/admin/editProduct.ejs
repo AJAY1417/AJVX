@@ -1,83 +1,138 @@
 <%- include('../layouts/admin/header.ejs') %>
 
-<!--  Body Wrapper -->
 <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
   data-sidebar-position="fixed" data-header-position="fixed">
-  <!-- sidebar start-->
   <%- include('../layouts/admin/sideBar.ejs') %>
-  <!-- sidebar end-->
-  <!--  Main wrapper -->
   <div class="body-wrapper">
-    <!--  Header Start -->
     <%- include('../layouts/admin/headerBar.ejs') %>
-    <!--  Header End -->
 
-    <!-- Edit Product Content Start -->
     <div class="container-fluid">
-      <div class="container-fluid">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title fw-semibold mb-4">Edit Product</h5>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title fw-semibold mb-4">Edit Product</h5>
 
-            <div class="card">
-              <% if (typeof message !== 'undefined') { %>
-                <p id="flashMessage" style="color: red;"><%= message %></p>
-                <script>
-                  // Set timeout to hide the message after 5000 milliseconds (5 seconds)
-                  setTimeout(function() {
-                    var flashMessage = document.getElementById('flashMessage');
-                    if (flashMessage) {
-                      flashMessage.style.display = 'none';
-                    }
-                  }, 5000);
-                </script>
-              <% } %>
-              <div class="card-body">
-                <!-- Update the form action and method for editing -->
-                <form action="/admin/editProduct/<%= product._id %>" method="post" enctype="multipart/form-data">
-                  <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Product name</label>
-                    <!-- Populate the input with existing product name -->
-                    <input type="text" name="productName" class="form-control" id="name" value="<%= product.name %>" required>
-                  </div>
-                  <div class="mb-3">
-                    <label for="exampleInputPassword1" class="form-label">Category </label>
-                    <select class="form-control" id="category" name="category" required>
-                      <option value="" disabled>Select category</option>
-                      <!-- Loop through categories and mark the selected category -->
-                      <% category.forEach(cat => { %>
-                        <option value="<%= cat._id %>" <%= (cat._id.toString() === product.category.toString()) ? 'selected' : '' %>><%= cat.name %></option>
-                      <% }); %>
-                    </select>
-                  </div>
+          <div class="card">
+            <% if (typeof message !== 'undefined') { %>
+              <p id="flashMessage" style="color: red;"><%= message %></p>
+              <script>
+                setTimeout(function() {
+                  var flashMessage = document.getElementById('flashMessage');
+                  if (flashMessage) {
+                    flashMessage.style.display = 'none';
+                  }
+                }, 5000);
+              </script>
+            <% } %>
 
-                  <div class="mb-3">
-                    <label for="exampleInputPassword1" class="form-label">Description </label>
-                    <!-- Populate the input with existing product description -->
-                    <input type="text" name="description" class="form-control" id="Description" value="<%= product.description %>" required>
-                  </div>
+            <div class="card-body">
+              <form action="/admin/editProduct/<%= product._id %>" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                  <label for="exampleInputEmail1" class="form-label">Product name</label>
+                  <input type="text" name="productName" class="form-control" id="name" value="<%= product.name %>" required>
+                </div>
+                <div class="mb-3">
+                  <label for="exampleInputPassword1" class="form-label">Category </label>
+                  <select class="form-control" id="category" name="category" required>
+                    <option value="" disabled>Select category</option>
+                    <% category.forEach(cat => { %>
+                      <option value="<%= cat._id %>" <%= (cat._id.toString() === product.category.toString()) ? 'selected' : '' %>><%= cat.name %></option>
+                    <% }); %>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="exampleInputPassword1" class="form-label">Description </label>
+                  <input type="text" name="description" class="form-control" id="Description" value="<%= product.description %>" required>
+                </div>
+                <div class="mb-3">
+                  <label for="exampleInputPassword1" class="form-label">Quantity </label>
+                  <input type="number" name="quantity" class="form-control" id="Description" value="<%= product.quantity %>" required>
+                </div>
+                <div class="mb-3">
+                  <label for="exampleInputPassword1" class="form-label">Price </label>
+                  <input type="number" name="price" class="form-control" id="Description" value="<%= product.price %>" required>
+                </div>
 
+                <% product.images.forEach((image, index) => { %>
                   <div class="mb-3">
-                    <label for="exampleInputPassword1" class="form-label">Quantity </label>
-                    <!-- Populate the input with existing product quantity -->
-                    <input type="number" name="quantity" class="form-control" id="Description" value="<%= product.quantity %>" required>
+                    <div style="display: flex; align-items: center;">
+                      <img src="/public/images/products/<%= image %>" alt="Product Image <%= index + 1 %>" style="max-width: 200px; margin-right: 10px;">
+                      <button type="button" class="btn btn-danger" onclick="confirmDelete('<%= product._id %>', '<%= index %>')">Delete</button>
+                      <input type="hidden" name="deletedImages" value="<%= index %>">
+                    </div>
                   </div>
-                  <div class="mb-3">
-                    <label for="exampleInputPassword1" class="form-label">Price </label>
-                    <!-- Populate the input with existing product price -->
-                    <input type="number" name="price" class="form-control" id="Description" value="<%= product.price %>" required>
-                  </div>
+                <% }); %>
 
-                  <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-              </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
             </div>
           </div>
+
+          <!-- New form for uploading additional images -->
+          <form action="/admin/uploadProductImages/<%= product._id %>" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label for="formFileMultiple" class="form-label">Upload new images</label>
+              <input class="form-control" type="file" name="newImages" multiple>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload Images</button>
+          </form>
+
         </div>
       </div>
     </div>
-    <!-- Edit Product Content End -->
   </div>
 </div>
+
+<script>
+  async function confirmDelete(productId, index) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(`/admin/deleteProductImage/${productId}/${index}`, {
+          method: 'DELETE'
+        });
+
+       // Inside your fetch success block
+if (response.ok) {
+  // Optionally display a success message
+  Swal.fire({
+    icon: 'success',
+    title: 'Success',
+    text: 'Image deleted successfully!',
+  });
+
+  // Reload the page after a short delay to ensure the server-side changes take effect
+  setTimeout(() => {
+    window.location.reload();
+  }, 1000); // Adjust the delay as needed
+} else {
+  // Display an error message
+  console.error('Failed to delete image. Status:', response.status);
+  Swal.fire({
+    icon: 'error',
+    title: 'Oops...',
+    text: 'Failed to delete the image!',
+  });
+}
+
+      } catch (error) {
+        console.error('Error during image deletion:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'An error occurred during image deletion!',
+        });
+      }
+    }
+  }
+</script>
 
 <%- include('../layouts/admin/footer.ejs') %>

@@ -1,19 +1,37 @@
 const productSchema = require("../models/productModel");
 const categorySchema = require("../models/categoryModel");
+const mongoose = require("mongoose");
+const path = require("path");
+const fs = require("fs");
+const multer = require("multer");
+
+
+
+
+
+
+
 
 //=================== LOAD PRODUCT PAGE =========================================================================//
 
 // Load all products and render the 'product' view with the product list
 const productLoad = async (req, res) => {
   try {
-    // Fetch the list of products, populating the 'category' field
     const productList = await productSchema.find().populate("category").exec();
     res.render("product", { products: productList });
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
   }
 };
 
+ 
+
+
+
+
+
+//===================  ADD PRODUCT PAGE LOAD ==============================================
 const addProductLoad = async (req, res) => {
   try {
     // Fetch the list of categories
@@ -25,24 +43,18 @@ const addProductLoad = async (req, res) => {
   }
 };
 
+
+
+
+
+
+//=================== TO ADD PRODUCT ==============================================
 const addProduct = async (req, res) => {
   try {
-    console.log(req.body);
-    const productName = req.body.productName;
-    const description = req.body.description;
-    const category = req.body.category;
-    const price = req.body.price;
-    const quantity = req.body.quantity;
-
-    // Find the category based on the ID
+    const { productName, description, category, price, quantity } = req.body;
     const categoryData = await categorySchema.findOne({ _id: category });
+    const coverPic = req.files.map(file => file.filename);
 
-    const coverPic = [];
-    for (let i = 0; i < req.files.length; i++) {
-      coverPic[i] = req.files[i].filename;
-    }
-
-    // Create a new product
     const productData = await productSchema.create({
       name: productName,
       description: description,
@@ -58,10 +70,18 @@ const addProduct = async (req, res) => {
       res.render("addProduct", { message: "Something wrong." });
     }
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
     res.status(500).render("addProduct", { message: "Internal Server Error" });
   }
 };
+
+
+
+
+
+
+
+//===================  BLOCKS THE PRODUCT ==============================================
 const blockProduct = async (req, res) => {
   try {
     const productId = req.query.id;
@@ -97,6 +117,10 @@ const blockProduct = async (req, res) => {
 
 
 
+
+
+//===================  EDITS THE PRODUCT  ==============================================
+
 const editProduct = async (req, res) => {
   try {
     const productId = req.params.productId;
@@ -111,12 +135,18 @@ const editProduct = async (req, res) => {
     res.render("editProduct", { product: productData, category: categoryList });
   } catch (error) {
     console.log(error.message);
-    res.status(500).render("error", { message: "Internal Server Error" });
+    res.status(500).send("Internal Server Error");
   }
 };
 
 
 
+
+
+
+
+
+//=================== UPDATE THE PRODUCT ==============================================
 const updateProduct = async (req, res) => {
   try {
     const productId = req.params.productId;
@@ -151,6 +181,93 @@ const updateProduct = async (req, res) => {
 };
 
 
+
+
+
+
+
+//===================  TO UPLOAD THE IMAGES FOR PRODUCTS ==============================================
+
+const uploadProductImages = async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    const product = await productSchema.findOne({ _id: productId });
+
+    if (!product) {
+      return res.status(404).send("Product not found");
+    }
+
+    // Add the image filenames (or other relevant information) to the product's images array
+    req.files.forEach(file => {
+      product.images.push(file.filename);
+    });
+
+   
+    await product.save();
+
+    // Redirect or respond as needed
+    res.redirect(`/admin/editProduct/${productId}`);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
+
+
+
+
+
+//=================== DELETE THE IMAGES SEPA=ERATELY ==============================================
+
+const deleteProductImage = async (req, res) => {
+  try {
+    const productId = req.params.productId;
+    const imageIndex = parseInt(req.params.imageIndex, 10);
+
+    // Validate product ID and image index
+    if (
+      !mongoose.isValidObjectId(productId) ||
+      isNaN(imageIndex) ||
+      imageIndex < 0
+    ) {
+      return res.status(400).send("Invalid product ID or image index");
+    }
+
+    // Find the product by ID
+    const product = await productSchema.findById(productId);
+    if (!product) {
+      return res.status(404).send("Product not found");
+    }
+
+    // Validate image index within product's images array
+    if (imageIndex >= product.images.length) {
+      return res.status(400).send("Invalid image index");
+    }
+
+    // Extract image name from array, considering your storage strategy
+    const imageName = product.images[imageIndex];
+
+    // Remove image from product's images array
+    product.images.splice(imageIndex, 1);
+
+    // Save the updated product
+    await product.save();
+
+    // Respond with success status (200) to the client
+    res.status(200).send("Image deleted successfully");
+  } catch (error) {
+    console.error('Error deleting product image:', error);
+    res.status(500).send('Internal server error');
+  }
+};
+
+
+
+
+
+//===================  TO LOAD THE EDIT PRODUCT PAGE ==============================================
 const editProductLoad = async (req, res) => {
   try {
     const productId = req.params.productId;
@@ -174,6 +291,12 @@ const editProductLoad = async (req, res) => {
   }
 };
 
+
+
+
+
+//===================  EXPORTED ARE HERE  ==============================================
+
 module.exports = {
   productLoad,
   addProductLoad,
@@ -181,5 +304,7 @@ module.exports = {
   blockProduct,
   editProductLoad,
   editProduct,
-  updateProduct
+  updateProduct,
+  uploadProductImages,
+  deleteProductImage
 };

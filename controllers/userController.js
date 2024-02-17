@@ -389,14 +389,36 @@ const productList = async (req, res) => {
 // };
 const shopLoad = async (req, res) => {
   try {
-    const products = await productSchema.find().populate("category").exec();
+    const productsPerPage = 9; // Change this based on your desired number of products per page
+    const currentPage = parseInt(req.query.page) || 1;
+
+    // Fetch only active (not blocked) products
+    const products = await productSchema
+      .find({ is_deleted: false })
+      .populate("category")
+      .skip((currentPage - 1) * productsPerPage)
+      .limit(productsPerPage)
+      .exec();
+
+    const totalProductsCount = await productSchema.countDocuments({
+      is_deleted: false,
+    });
+    const totalPages = Math.ceil(totalProductsCount / productsPerPage);
+
     const categories = await categorySchema.find();
-    res.render("shop", { products: products, categories: categories });
+
+    res.render("shop", {
+      products: products,
+      categories: categories,
+      currentPage: currentPage,
+      totalPages: totalPages,
+    });
   } catch (error) {
     console.log(error.message);
     res.status(500).send("Internal Server Error");
   }
 };
+
 
 
 
