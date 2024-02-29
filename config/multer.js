@@ -3,6 +3,7 @@ const express = require("express");
 const path = require("path");
 const sharp = require("sharp");
 const fs = require("fs");
+
 const multer_route = express();
 multer_route.use(express.static("public"));
 
@@ -58,6 +59,7 @@ const createMulter = (storage) => {
     },
   });
 };
+
 const uploadUser = createMulter(userStorage);
 const uploadBrand = createMulter(brandStorage);
 const uploadCategory = createMulter(categoryStorage);
@@ -68,7 +70,6 @@ const productImgResize = async (req, res, next) => {
   try {
     await Promise.all(
       req.files.map(async (file) => {
-        // Use try-catch to handle errors during image processing
         try {
           let sharpInstance = sharp(file.path);
 
@@ -78,10 +79,7 @@ const productImgResize = async (req, res, next) => {
             .jpeg({ quality: 100 })
             .toFile(`public/images/products/${file.filename}`);
 
-          // Destroy the sharp instance to release resources
           sharpInstance.destroy();
-
-          // Use fs.promises.unlink for asynchronous file deletion
           await fs.promises.unlink(file.path);
           console.log(`File ${file.filename} deleted successfully.`);
         } catch (error) {
@@ -101,13 +99,11 @@ const productImgResize = async (req, res, next) => {
 const userImgResize = async (req, res, next) => {
   try {
     if (!req.file) {
-      // No file uploaded, proceed to the next middleware/controller
       return next();
     }
 
     await Promise.all(
       [req.file].map(async (file) => {
-        // Use try-catch to handle errors during image processing
         try {
           let sharpInstance = sharp(file.path);
 
@@ -117,10 +113,7 @@ const userImgResize = async (req, res, next) => {
             .jpeg({ quality: 100 })
             .toFile(`public/images/userProfile/${file.filename}`);
 
-          // Destroy the sharp instance to release resources
           sharpInstance.destroy();
-
-          // Use fs.promises.unlink for asynchronous file deletion
           await fs.promises.unlink(file.path);
           console.log(`File ${file.filename} deleted successfully.`);
         } catch (error) {

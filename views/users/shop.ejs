@@ -33,6 +33,10 @@
               Showing <span>9 of 56</span> Products
             </div>
             <!-- End .toolbox-info -->
+            <div class="search-box">
+              <input type="text" id="searchInput" placeholder="Search products...">
+              <button onclick="searchProducts()">Search</button>
+           </div>
           </div>
           <!-- End .toolbox-left -->
 
@@ -235,6 +239,32 @@
 
 
 
+<script>
+  function searchProducts() {
+     const searchQuery = document.getElementById('searchInput').value;
+     fetch(`/search?q=${searchQuery}`)
+        .then(response => response.json())
+        .then(data => {
+           updateProductList(data.results);
+        })
+        .catch(error => console.error('Error:', error));
+  }
 
+  function updateProductList(results) {
+     const productsContainer = document.querySelector('.products .row');
+     productsContainer.innerHTML = '';
+
+     results.forEach(product => {
+        // Render each product based on your existing code
+        const productHTML = `
+           <!-- Your existing product HTML here -->
+           <div class="col-6 col-md-4 col-lg-4 mb-4">
+              <!-- ... (existing product structure) ... -->
+           </div>
+        `;
+        productsContainer.insertAdjacentHTML('beforeend', productHTML);
+     });
+  }
+</script>
 
 <%- include('../layouts/user/footer.ejs') %>

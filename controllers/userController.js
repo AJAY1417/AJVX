@@ -1,15 +1,26 @@
 const User = require("../models/userModel");
-const productSchema = require("../models/productModel");
+const Product = require("../models/productModel");
 const categorySchema = require("../models/categoryModel");
+const Wishlist = require("../models/wishlistModel");
 const bcrypt = require("bcrypt");
 const config = require("../config/config");
 
 const nodemailer = require("nodemailer");
 
+const searchProducts = async (req, res) => {
+  const { q } = req.query;
+  console.log("Search query:", q);
+  try {
+    const results = await Product.find({
+      name: { $regex: new RegExp(q, "i") },
+    });
 
-
-
-
+    res.json({ results });
+  } catch (error) {
+    console.error("Error searching products:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 // ============================  OTP GENERATION  =======================================
 const generateRandomNumericString = (length) => {
@@ -21,7 +32,6 @@ const securePassword = async (password) => {
   try {
     const passwordHash = await bcrypt.hash(password, 10);
     return passwordHash;
-
   } catch (error) {
     console.log(error.message);
     throw error; // Make sure to propagate the error to the calling function
@@ -31,7 +41,7 @@ const securePassword = async (password) => {
 // ============================ HOMEPAGE RENDERING =======================================
 const loadHome = async (req, res) => {
   try {
-    const products = await productSchema.find().populate("category").exec();
+    const products = await Product.find().populate("category").exec();
     // Pass the user information to the template
     res.render("home", { products: products, user: req.session.user_id });
   } catch (error) {
@@ -40,7 +50,6 @@ const loadHome = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 
 // ============================  USER REGISTER  =======================================
 const insertUser = async (req, res, next) => {
@@ -55,7 +64,6 @@ const insertUser = async (req, res, next) => {
     }
 
     const spassword = await securePassword(req.body.password);
-;
     if (!spassword) {
       return res.status(500).send("Failed to hash the password");
     }
@@ -82,7 +90,6 @@ const insertUser = async (req, res, next) => {
     await sendVerifyMail(req.body.firstName, req.body.email, otpsend);
 
     // Assuming user creation was successful, clean up sensitive data from the session
-  
 
     res.render("otp", { user: req.body.email });
   } catch (error) {
@@ -142,7 +149,6 @@ const loginLoad = async (req, res) => {
 
 // ============================  LOGOUT =======================================
 
-
 const logout = (req, res) => {
   // Clear the session or perform any other logout actions
   req.session.destroy((err) => {
@@ -154,16 +160,15 @@ const logout = (req, res) => {
   });
 };
 
-
 // ============================  VERIFY LOGIN  =======================================
 
 const verifyLogin = async (req, res) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
-console.log(req.body);
+    console.log(req.body);
     const userData = await User.findOne({ email: email });
-console.log(userData);
+    console.log(userData);
     if (userData) {
       const passwordMatch = await bcrypt.compare(password, userData.password);
 
@@ -175,7 +180,7 @@ console.log(userData);
           );
           console.log("Redirecting to OTP page");
           res.render("otp", { user: userData.email });
-        } else if (userData.is_block==true) {
+        } else if (userData.is_block == true) {
           console.log("Account is blocked");
           res.render("login", {
             status: "failed",
@@ -205,28 +210,24 @@ console.log(userData);
   }
 };
 
-
-
 // ============================ OTP VERIFICATION =======================================
 const verifyOtp = async (req, res, next) => {
   try {
     console.log("Stored OTP:", req.session.otpsend);
 
-    console.log('otp in session');
+    console.log("otp in session");
     // Check if req.session.otpsend and req.session.otpsend.code are defined
     if (req.session.otpsend && req.session.otpsend.code) {
       // Compare the entered OTP with the stored OTP
       if (req.body.otp === req.session.otpsend.code) {
-        console.log('otp correct');
-
-        
+        console.log("otp correct");
 
         const user = new User({
           firstName: req.session.firstName,
           lastName: req.session.lastName,
           email: req.session.email,
           mobile: req.session.mobile,
-          password:req.session.password,
+          password: req.session.password,
           is_verified: 1,
         });
 
@@ -255,8 +256,6 @@ const verifyOtp = async (req, res, next) => {
         });
       }
     } else {
-      
-
       // Handle the case where req.session.otpsend or req.session.otpsend.code is not defined
       return res.render("otp", {
         status: "error",
@@ -269,7 +268,6 @@ const verifyOtp = async (req, res, next) => {
     return res.status(500).send("Internal Server Error");
   }
 };
-
 
 // ============================ RESEND OTP =======================================
 const resendOtp = async (req, res, next) => {
@@ -310,12 +308,12 @@ const resendOtp = async (req, res, next) => {
     console.log("Email has been sent:", info.response);
 
     // Redirect back to the OTP page with a success message in the query parameter
-    res.redirect('/otp?success=OTP has been resent successfully');
+    res.redirect("/otp?success=OTP has been resent successfully");
   } catch (error) {
     console.error("Error in resendOtp:", error);
 
     // Redirect back to the OTP page with an error message in the query parameter
-    res.redirect('/otp?error=Error in resending OTP. Please try again.');
+    res.redirect("/otp?error=Error in resending OTP. Please try again.");
   }
 };
 
@@ -331,76 +329,19 @@ const productList = async (req, res) => {
   res.render("productList", { ProductDB: [] });
 };
 
-
-
-// ============================ SHOPLOAD =======================================
-// Product list or category page or shop
-// const shopLoad = async (req, res) => {
-//     try {
-//         // Fetch categories for dropdown or filtering
-//         const categories = await categorySchema.find();
-
-//         // Search product
-//         var search = '';
-//         if (req.query.search) {
-//             search = req.query.search;
-//         }
-
-//         // Pagination in product
-//         var page = 1;
-//         if (req.query.page) {
-//             page = req.query.page;
-//         }
-
-//         const limit = 3;
-
-//         // Query to find products based on search criteria
-//         const query = {
-//             is_deleted: false,
-//             $or: [
-//                 { name: { $regex: new RegExp(search, 'i') } },
-//                 { category: { $regex: new RegExp(search, 'i') } },
-//             ]
-//         };
-
-//         // Fetch products based on the query and pagination parameters
-//         const ProductDB = await productSchema.find(query)
-//             .limit(limit * 1)
-//             .skip((page - 1) * limit)
-//             .populate("category")
-//             .exec();
-
-//         // Count the total number of products matching the search criteria
-//         const count = await productSchema.find(query).countDocuments();
-
-//         res.render('shop', {
-//             ProductDB,
-//             categories,
-//             totalPages: Math.ceil(count / limit),
-//             currentPage: page,
-//             title: 'shop'
-//         });
-
-//     } catch (error) {
-//         console.log(error.message);
-//         // Handle the error and send an appropriate response
-//         res.status(500).send("Internal Server Error");
-//     }
-// };
 const shopLoad = async (req, res) => {
   try {
     const productsPerPage = 9; // Change this based on your desired number of products per page
     const currentPage = parseInt(req.query.page) || 1;
 
     // Fetch only active (not blocked) products
-    const products = await productSchema
-      .find({ is_deleted: false })
+    const products = await Product.find({ is_deleted: false })
       .populate("category")
       .skip((currentPage - 1) * productsPerPage)
       .limit(productsPerPage)
       .exec();
 
-    const totalProductsCount = await productSchema.countDocuments({
+    const totalProductsCount = await Product.countDocuments({
       is_deleted: false,
     });
     const totalPages = Math.ceil(totalProductsCount / productsPerPage);
@@ -419,11 +360,6 @@ const shopLoad = async (req, res) => {
   }
 };
 
-
-
-
-
-
 // ============================ PRODUCT DETAIL LOAD  =======================================
 const productDetailLoad = async (req, res) => {
   try {
@@ -431,7 +367,7 @@ const productDetailLoad = async (req, res) => {
     const productId = req.query.id;
     console.log(productId);
     // Fetch product details from the database based on the product ID
-    const fetchedProduct = await productSchema.findById(productId)
+    const fetchedProduct = await Product.findById(productId)
       .populate("category")
       .exec();
 
@@ -441,11 +377,11 @@ const productDetailLoad = async (req, res) => {
         .status(404)
         .json({ success: false, error: "Product not found" });
     }
-    console.log(fetchedProduct)
+    console.log(fetchedProduct);
 
     // Render the product details page or send the product data as JSON
     // For example, if using a template engine like EJS:
-    res.render("productDetail", { product: fetchedProduct });//from her goes to frontend
+    res.render("productDetail", { product: fetchedProduct }); //from her goes to frontend
 
     // If sending JSON:
     // res.json({ success: true, data: fetchedProduct });
@@ -456,14 +392,115 @@ const productDetailLoad = async (req, res) => {
   }
 };
 
+// ============================ WISHLIST PAGE LOAD  =======================================
+const loadWishlist = async (req, res) => {
+  try {
+    console.log("loadWishlist started __________________________");
+    // Check if the user is authenticated
+    const user = req.session.user_id;
+    console.log(user);
+    let userName;
+    let wishlist;
 
+    if (!user) {
+      // User not authenticated, return 401 status and render wishlist page with an empty wishlist
+      console.log("User not authenticated");
+      return res.status(401).render("wishlist", { wishlist: [], userName });
+    }
 
+    // Find user data based on the user ID
+    const userData = await User.findOne({ _id: user });
 
+    if (!userData) {
+      // User data not found, return 404 status and render error page with "User not found" message
+      console.log("User not found");
+      return res
+        .status(404)
+        .render("error", { errorMessage: "User not found" });
+    }
 
+    // Retrieve user name from user data
+    userName = userData.firstName;
+    console.log(userName);
+    // Populate wishlist with product data using Product
+    wishlist = await Wishlist.find({ userId: user }).populate("productid");
+    console.log(wishlist);
+    // Render the wishlist page with populated wishlist and user name
+    res.render("wishlist", { wishlist, userName });
+  } catch (error) {
+    // Handle errors during the process, log details, return 500 status, and render error page with "Internal Server Error" message
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+// ============================ ADD PRODUCT TO WISHLIST   =======================================
+
+const addtoWishlist = async (req, res) => {
+  console.log("wishkkkerri");
+  try {
+    const user = req.session.user_id;
+    console.log(user, " userW");
+    const pro_id = req.body.id;
+    const wishlist = await Wishlist.findOne({ userId: user });
+    console.log(wishlist, "wishlistdb");
+    const checkwishlistdata = await Wishlist.findOne({
+      userId: user,
+      productid: pro_id,
+    });
+    console.log(checkwishlistdata, "datas");
+
+    if (user) {
+      if (wishlist) {
+        if (checkwishlistdata) {
+          res.json({ result: false });
+        } else {
+          await Wishlist.updateOne(
+            { userId: user },
+            { $push: { productid: pro_id } }
+          );
+          res.json({ result: true });
+        }
+      } else {
+        const data = new Wishlist({
+          userId: user,
+          productid: [pro_id],
+        });
+
+        await data.save();
+        res.json({ result: true });
+      }
+    } else {
+      res.json({ result: false });
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.render("500");
+  }
+};
+
+// ============================ DELETE THE PRODUCT FROM THE WISHLIST  =======================================
+
+const deleteWishlistproduct = async (req, res) => {
+    console.log('delete wish');
+    try {
+        const user = req.session.user_id;
+        const pro_id = req.query.id;
+        console.log(user, 'usernd');
+        console.log(pro_id, 'product ind');
+        await Wishlist.updateOne({ userId: user }, { $pull: { productid: pro_id } });
+        res.redirect('/wishlist')
+
+    } catch (error) {
+        console.log(error.message)
+        res.render('500')
+    }
+}
 
 // =====================================================================================================================================
 
 module.exports = {
+  searchProducts,
   loadRegister,
   loadHome,
   securePassword,
@@ -478,5 +515,7 @@ module.exports = {
   resendOtp,
   shopLoad,
   productDetailLoad,
-
+  loadWishlist,
+  addtoWishlist,
+  deleteWishlistproduct,
 };

@@ -33,9 +33,28 @@
     <link rel="stylesheet" href="/public/user/assets/css/skins/skin-demo-5.css">
     <link rel="stylesheet" href="/public/user/assets/css/plugins/nouislider/nouislider.css">
     <link rel="stylesheet" href="/public/user/assets/css/demos/demo-5.css">
+
+
 </head>
+
+
 <body>
-    <header class="header header-5 custom-header">
+    <div class="page-wrapper">
+        <header class="header">
+            <div class="header-top">
+                <div class="container">
+                    <div class="header-left">
+              
+
+                        
+                    </div><!-- End .header-left -->
+
+                    <div class="header-right">
+                        
+                    </div><!-- End .header-right -->
+                </div><!-- End .container -->
+            </div><!-- End .header-top -->
+   
         <div class="header-middle sticky-header">
             <div class="container-fluid">
                 <div class="header-left">
@@ -93,7 +112,7 @@
                         </form>
                     </div><!-- End .header-search -->
                     
-                    <a href="wishlist.html" class="wishlist-link">
+                    <a href="/wishlist" class="wishlist-link">
                         <i class="icon-heart-o"></i>
                     </a>
 
@@ -107,22 +126,23 @@
                     </div>
                     <div class="header-profile">
                         <% if (typeof user !== 'undefined' && user) { %>
-                          <!-- User is logged in, show dropdown menu -->
-                          <a class="profile-link" href="#" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="icon-user"></i>
-                          </a>
-                          <div class="dropdown-menu" aria-labelledby="profileDropdown">
-                            <a class="dropdown-item" href="/profile" style="font-size: 18px">Profile</a>
-                            <a class="dropdown-item" href="/logout" style="font-size: 18px">Logout</a>
-                          </div>
+                            <!-- User is logged in, show dropdown menu -->
+                            <a class="profile-link" href="#" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="icon-user" style="color: #000; font-size: 24px; font-weight: bold;"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                                <a class="dropdown-item" href="/profile" style="font-size: 18px;">Profile</a>
+                                <a class="dropdown-item" href="/logout" style="font-size: 18px;">Logout</a>
+                            </div>
                         <% } else { %>
-                          <!-- User is not logged in, show login link -->
-                          <a href="/login" class="profile-link">
-                            <i class="icon-user"></i>
-                          </a>
+                            <!-- User is not logged in, show login link -->
+                            <a href="/login" class="profile-link">
+                                <i class="icon-user" style="color: #000; font-size: 24px; font-weight: bold;"></i>
+                            </a>
                         <% } %>
-                      </div>
-                      
+                    </div>
+                    
+                    
                       
                 </div><!-- End .header-right -->
             </div><!-- End .container-fluid -->

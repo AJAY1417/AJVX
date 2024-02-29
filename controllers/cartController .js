@@ -8,23 +8,23 @@ const mongoose = require("mongoose");
 //============================ LOAD THE CART ==============================
 const loadCart = async (req, res) => {
   try {
-    console.log("Load Cart Controller Called");
+    // console.log("Load Cart Controller Called");
     let totalSum = 0;
     let totalQuantity = 0;
 
     // Check if user is authenticated
     if (!req.session || !req.session.user_id) {
-      console.log("No User ID Found");
+      // console.log("No User ID Found");
       return res.redirect("/login"); // Redirect to the login page if not logged in
     }
 
     const userId = req.session.user_id;
-    console.log("User ID:", userId);
+    // console.log("User ID:", userId);
 
     const user = await User.findById(userId);
 
     if (!user) {
-      console.log("User not found");
+      // console.log("User not found");
       return res.redirect("/login"); // Redirect to the login page if user not found
     }
 
@@ -33,7 +33,7 @@ const loadCart = async (req, res) => {
       "products.productId"
     );
 
-    console.log("Has Cart:", hasCart);
+    // console.log("Has Cart:", hasCart);
 
     if (hasCart && hasCart.products) {
       // Calculate the total sum
@@ -49,7 +49,7 @@ const loadCart = async (req, res) => {
       });
 
       console.log("Rendering Cart Page");
-      console.log(totalQuantity);
+      // console.log(totalQuantity);
       res.render("cart", {
         cartItems: hasCart,
         totalSum,
@@ -140,7 +140,7 @@ const updateCartQuantity = async (req, res) => {
     // Check if the product with the specified productId exists
     console.log("Product Data - productId:", productId);
     const productData = await Product.findById({ _id: productId });
-    console.log("Product Data:", productData);
+    // console.log("Product Data:", productData);
 
     if (!productData) {
       // Product not found
@@ -154,7 +154,7 @@ const updateCartQuantity = async (req, res) => {
       "products.productId": productId,
     });
 
-    console.log("Cart Data:", cartData);
+    // console.log("Cart Data:", cartData);
 
     if (cartData && cartData.products) {
       const cartProduct = cartData.products.find(
