@@ -1,0 +1,98 @@
+<%- include('../layouts/admin/header.ejs') %>
+
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+  data-sidebar-position="fixed" data-header-position="fixed">
+  <%- include('../layouts/admin/sideBar.ejs') %>
+  <div class="body-wrapper">
+    <%- include('../layouts/admin/headerBar.ejs') %>
+    <div class="container-fluid page-body-wrapper">
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-12 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <div class="display-flex justify-content-between">
+                    <h4 class="card-title">Coupon Management</h4>
+                    <div class="btn-group" role="group">
+                      <a href="/admin/loadAddCoupon" class="btn btn-primary" type="button">+ ADD COUPONS</a>
+                     
+                    </div>
+                  </div>
+
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th> S.No </th>
+                          <th> Coupon Name</th>
+                          <th> Code</th>
+                          <th> Disc.Amount</th>
+                          <th> Active Date</th>
+                          <th> Expiry Date</th>
+                          <th> Min Sale</th>
+                          <th> Status</th>
+                          <th> Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% function formatDate(date) { %>
+                          <% if (date) { %>
+                            <%= date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %>
+                          <% } else { %>
+                            N/A
+                          <% } %>
+                        <% } %>
+
+                        <% for(let i=0; i < coupon.length; i++) { %>
+                          <tr>
+                            <td><%= i + 1 %></td>
+                            <td><%= coupon[i].couponname %></td>
+                            <td><%= coupon[i].couponcode %></td>
+                            <td><%= coupon[i].discountamount %></td>
+                            <td><%= formatDate(coupon[i].activationdate) %></td>
+                            <td><%= formatDate(coupon[i].expirydate) %></td>
+                            <td><%= coupon[i].criteriaamount %></td>
+                            <td class="<%= coupon[i].status === 1 ? 'text-danger' : 'text-success' %>">
+                              <%= coupon[i].status === 1 ? 'Blocked' : 'Active' %>
+                            </td>
+                            <td>
+                              <a href="/admin/loadEditCoupon?id=<%= coupon[i]._id %>">
+                                <i class="bi bi-pencil-square"></i> Edit
+                              </a>
+                              <a href="/admin/deleteCoupon?id=<%= coupon[i]._id %>" class="delete-link">
+                                <i class="bi bi-trash3"></i> Delete
+                              </a>
+                            </td>
+                          </tr>
+                        <% } %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <%- include('../layouts/admin/footer') %>
+
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $(".delete-link").click(function () {
+        // Add logic here to handle delete action
+        var confirmation = confirm("Are you sure you want to delete this?");
+        if (confirmation) {
+          // Perform the delete action
+          // After deletion, you can refresh the page
+          location.reload();
+        } else {
+          // Cancelled
+        }
+      });
+    });
+  </script>
+</div>

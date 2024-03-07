@@ -7,6 +7,8 @@ const userController = require("../controllers/userController");
 const cartController = require("../controllers/cartController ");
 const accountController = require("../controllers/accountController");
 const orderController = require("../controllers/orderController");
+const walletController = require("../controllers/walletController");
+const couponController = require("../controllers/couponController");
 const { isLogin, isLogout } = require("../middlewares/auth");
 
 user_route.set("view engine", "ejs");
@@ -59,11 +61,12 @@ user_route.get('/wishlist', isLogin, userController.loadWishlist);
 user_route.post("/addToWishlist", isLogin, userController.addtoWishlist);
 
 // Delete Wishlist Product
-user_route.post(
+user_route.get(
   "/deleteWishlistProduct",
   isLogin,
   userController.deleteWishlistproduct
 );
+
 
 // ============================ CART =======================================
 user_route.get("/cart", isLogin, cartController.loadCart);
@@ -86,6 +89,11 @@ user_route.get("/addAddress", isLogin, accountController.loadAddAddress);
 user_route.post("/addAddress", isLogin, accountController.addAddress);
 user_route.post("/updateDetails", isLogin, accountController.userDetails);
 
+// ============================ WALLET  =======================================
+
+user_route.get('/wallet',isLogin,walletController.showWallet)
+user_route.post("/add-money", isLogin, walletController.addMoneyToWallet);
+
 // ============================ CHECKOUT =======================================
 
 user_route.get("/checkout", isLogin, orderController.loadCheckout);
@@ -97,6 +105,10 @@ user_route.post("/orderPlace", isLogin, orderController.placeOrder);
 // ============================ PAYMENT =======================================
 user_route.post("/verifyPayment", isLogin, orderController.verifyPayment);
 
+
+//coupons
+
+user_route.post("/applyCoupon",isLogin,couponController.applyCoupon)
 // ============================ EXPORTS =======================================
 
 module.exports = user_route;

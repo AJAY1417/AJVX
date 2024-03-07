@@ -1,0 +1,76 @@
+<%- include('../layouts/admin/header.ejs') %>
+
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+  data-sidebar-position="fixed" data-header-position="fixed">
+  <%- include('../layouts/admin/sideBar.ejs') %>
+  <div class="body-wrapper">
+    <%- include('../layouts/admin/headerBar.ejs') %>
+            <div class="container-fluid page-body-wrapper">
+                <div class="main-panel">
+                    <div class="content-wrapper">
+                        <div class="row">
+                            <div class="col-12 grid-margin">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="display-flex justify-content-between">
+                                            <h4 class="card-title">Category Offer Management</h4>
+
+                                            <a href="/admin/addoffersCat" class="btn-primary" type="button">+ ADD OFFERS</a>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+
+                                                        <th> S.No </th>
+                                                        <!-- <th> Image </th> -->
+                                                        <th> Category Name</th>
+                                                        <th> Offers %</th>
+                                                        <th> Ending Date</th>
+                                                        <!-- <th> Price</th> -->
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    
+                                                <%  if (categoryOffers && categoryOffers.length > 0) { %> 
+                                                    <% for(let i =0; i < categoryOffers.length; i++ ) { %>
+                                                        <tr>
+                                                            <td>
+                                                                <%= i + 1 %>
+                                                            </td>
+                                                            <td>
+                                                                <%= categoryOffers[i].categoryname %>
+                                                            </td>
+                                                            <td>
+                                                                <%= categoryOffers[i].percentage %>% 
+                                                            </td>
+                                                            <td>
+                                                                <%= categoryOffers[i].expiryDate.toLocaleDateString('en-US', {
+                                                                    year: 'numeric' , month: 'short' , day: '2-digit'
+                                                                    }).replace(/\//g, '-' ) %>
+                                                            </td>
+                                                            <td>
+                                                                <td> <a href="/admin/deletecatOff?id=<%= categoryOffers[i]._id %>"" class="
+                                                                    delete-link"><i class="bi bi-trash3"></i></a></td>
+                                                            </td>
+                                                        </tr>
+                                                 <% } %>
+                                                  <% } else { %>
+                                                    <tr>
+                                                        <td colspan="6">Offers Not Found</td>
+                                                    </tr>
+                                                <% } %> 
+                                                </tbody>
+                                                
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <%- include('../layouts/admin/footer') %>

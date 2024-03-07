@@ -2,7 +2,7 @@ const express = require("express");
 const imageUploader = require("../config/multer");
 const admin_route = express();
 
-
+const couponController= require('../controllers/couponController')
 const adminController = require("../controllers/adminController");
 const productController = require("../controllers/productController");
 
@@ -111,7 +111,13 @@ admin_route.post("/updateOrderStatus", adminController.updateOrderStatus);
 
 
 
-
+//============================= COUPON ==================================
+admin_route.get("/coupon", couponController.loadCoupon);
+admin_route.get("/loadAddCoupon", couponController.loadAddCoupon);
+admin_route.post("/addCouponDB",  couponController.addCoupon);
+admin_route.get("/loadEditCoupon",couponController.loadEditCoupon);
+admin_route.post("/editCouponDB",  couponController.editCoupon);
+admin_route.get("/deleteCoupon", couponController.deleteCoupon);
 
 
 

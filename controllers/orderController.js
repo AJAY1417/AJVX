@@ -42,7 +42,7 @@ const loadCheckout = async (req, res) => {
       const addresses = await Address.find({ userId: req.session.user_id }); //taken from address
 
       if (user) {
-        userName = user.name;
+        userName = user.firstName;
         accountDetails = user;
         UserAddress = addresses;
       }
@@ -56,6 +56,9 @@ const loadCheckout = async (req, res) => {
     // Calculate totalSum outside the loop
     let totalSum = 0;
     let datatotal = [];
+
+
+
     cartData.products.forEach((product) => {
       product.sum = product.quantity * product.price;
       totalSum += product.sum;
@@ -80,7 +83,6 @@ const loadCheckout = async (req, res) => {
       datatotal,
       totalSum,
       cartData,
-
       coupon,
       //   discAmount,
     });
@@ -128,6 +130,9 @@ const removeCartProduct = async (req, res) => {
   }
 };
 
+
+
+// ============================ PLACE ORDER ============================  
 const placeOrder = async (req, res) => {
   try {
     // Retrieve necessary data from the request
@@ -156,17 +161,34 @@ const placeOrder = async (req, res) => {
     }
 
     // Calculate total amount and prepare order products
-    // Calculate total amount and prepare order products
-    const totalAmount = cartData.products.reduce((total, cartProduct) => {
-      return total + cartProduct.totalPrice;
-    }, 0);
+    const totalAmount = cartData.totalPrice || 0;
 
-    const orderProducts = cartData.products.map((cartProduct) => ({
-      product: cartProduct.productId,
-      count: cartProduct.count,
-      total: cartProduct.totalPrice,
-      productPrice: cartProduct.price,
-    }));
+    // Calculate discounted total for each product
+    const orderProducts = cartData.products.map((cartProduct) => {
+      const discount = cartProduct.discount || 0;
+
+      const discountedTotal = calculateDiscountedTotal(
+        cartProduct.price,
+        cartProduct.quantity,
+        discount
+      );
+
+      console.log(`Product ${cartProduct.productId}:`);
+      console.log(`Price: ${cartProduct.price}`);
+      console.log(`Quantity: ${cartProduct.quantity}`);
+      console.log(`Discount: ${discount}`);
+      console.log(`Discounted Total: ${discountedTotal}`);
+
+      return {
+        product: cartProduct.productId,
+        count: cartProduct.quantity,
+        total: discountedTotal,
+        productPrice: cartProduct.price,
+      };
+    });
+
+    // Use the updated totalAmount after applying the coupon
+    const updatedTotalAmount = cartData.totalPrice || 0;
 
     // Create a new order document
     const newOrder = new Order({
@@ -174,7 +196,7 @@ const placeOrder = async (req, res) => {
       deliveryDetails: { address: address },
       products: orderProducts,
       purchaseDate: new Date(),
-      totalAmount: totalAmount,
+      totalAmount: discountedTotal, // Use the updated total amount
       status: status,
       paymentMethod: paymentMethod,
       paymentStatus: "pending", // Assuming the payment starts as pending
@@ -183,34 +205,33 @@ const placeOrder = async (req, res) => {
 
     // Save the order to the database
     const savedOrder = await newOrder.save();
-     console.log('orderidddddddddddddddddddd',savedOrder._id);
-     let orderid = savedOrder._id;
+    console.log("orderidddddddddddddddddddd", savedOrder._id);
+    let orderid = savedOrder._id;
+
     // Clear the user's cart
     await Cart.updateOne(
       { user: userId },
       { $set: { products: [], total: 0 } }
     );
-  
+
     // Handle payment based on the selected method
     if (paymentMethod === "online") {
       // Set up options for Razorpay payment
-
       const options = {
-        amount: totalAmount * 100,
+        amount: updatedTotalAmount * 100, // Use the updated total amount
         currency: "INR",
-        receipt: ""+orderid,
+        receipt: "" + orderid,
       };
 
-      // Create Razorpay order asynchronously
       // Create Razorpay order asynchronously
       const orderPromise = new Promise((resolve, reject) => {
         razorpayInstance.orders.create(options, (err, order) => {
           if (err) {
-            console.log('errrrrrrrrrrrrrr');
+            console.log("errrrrrrrrrrrrrr");
             console.error(err);
             reject(err);
           } else {
-            console.log('no errorrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+            console.log("no errorrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
             resolve(order);
           }
         });
@@ -247,13 +268,18 @@ const placeOrder = async (req, res) => {
   }
 };
 
+// Function to calculate
+
+// Function to calculate discounted total
+const calculateDiscountedTotal = (totalPrice, discountAmount) => {
+  const discountedPrice = totalPrice - discountAmount;
+  return discountedPrice;
+};
 
 
+// Function to calculate
 
-
-
-
-
+// Function to calculate discounted total
 
 
 
@@ -365,7 +391,7 @@ const verifyPayment = async (req, res) => {
 
 //========================== LOAD RETURN ORDER PAGE ==========================
 
-const returnOrder = async (req, res) => {
+const returnOrder = async (req, res) => { 
   try {
     res.render('orderReturn')
   } catch (error) {

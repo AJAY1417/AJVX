@@ -132,7 +132,7 @@ const addToCart = async (req, res) => {
 
 const updateCartQuantity = async (req, res) => {
   try {
-    console.log("Update Cart Quantity Controller Called");
+    console.log("Update Cart Quantity Controller Called 2");
     const userId = req.session.user_id;
     const productId = req.body.id;
     const val = req.body.val;

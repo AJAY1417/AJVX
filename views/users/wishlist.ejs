@@ -26,12 +26,13 @@
                                                 <img src="/public/images/products/<%= pro.images[0] %>" alt="Product image">
                                             </a>
                                         </figure>
+                
                                         <h3 class="product-title">
                                             <a href="#">
                                                 <%= pro.name %>
                                             </a>
-                                        </h3>
-                                    </div>
+                                        </h3><!-- End .product-title -->
+                                    </div><!-- End .product -->
                                 </td>
                                 <td class="price-col">
                                     <% if (pro.discountPrice) { %>
@@ -47,7 +48,7 @@
                                         <span class="in-stock">In stock</span>
                                     <% } %>
                                 </td>
-                                <td class="product-details-action">
+                                <td class="action-col">
                                     <form onsubmit="addToCart('<%= pro._id %>'); return false;">
                                         <button type="submit" class="btn-product btn-cart"><span>Add to cart</span></button>
                                     </form>
@@ -59,11 +60,11 @@
                                         </button>
                                     </a>
                                 </td>
-                                
                             </tr>
                         <% } %>
                     <% } %>
                 </tbody>
+                
             </table>
             <% if (wishlist.length === 0) { %>
                 <h4 style="color: red;">EMPTY! PLEASE ADD SOME PRODUCTS</h4>
@@ -75,41 +76,46 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    async function addToCart(id) {
-        console.log("addToCart function called with id: " + id);
-        try {
-            const response = await $.ajax({
-                url: "/addTocart",
-                method: "post",
-                encoded: true,
-                data: {
-                    id: id
-                },
+  async function addToCart(id) {
+    console.log("addToCart function called with id: " + id);
+    try {
+        const response = await $.ajax({
+            url: "/addTocart",
+            method: "post",
+            encoded: true,
+            data: {
+                id: id
+            },
+        });
+
+        if (response && response.success) {
+            console.log(response);
+
+            await Swal.fire({
+                icon: 'success',
+                title: 'Item has been added to Cart!',
+                showConfirmButton: false,
+                timer: 1000
             });
 
-            if (response && response.success) {
-                console.log(response);
-
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Item has been added to Cart!',
-                    showConfirmButton: false,
-                    timer: 1000
-                });
-
-                // Remove the product from the wishlist on the client side
-                const wishlistItem = document.querySelector(`[data-product-id="${id}"]`);
-                if (wishlistItem) {
-                    wishlistItem.remove();
-                }
-            } else {
-                swal("Fail to add");
+            // Remove the product from the wishlist on the client side
+            const wishlistItem = document.querySelector(`[data-product-id="${id}"]`);
+            if (wishlistItem) {
+                wishlistItem.remove();
             }
-        } catch (error) {
-            console.error("Error in addToCart", error);
+
+            // You need to update the wishlist on the server side. Make an AJAX call to do this.
+            // Example: $.ajax({ url: "/updateWishlist", method: "post", data: { productId: id } });
+
+        } else {
             swal("Fail to add");
         }
+    } catch (error) {
+        console.error("Error in addToCart", error);
+        swal("Fail to add");
     }
+}
+
 </script>
 
 <%- include('../layouts/user/footer.ejs') %>

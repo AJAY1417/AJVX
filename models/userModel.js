@@ -36,7 +36,24 @@ const UserSchema = new mongoose.Schema({
   is_block:{
     type:Boolean,
     default:"false"
-  }
+  },
+  wallet:{
+    type:Number,
+    default:0
+  },
+  walletHistory:[{
+      date:{
+        type:Date,
+        default:Date.now()
+      },
+      amount:{
+        type:Number
+      },
+      message:{
+        type:String,
+        default:'credit'
+      }
+  }]
 });
 
 // Create the User model based on the schema

@@ -6,25 +6,47 @@ const product = require("../models/productModel");
 const Order = require("../models/orderModel");
 
 // load myAccount dasboard
+// load myAccount dashboard
 const loadMyAccount = async (req, res) => {
   try {
+    console.log("entered the function");
+
+    // Find the user by ID
     const user = await User.findOne({ _id: req.session.user_id });
+
+    // Check if the user is found
+    if (!user) {
+      console.log("User not found");
+      // You can redirect to a different page or handle it in a way that makes sense for your application
+      return res.status(404).send("User not found");
+    }
+
+    console.log("User found:", user);
+
+    // Retrieve addresses, order data, and wallet details
     const addresses = await Address.find({ userId: req.session.user_id });
-    orderData = await Order.find({ userId: req.session.user_id })
+    const orderData = await Order.find({ userId: req.session.user_id })
       .populate("products.product")
       .sort({ purchaseDate: -1 });
 
+    // Assuming wallet details are present in the user object
+    const walletBalance = user.wallet;
+    const walletHistory = user.walletHistory;
+
     res.render("profile", {
       UserAddress: addresses,
-      userName: user.name,
+      userName: user.firstName,
       orderData: orderData,
-      userDB: user,
+      User: user,//userdb = user
+      walletBalance: walletBalance,
+      walletHistory: walletHistory,
     });
   } catch (error) {
     console.log(error.message);
     res.status(500).send("Internal Server Error");
   }
 };
+
 
 //load edit Address
 const loadEditaddress = async (req, res) => {
@@ -180,6 +202,9 @@ const userDetails = async (req, res) => {
   }
 };
 
+
+
+
 module.exports = {
   loadMyAccount,
   loadEditaddress,
@@ -187,4 +212,5 @@ module.exports = {
   addAddress,
   editAddress,
   userDetails,
+  
 };
