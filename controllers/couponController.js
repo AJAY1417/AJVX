@@ -103,7 +103,6 @@ const calculateDiscountedTotal = (totalPrice, discountAmount) => {
 };
 
 
-
 const applyCoupon = async (req, res) => {
   try {
     console.log("entered applyCoupon");
@@ -144,7 +143,7 @@ const applyCoupon = async (req, res) => {
       return res.json({ success: false, message: "User cart not found" });
     }
 
-    if (cart.totalPrice < coupon.criteriaamount) {
+    if (cart.cartTotal < coupon.criteriaamount) {
       return res.json({
         success: false,
         message: "Order total does not meet coupon criteria amount",
@@ -153,10 +152,10 @@ const applyCoupon = async (req, res) => {
 
     // Update the cart with the discounted total
     const discountedTotal = calculateDiscountedTotal(
-      cart.totalPrice,
+      cart.cartTotal,
       coupon.discountamount
     );
-    cart.totalPrice -= coupon.discountamount;
+    cart.cartTotal -= coupon.discountamount;
 
     console.log(coupon.discountamount, "===================");
     console.log(discountedTotal, "+++++++++++++++++++++++++++");

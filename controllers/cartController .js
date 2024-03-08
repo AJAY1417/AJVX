@@ -1,6 +1,6 @@
-const Cart = require('../models/cartModel')
-const User = require('../models/userModel')
-const Product = require("../models/productModel")
+const Cart = require("../models/cartModel");
+const User = require("../models/userModel");
+const Product = require("../models/productModel");
 const mongoose = require("mongoose");
 
 //=========================================================================
@@ -8,48 +8,37 @@ const mongoose = require("mongoose");
 //============================ LOAD THE CART ==============================
 const loadCart = async (req, res) => {
   try {
-    // console.log("Load Cart Controller Called");
     let totalSum = 0;
     let totalQuantity = 0;
 
     // Check if user is authenticated
     if (!req.session || !req.session.user_id) {
-      // console.log("No User ID Found");
       return res.redirect("/login"); // Redirect to the login page if not logged in
     }
 
     const userId = req.session.user_id;
-    // console.log("User ID:", userId);
-
     const user = await User.findById(userId);
 
     if (!user) {
-      // console.log("User not found");
       return res.redirect("/login"); // Redirect to the login page if user not found
     }
 
-    // Query the Cart collection using the user field
     const hasCart = await Cart.findOne({ user: userId }).populate(
       "products.productId"
     );
 
-    // console.log("Has Cart:", hasCart);
-
     if (hasCart && hasCart.products) {
-      // Calculate the total sum
       hasCart.products.forEach((product) => {
         product.sum = product.quantity * product.price;
         totalSum += product.sum;
         totalQuantity += product.quantity;
       });
 
-      // Calculate data total based on product prices and counts
       let datatotal = hasCart.products.map((product) => {
         return product.price * product.quantity;
       });
 
       console.log("Rendering Cart Page");
-      // console.log(totalQuantity);
       res.render("cart", {
         cartItems: hasCart,
         totalSum,
@@ -65,8 +54,6 @@ const loadCart = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
-
 
 //=============================  ADD TO CART  =========================================
 const addToCart = async (req, res) => {
@@ -95,7 +82,9 @@ const addToCart = async (req, res) => {
     let productPrice = productData.price;
 
     if (userCart) {
-      const productExistIndex = userCart.products.findIndex((product) => product.productId == productId);
+      const productExistIndex = userCart.products.findIndex(
+        (product) => product.productId == productId
+      );
 
       if (productExistIndex !== -1) {
         const cartProduct = userCart.products[productExistIndex];
@@ -104,7 +93,10 @@ const addToCart = async (req, res) => {
         if (productData.quantity <= quantity) {
           return res.json({ outofstock: true });
         } else {
-          await Cart.updateOne({ user: userId, "products.productId": productId }, { $inc: { "products.$.quantity": 1 } });
+          await Cart.updateOne(
+            { user: userId, "products.productId": productId },
+            { $inc: { "products.$.quantity": 1 } }
+          );
         }
       } else {
         await Cart.updateOne(
@@ -127,9 +119,7 @@ const addToCart = async (req, res) => {
   }
 };
 
-
-//============================= Update the quanity =================================
-
+//============================= Update the quantity =================================
 const updateCartQuantity = async (req, res) => {
   try {
     console.log("Update Cart Quantity Controller Called 2");
@@ -140,7 +130,6 @@ const updateCartQuantity = async (req, res) => {
     // Check if the product with the specified productId exists
     console.log("Product Data - productId:", productId);
     const productData = await Product.findById({ _id: productId });
-    // console.log("Product Data:", productData);
 
     if (!productData) {
       // Product not found
@@ -149,62 +138,37 @@ const updateCartQuantity = async (req, res) => {
       return;
     }
 
-    const cartData = await Cart.findOne({
-      user: userId,
-      "products.productId": productId,
-    });
+    const cartData = await Cart.findOneAndUpdate(
+      {
+        user: userId,
+        "products.productId": productId,
+      },
+      {
+        $inc: {
+          "products.$.quantity": val,
+        },
+      },
+      { new: true }
+    );
 
-    // console.log("Cart Data:", cartData);
-
-    if (cartData && cartData.products) {
-      const cartProduct = cartData.products.find(
-        (product) => product.productId.toString() === productId.toString()
+    if (cartData) {
+      // Recalculate and update cartTotal
+      const updatedCartTotal = cartData.products.reduce(
+        (total, product) => total + product.quantity * product.price,
+        0
       );
 
-      console.log("Cart Product:", cartProduct);
+      await Cart.findOneAndUpdate(
+        { user: userId },
+        { $set: { cartTotal: updatedCartTotal } },
+        { new: true }
+      );
 
-      if (cartProduct) {
-        const currentQuantity = cartProduct.quantity;
-
-        if (val === 1) {
-          if (currentQuantity < productData.quantity) {
-            await Cart.updateOne(
-              { user: userId, "products.productId": productId },
-              { $inc: { "products.$.quantity": 1 } }
-            );
-            console.log("Quantity increased");
-            res.json({ result: true });
-          } else {
-            // Display a "stock exceeded" alert
-            console.error("Stock exceeded for productId:", productId);
-            res.json({ result: "stock_exceeded" });
-          }
-        } else if (val === -1) {
-          if (currentQuantity > 1) {
-            await Cart.updateOne(
-              { user: userId, "products.productId": productId },
-              { $inc: { "products.$.quantity": -1 } }
-            );
-            console.log("Quantity decreased");
-            res.json({ result: true });
-          } else {
-            // Handle the case when the quantity is already 1
-            console.error("Quantity is already 1 for productId:", productId);
-            res.json({ result: "quantity_below_1" });
-          }
-        }
-      } else {
-        // Handle the case when the product is not found in the cart
-        console.error(
-          "Product not found in the cart for productId:",
-          productId
-        );
-        res.json({ result: "product_not_found_in_cart" });
-      }
+      res.json({ result: true });
     } else {
-      // Handle the case when the cart or products array is null
-      console.error("Cart or products array is null for userId:", userId);
-      res.json({ result: "cart_or_products_null" });
+      // Handle the case when the product is not found in the cart
+      console.error("Product not found in the cart for productId:", productId);
+      res.json({ result: "product_not_found_in_cart" });
     }
   } catch (error) {
     console.error(error.message);
@@ -212,11 +176,10 @@ const updateCartQuantity = async (req, res) => {
   }
 };
 
-
 //removing a product from cart
 const removeCartProduct = async (req, res) => {
   try {
-    const productId = req.query.id; // Keep this line for GET request
+    const productId = req.query.id;
     const userId = req.session.user_id;
     const cartData = await Cart.findOneAndUpdate(
       { user: userId },
@@ -227,9 +190,6 @@ const removeCartProduct = async (req, res) => {
       },
       { new: true }
     );
-
-    console.log(productId);
-    console.log(cartData);
 
     if (cartData) {
       res.json({ success: true, message: "Product removed from the cart." });
@@ -248,7 +208,6 @@ const removeCartProduct = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   loadCart,

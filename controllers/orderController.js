@@ -8,23 +8,13 @@ const Coupon = require("../models/couponModel");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 
-
 //================================================================================================================
 
-
-
 //================================== RAZORPAY INSTANCE ==========================================
-
 const razorpayInstance = new Razorpay({
   key_id: "rzp_test_Rr5LK4XJjm8rxm",
   key_secret: "f4QOCHAFThYVJH9z8lX8OPhN",
- 
 });
-
-
-
-
-
 
 //====================================== RENDER THE CHECKOUT PAGE =============================================
 const loadCheckout = async (req, res) => {
@@ -56,8 +46,6 @@ const loadCheckout = async (req, res) => {
     // Calculate totalSum outside the loop
     let totalSum = 0;
     let datatotal = [];
-
-
 
     cartData.products.forEach((product) => {
       product.sum = product.quantity * product.price;
@@ -130,8 +118,6 @@ const removeCartProduct = async (req, res) => {
   }
 };
 
-
-
 // ============================ PLACE ORDER ============================  
 const placeOrder = async (req, res) => {
   try {
@@ -160,9 +146,6 @@ const placeOrder = async (req, res) => {
       return res.status(400).json({ error: "Cart data not found" });
     }
 
-    // Calculate total amount and prepare order products
-    const totalAmount = cartData.totalPrice || 0;
-
     // Calculate discounted total for each product
     const orderProducts = cartData.products.map((cartProduct) => {
       const discount = cartProduct.discount || 0;
@@ -187,8 +170,11 @@ const placeOrder = async (req, res) => {
       };
     });
 
-    // Use the updated totalAmount after applying the coupon
-    const updatedTotalAmount = cartData.totalPrice || 0;
+    // Calculate total amount after applying the coupon
+    const updatedTotalAmount = orderProducts.reduce(
+      (total, product) => total + product.total,
+      0
+    );
 
     // Create a new order document
     const newOrder = new Order({
@@ -196,7 +182,7 @@ const placeOrder = async (req, res) => {
       deliveryDetails: { address: address },
       products: orderProducts,
       purchaseDate: new Date(),
-      totalAmount: discountedTotal, // Use the updated total amount
+      totalAmount: updatedTotalAmount, // Use the updated total amount
       status: status,
       paymentMethod: paymentMethod,
       paymentStatus: "pending", // Assuming the payment starts as pending
@@ -251,7 +237,7 @@ const placeOrder = async (req, res) => {
       console.log("orderPromise", orderPromise);
       // Get the Razorpay order and send it in the response
       const razorpayOrder = await orderPromise;
-      return res.json({ order: newOrder });
+      return res.json({ order: newOrder, razorpayOrder });
     } else if (paymentMethod === "cod") {
       // Handle cash-on-delivery order
       console.log("COD order placed");
@@ -268,23 +254,13 @@ const placeOrder = async (req, res) => {
   }
 };
 
-// Function to calculate
-
 // Function to calculate discounted total
-const calculateDiscountedTotal = (totalPrice, discountAmount) => {
-  const discountedPrice = totalPrice - discountAmount;
-  return discountedPrice;
+const calculateDiscountedTotal = (totalPrice, quantity, discount) => {
+  const discountedTotal = totalPrice * quantity - discount;
+  return discountedTotal;
 };
 
-
-// Function to calculate
-
-// Function to calculate discounted total
-
-
-
 //===================== RENDER ORDER SUCCESS PAGE ==========================
-
 
 // order placed success page
 const orderSuccess = async (req, res) => {
@@ -346,7 +322,6 @@ const cancelOrder = async (req, res) => {
   }
 };
 
-
 const verifyPayment = async (req, res) => {
   console.log("Inside verifyPayment");
   try {
@@ -360,10 +335,10 @@ const verifyPayment = async (req, res) => {
     console.log("HMAC Value:", hmacValue);
     console.log("Razorpay Signature:", paymentData.payment.razorpay_signature);
     console.log("Order Receipt ID:", paymentData.order.receipt);
-      console.log(
-        "jjjjjjjjjjjjjjjjjjj",
-        paymentData.payment.razorpay_payment_id
-      );
+    console.log(
+      "jjjjjjjjjjjjjjjjjjj",
+      paymentData.payment.razorpay_payment_id
+    );
     const hmac = crypto.createHmac("sha256", "f4QOCHAFThYVJH9z8lX8OPhN");
     hmac.update(
       paymentData.payment.razorpay_order_id +
@@ -388,7 +363,6 @@ const verifyPayment = async (req, res) => {
   }
 };
 
-
 //========================== LOAD RETURN ORDER PAGE ==========================
 
 const returnOrder = async (req, res) => { 
@@ -399,7 +373,6 @@ const returnOrder = async (req, res) => {
     res.render('500')
   }
 }
-
 
 //========================== RETURN ORDER ====================================================
 const orderReturnPOST = async (req, res) => {
@@ -459,8 +432,6 @@ const orderReturnPOST = async (req, res) => {
     res.render('500')
   }
 }
-
-
 
 module.exports = {
   loadCheckout,
