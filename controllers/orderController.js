@@ -139,6 +139,7 @@ const placeOrder = async (req, res) => {
 
     // Fetch cart data for the user
     const cartData = await Cart.findOne({ user: userId });
+    const totalAmount = cartData.total;
 
     // Check if cart data not found
     if (!cartData) {
@@ -148,19 +149,16 @@ const placeOrder = async (req, res) => {
 
     // Calculate discounted total for each product
     const orderProducts = cartData.products.map((cartProduct) => {
-      const discount = cartProduct.discount || 0;
+      
+      const discount = req.body.discountAmt || 0;
+
 
       const discountedTotal = calculateDiscountedTotal(
         cartProduct.price,
         cartProduct.quantity,
         discount
       );
-
-      console.log(`Product ${cartProduct.productId}:`);
-      console.log(`Price: ${cartProduct.price}`);
-      console.log(`Quantity: ${cartProduct.quantity}`);
-      console.log(`Discount: ${discount}`);
-      console.log(`Discounted Total: ${discountedTotal}`);
+      
 
       return {
         product: cartProduct.productId,
@@ -175,6 +173,10 @@ const placeOrder = async (req, res) => {
       (total, product) => total + product.total,
       0
     );
+
+ 
+
+
 
     // Create a new order document
     const newOrder = new Order({
@@ -254,9 +256,11 @@ const placeOrder = async (req, res) => {
   }
 };
 
+
 // Function to calculate discounted total
 const calculateDiscountedTotal = (totalPrice, quantity, discount) => {
   const discountedTotal = totalPrice * quantity - discount;
+  console.log("discount function___________________", discountedTotal);
   return discountedTotal;
 };
 
@@ -323,7 +327,7 @@ const cancelOrder = async (req, res) => {
 };
 
 const verifyPayment = async (req, res) => {
-  console.log("Inside verifyPayment");
+  console.log("****************************************************",req.body);
   try {
     const user_id = req.session.user_id;
     const cartData = await Cart.findOne({ user: user_id });

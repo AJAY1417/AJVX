@@ -1,5 +1,10 @@
 <%- include('../layouts/user/header.ejs') %>
 
+	<!-- Bootstrap JavaScript (and Popper.js) -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
 	<main class="main">
 		<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
 			<div class="container">
@@ -19,52 +24,70 @@
 		<div class="page-content">
 			<div class="checkout">
 				<div class="container">
-					<!-- add address -->
+					<!-- Add address -->
 					<a href="/addAddress">
 						<button type="submit" class="btn btn-outline-primary-2 float-right">
 							<span>+ ADD ADDRESS</span>
 							<i class="icon-long-arrow-right"></i>
 						</button>
 					</a>
-					<i class="bi bi-plus-square-dotted" data-toggle="modal" data-target="#couponModal"></i>
 
 
-
-					<!-- add coupons -->
+					<!-- _______________________________________________________________________________________________________________________________________ -->
+					
+					
+					<!-- Add coupons -->
 					<div class="checkout-discount">
 						<form action="/applyCoupon" id="applyCouponForm" method="post">
-							<input type="text" class="form-control" required id="checkout-discount-input"
-								name="couponCode">
-							<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here
-									to enter your code</span></label>
-							<button type="submit" class="btn btn-primary">Apply Coupon</button>
+							<div class="d-flex align-items-center">
+								<input type="text" class="form-control" required id="checkout-discount-input"
+									name="couponCode">
+								<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click
+										here to enter your code</span></label>
+							</div>
+
+							<br><br>
+
+							<!-- Button trigger modal -->
+							<div class="mt-2">
+								<button type="button" class="btn btn-primary copy-button" data-toggle="modal"
+									data-target="#exampleModal">
+									Coupons available
+								</button>
+							</div>
+
+
+							<button type="submit" class="btn btn-primary mt-2">Apply Coupon</button>
+
 						</form>
 					</div><!-- End .checkout-discount -->
 
 
-					<!-- Filters Modal -->
+	<!-- ___________________________________________________________ LOAD THE MODAL FOR THE COUPONS ____________________________________________________________________________ -->
 
-					<div class="modal fade" id="filtersModal" tabindex="-1" role="dialog"
-						aria-labelledby="filtersModalLabel" aria-hidden="true">
+
+					<!-- Modal -->
+					<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+						aria-labelledby="exampleModalLabel" aria-hidden="true">
 						<div class="modal-dialog" role="document">
 							<div class="modal-content">
 								<div class="modal-header">
-									<h5 class="modal-title" id="filtersModalLabel">Available Coupons</h5>
+									<h5 class="modal-title" id="exampleModalLabel">COUPONS AVAILABLE</h5>
 									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 										<span aria-hidden="true">&times;</span>
 									</button>
 								</div>
 								<div class="modal-body">
-									<!-- Coupon List -->
-
-									<% for(let i=0; i< coupon.length; i++) { %>
-										<div class="card mb-3">
+									<% for (let i=0; i < coupon.length; i++) { %>
+										<div class="card mb-3 bg-red">
 											<div class="card-body">
 												<h5 class="card-title">
 													<%= coupon[i].couponname %>
 												</h5>
-												<p class="card-text">Code: <%= coupon[i].couponcode %>
-												</p>
+												<p class="card-text">Code: <span class="copy-text">
+														<%= coupon[i].couponcode %>
+													</span><button class="btn btn-primary copy-button">Copy
+														Code</button></p>
 												<p class="card-text">Discount: ₹<%= coupon[i].discountamount %>
 												</p>
 												<p class="card-text">
@@ -72,13 +95,12 @@
 												</p>
 												<p class="card-text">Minimum Purchase: <%= coupon[i].criteriaamount %>
 												</p>
-
 											</div>
 										</div>
 										<% } %>
 								</div>
 								<div class="modal-footer">
-
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 								</div>
 							</div>
 						</div>
@@ -87,17 +109,13 @@
 
 
 
-
-
-
-					<!-- ordaer place -->
-
+					<!-- Order place -->
 					<form action="/orderPlace?id=<%= %>" method="post" id="myform">
 						<div class="row">
 							<div class="col-lg-9">
 								<p>The following addresses will be used on the checkout page by default.</p>
 
-								<!-- billing address -->
+								<!-- Billing address -->
 								<div class="row">
 									<% if (UserAddress && UserAddress.length> 0) { %>
 										<% for (let i=0; i < UserAddress.length; i++) { %>
@@ -147,7 +165,8 @@
 							<aside class="col-lg-3">
 								<div class="summary">
 									<h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
-									<!-- order summary -->
+
+									<!-- Order summary -->
 									<table class="table table-summary">
 										<thead>
 											<tr>
@@ -174,11 +193,14 @@
 																<td>$<%= totalSum %>
 																</td>
 															</tr><!-- End .summary-subtotal -->
+
 															<tr>
 																<td id="couponDiscount">Coupon Discount</td>
-																<td id="couponDiscountAmount">-₹<%= coupon.discountamount %></td>
-
+																<td id="couponDiscountAmount">-₹<%=
+																		coupon.discountamount %>
+																</td>
 															</tr>
+
 															<tr class="summary-total">
 																<td>Total:</td>
 																<td id="total">$<%= totalSum %>
@@ -187,14 +209,12 @@
 										</tbody>
 									</table><!-- End .table table-summary -->
 
-
 									<div class="accordion-summary" id="accordion-payment">
 										<!-- Your payment options here -->
 										<div class="payment-options">
 											<h3 class="summary-title">Select Payment Method</h3>
 											<!-- End .summary-title -->
 											<!-- Payment methods -->
-
 											<div class="card">
 												<div class="custom-control custom-radio">
 													<input type="radio" id="payment-cod" name="payment-method"
@@ -223,7 +243,6 @@
 											</div><!-- End .card -->
 										</div><!-- End .accordion -->
 
-										<input type="hidden" id="total" name="total">
 										<% if (cartData) { %>
 											<button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
 												<span class="btn-text">Place Order</span>
@@ -239,20 +258,33 @@
 		</div><!-- End .page-content -->
 	</main><!-- End .main -->
 
+
+	<!-- _______________________________________________________________________________________________________________________________________ -->
+
+
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 	<script>
 		$(document).ready(function () {
+			// Click event listener for the icon triggering the coupon modal
+			$('.bi.bi-plus-square-dotted').click(function () {
+				console.log('Coupon modal button clicked');
+				$('#filtersModal').modal('show');
+			});
+
 			$('#myform').submit(function (event) {
 				event.preventDefault();
 				var formData = $(this).serializeArray();
 
+				let discountAmt = $('#couponDiscountAmount').val();
+				formData.push({ name: "discountAmt", value: discountAmt });
+
 				// Check if an address and payment method are selected
 				var selectedAddress = $('input[name="selectedAddress"]:checked').val();
 				var selectedPaymentMethod = $('input[name="payment-method"]:checked').val();
-				console.log(selectedPaymentMethod)
+				console.log(selectedPaymentMethod);
 
 				if (!selectedAddress) {
 					// Show a SweetAlert if an address is not selected
@@ -269,6 +301,7 @@
 						text: 'Please select a payment method!',
 					});
 				} else {
+					// Add discount amount to form data
 					$.ajax({
 						url: '/orderPlace',
 						method: 'POST',
@@ -300,65 +333,91 @@
 					});
 				}
 			});
-
-			function razorpayPayment(order) {
-				console.log(order, "hello");
-				var options = {
-					"key": "rzp_test_ykdEV4zuE7mjJQ", // Enter the Key ID generated from the Dashboard
-					"amount": order.totalAmount*100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-					"currency": "INR",
-					"name": "AJVX", //your business name
-					"description": "Test Transaction",
-					"image": "/public/user/assets/images/demos/demo-5/logo.png",
-					"order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-					handler: function (response) {
-						verifyPayment(response, order);
-					},
-					"prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
-						"name": "AJVX", //your customer's name
-						"email": "info@stylo.com",
-						"contact": "9000090000" //Provide the customer's phone number for better conversion rates 
-					},
-					"notes": {
-						"address": "AJVX"
-					},
-					"theme": {
-						"color": "#3399cc"
-					}
-				};
-				var rzp1 = new Razorpay(options);
-				console.log('kkkkkkkkkkkkkkkkkkkk',rzp1);
-				rzp1.open();
-			}
-			function verifyPayment(payment, order) {
-				console.log("verifyPayment kk keri");
-				const amount2 = document.getElementById("total").value;
-				console.log(amount2, "amount 2 :");
-				$.ajax({
-					url: '/verifyPayment',
-					method: "post",
-					data: {
-						payment: payment,
-						order: order,
-						amount2: amount2,
-					},
-					success: (response) => {
-						if (response.placed == true) {
-							window.location.href = '/orderSuccess';
-						} else {
-							swal.fire({
-								positon: "center",
-								icon: "error",
-								title: "Payment failed",
-								showConfirmButton: false,
-								timer: 1500,
-							});
-						}
-					}
-				})
-			}
-
 		});
+
+
+		//_______________________________________________________________________________________________________________________________________
+
+		//this is to copy the code in the dashboard in coupon modal 
+
+
+		document.addEventListener('DOMContentLoaded', function () {
+			document.querySelectorAll(".copy-button").forEach(function (button) {
+				button.addEventListener("click", function () {
+					let codeText = this.parentNode.querySelector(".copy-text").textContent.trim();
+					navigator.clipboard.writeText(codeText)
+						.then(() => {
+							alert('Coupon code copied to clipboard: ' + codeText);
+						})
+						.catch(err => {
+							console.error('Could not copy text: ', err);
+						});
+				});
+			});
+		});
+		//_______________________________________________________________________________________________________________________________________
+
+
+
+
+		function razorpayPayment(order) {
+			console.log(order, "hello");
+
+			var options = {
+				"key": "rzp_test_ykdEV4zuE7mjJQ", // Enter the Key ID generated from the Dashboard
+				"amount": order.totalAmount * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+				"currency": "INR",
+				"name": "AJVX", //your business name
+				"description": "Test Transaction",
+				"image": "/public/user/assets/images/demos/demo-5/logo.png",
+				"order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+				handler: function (response) {
+					verifyPayment(response, order);
+				},
+				"prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+					"name": "AJVX", //your customer's name
+					"email": "info@stylo.com",
+					"contact": "9000090000" //Provide the customer's phone number for better conversion rates 
+				},
+				"notes": {
+					"address": "AJVX"
+				},
+				"theme": {
+					"color": "#3399cc"
+				}
+			};
+			var rzp1 = new Razorpay(options);
+			console.log('kkkkkkkkkkkkkkkkkkkk', rzp1);
+			rzp1.open();
+		}
+
+		function verifyPayment(payment, order) {
+			console.log("verifyPayment kk keri");
+			const amount2 = document.getElementById("total").value;
+			console.log(amount2, "amount 2 :");
+			$.ajax({
+				url: '/verifyPayment',
+				method: "post",
+				data: {
+					payment: payment,
+					order: order,
+					amount2: amount2,
+				},
+				success: (response) => {
+					if (response.placed == true) {
+						window.location.href = '/orderSuccess';
+					} else {
+						swal.fire({
+							positon: "center",
+							icon: "error",
+							title: "Payment failed",
+							showConfirmButton: false,
+							timer: 1500,
+						});
+					}
+				}
+			});
+		}
 
 		// In your client-side script
 		$(document).ready(function () {
@@ -375,6 +434,7 @@
 							// Update the total amount on the page
 							$('#total').text('$' + response.discountedTotal);
 							$('#couponDiscountAmount').text('- ₹' + response.couponDiscountAmount);
+							$('#couponDiscountAmount').val(response.couponDiscountAmount);
 							Swal.fire({
 								icon: 'success',
 								title: 'Coupon Applied!',
@@ -402,10 +462,6 @@
 				});
 			});
 		});
-
-
-
-
 	</script>
 
 	<%- include('../layouts/user/footer.ejs') %>
