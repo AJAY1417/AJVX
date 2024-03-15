@@ -1,9 +1,10 @@
 <%- include('../layouts/user/header.ejs') %>
 
 <main class="main">
-    <div class="page-content">
-        <div class="container">
+    <div class="page-content d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="container text-center">
             <table class="table table-wishlist table-mobile">
+                <!-- Your table content -->
                 <thead>
                     <tr>
                         <th>Product</th>
@@ -64,10 +65,15 @@
                         <% } %>
                     <% } %>
                 </tbody>
-                
             </table>
             <% if (wishlist.length === 0) { %>
-                <h4 style="color: red;">EMPTY! PLEASE ADD SOME PRODUCTS</h4>
+            <div style="color: red;">
+                <h4>EMPTY! PLEASE ADD SOME PRODUCTS</h4>
+                <div class="d-flex justify-content-center"> <!-- Added a flex container to center the animation -->
+                    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script> 
+                    <dotlottie-player src="https://lottie.host/486be7a8-1d76-4862-a42c-06346577d30c/nwwfigMRQN.json" background="transparent" speed="1" style="width: 300px; height: 300px;" loop autoplay></dotlottie-player>
+                </div>
+            </div>
             <% } %>
         </div><!-- End .container -->
     </div><!-- End .page-content -->

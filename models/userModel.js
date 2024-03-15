@@ -33,27 +33,35 @@ const UserSchema = new mongoose.Schema({
   otp: {
     type: Number,
   },
-  is_block:{
-    type:Boolean,
-    default:"false"
+  is_block: {
+    type: Boolean,
+    default: false,
   },
-  wallet:{
-    type:Number,
-    default:0
+  wallet: {
+    type: Number,
+    default: 0,
   },
-  walletHistory:[{
-      date:{
-        type:Date,
-        default:Date.now()
+  walletHistory: [
+    {
+      date: {
+        type: Date,
+        default: Date.now(),
       },
-      amount:{
-        type:Number
+      amount: {
+        
+        type: Number,
       },
-      message:{
-        type:String,
-        default:'credit'
-      }
-  }]
+      message: {
+        type: String,
+        default: "credit",
+      },
+      type: {
+        type: String,
+        enum: ["credit", "debit"],
+        default: "credit",
+      },
+    },
+  ],
 });
 
 // Create the User model based on the schema

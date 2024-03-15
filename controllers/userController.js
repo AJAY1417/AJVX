@@ -43,7 +43,7 @@ const loadHome = async (req, res) => {
   try {
     const products = await Product.find().populate("category").exec();
     // Pass the user information to the template
-    res.render("home", { products: products, user: req.session.user_id });
+    res.render("home", { products: products });
   } catch (error) {
     console.log(error.message);
     // Handle errors appropriately
@@ -54,20 +54,24 @@ const loadHome = async (req, res) => {
 // ============================  USER REGISTER  =======================================
 const insertUser = async (req, res, next) => {
   try {
+    // Check if the user already exists in the database
     const userD = await User.findOne({ email: req.body.email });
 
     if (userD) {
+      // Render the "register" view with the error message if the user already exists
       return res.render("register", {
         status: "failed",
         message: "User already exists",
       });
     }
 
+    // Hash the password
     const spassword = await securePassword(req.body.password);
     if (!spassword) {
       return res.status(500).send("Failed to hash the password");
     }
 
+    // Check if the password and confirm password match
     if (req.body.password !== req.body.confirm_password) {
       return res.render("register", {
         status: "failed",
@@ -75,28 +79,35 @@ const insertUser = async (req, res, next) => {
       });
     }
 
+    // Store user data in session
     req.session.firstName = req.body.firstName;
     req.session.lastName = req.body.lastName;
     req.session.mobile = req.body.mobile;
     req.session.email = req.body.email;
     req.session.password = spassword;
 
+    // Generate and store OTP for email verification
     const otpsend = generateRandomNumericString(6);
     req.session.otpsend = {
       code: otpsend,
       expiry: Date.now() + 45 * 1000, // 45 seconds expiry
     };
 
+    // Send verification email
     await sendVerifyMail(req.body.firstName, req.body.email, otpsend);
 
     // Assuming user creation was successful, clean up sensitive data from the session
 
+    // Render the "otp" view to prompt the user to enter OTP for email verification
     res.render("otp", { user: req.body.email });
   } catch (error) {
+    // Handle any errors that occur during user registration
     console.log("Error in user registration:", error.message);
     res.status(500).send("Internal Server Error");
   }
 };
+
+
 // ============================  MAIL VERIFICATION  =======================================
 const sendVerifyMail = async (name, email, otpsend) => {
   try {
@@ -235,13 +246,13 @@ const verifyOtp = async (req, res, next) => {
         const savedUser = await user.save();
         console.log("User saved:", savedUser);
 
-        // Clear sensitive data from the session
-        // delete req.session.otpsend;
-        // delete req.session.firstName;
-        // delete req.session.lastName;
-        // delete req.session.email;
-        // delete req.session.mobile;
-        // delete req.session.password;
+            // Clear sensitive data from the session
+            // delete req.session.otpsend;
+            // delete req.session.firstName;
+            // delete req.session.lastName;
+            // delete req.session.email;
+            // delete req.session.mobile;
+            // delete req.session.password;
 
         // Render the login page with a success message
         return res.render("login", {
@@ -268,6 +279,7 @@ const verifyOtp = async (req, res, next) => {
     return res.status(500).send("Internal Server Error");
   }
 };
+
 
 // ============================ RESEND OTP =======================================
 const resendOtp = async (req, res, next) => {

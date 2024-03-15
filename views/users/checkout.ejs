@@ -34,8 +34,8 @@
 
 
 					<!-- _______________________________________________________________________________________________________________________________________ -->
-					
-					
+
+
 					<!-- Add coupons -->
 					<div class="checkout-discount">
 						<form action="/applyCoupon" id="applyCouponForm" method="post">
@@ -63,7 +63,7 @@
 					</div><!-- End .checkout-discount -->
 
 
-	<!-- ___________________________________________________________ LOAD THE MODAL FOR THE COUPONS ____________________________________________________________________________ -->
+					<!-- ___________________________________________________________ LOAD THE MODAL FOR THE COUPONS ____________________________________________________________________________ -->
 
 
 					<!-- Modal -->
@@ -234,13 +234,11 @@
 											</div><!-- End .card -->
 
 											<div class="card">
-												<div class="custom-control custom-radio">
-													<input type="radio" id="payment-Wallet" name="payment-method"
-														class="custom-control-input" value="Wallet">
-													<label class="custom-control-label"
-														for="payment-Wallet">Wallet</label>
-												</div>
-											</div><!-- End .card -->
+    <div class="custom-control custom-radio">
+        <input type="radio" id="payment-Wallet" name="payment-method" class="custom-control-input" value="wallet">
+        <label class="custom-control-label" for="payment-Wallet">Wallet</label>
+    </div>
+</div><!-- End .card -->
 										</div><!-- End .accordion -->
 
 										<% if (cartData) { %>
@@ -276,6 +274,7 @@
 
 			$('#myform').submit(function (event) {
 				event.preventDefault();
+
 				var formData = $(this).serializeArray();
 
 				let discountAmt = $('#couponDiscountAmount').val();

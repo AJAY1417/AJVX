@@ -1,5 +1,3 @@
-<!-- views/users/register.ejs -->
-
 <%- include('../layouts/user/header.ejs') %>
 <main class="main">
   <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
@@ -17,41 +15,60 @@
           </ul>
           <div class="tab-content">
             <div class="tab-pane fade show active" id="register-2" role="tabpanel" aria-labelledby="register-tab-2">
-              <form id="registrationForm" action="/register" method="POST" onsubmit="return validateForm()">
+              
+                        <!-- shows the message and hide after 5s -->
+              
+              <% if (typeof message !== 'undefined') { %>
+                <p id="flashMessage" style="color: red; text-align: center; font-weight: bold; font-size: 20px;">
+                  <%= message %>
+                </p>
+                <script>
+                  // Set timeout to hide the message after 5000 milliseconds (5 seconds)
+                  setTimeout(function() {
+                    var flashMessage = document.getElementById('flashMessage');
+                    if (flashMessage) {
+                      flashMessage.style.display = 'none';
+                    }
+                  }, 5000);
+                </script>
+              <% } %>
+              
+             
+              <form id="registrationForm" action="/register" method="POST" onsubmit="return validateForm(event)">
                 <div class="form-group">
                   <label for="firstName">First Name *</label>
-                  <input type="text" class="form-control" id="firstName" name="firstName" required>
-                  <span id="firstNameError" class="error-message"></span>
+                  <input type="text" class="form-control" id="firstName" name="firstName" required pattern="^[a-zA-Z]+$" oninput="validateFirstName(this)">
+                  <span id="firstNameError" class="error-message" style="color: red;"></span>
                 </div><!-- End .form-group -->
 
                 <div class="form-group">
                   <label for="lastName">Last Name *</label>
-                  <input type="text" class="form-control" id="lastName" name="lastName" required>
-                  <span id="lastNameError" class="error-message"></span>
+                  <input type="text" class="form-control" id="lastName" name="lastName" required pattern="^[a-zA-Z]+$" oninput="validateLastName(this)">
+                  <span id="lastNameError" class="error-message" style="color: red;"></span>
                 </div><!-- End .form-group -->
 
                 <div class="form-group">
                   <label for="email">E-mail Address *</label>
-                  <input type="email" class="form-control" id="email" name="email" required>
-                  <span id="emailError" class="error-message"></span>
+                  <input type="email" class="form-control" id="email" name="email" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" oninput="validateEmail(this)">
+                  <span id="emailError" class="error-message" style="color: red;"></span>
                 </div><!-- End .form-group -->
 
                 <div class="form-group">
                   <label for="mobile">Mobile *</label>
-                  <input type="tel" class="form-control" id="mobile" name="mobile" required>
-                  <span id="mobileError" class="error-message"></span>
+                  <input type="tel" class="form-control" id="mobile" name="mobile" required pattern="^(\+\d{1,3}[- ]?)?\d{10}$" oninput="validateMobile(this)">
+                  <span id="mobileError" class="error-message" style="color: red;"></span>
                 </div><!-- End .form-group -->
 
                 <div class="form-group">
                   <label for="password">Password *</label>
-                  <input type="password" class="form-control" id="password" name="password" required>
-                  <span id="passwordError" class="error-message"></span>
+                  <input type="password" class="form-control" id="password" name="password" required pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[0-9a-zA-Z!@#$%^&*]{8,}$" oninput="validatePassword(this)">
+                  <span id="passwordError" class="error-message" style="color: red;"></span>
                 </div><!-- End .form-group -->
 
                 <div class="form-group">
                   <label for="confirm_password">Confirm Password *</label>
-                  <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                  <span id="confirmPasswordError" class="error-message"></span>
+                  <input type="password" class="form-control" id="confirm_password" name="confirm_password" required oninput="validateConfirmPassword(this)">
+                  <span id="confirmPasswordError" class="error-message" style="color: red;"></span>
                 </div><!-- End .form-group -->
 
                 <div class="form-footer">
@@ -78,62 +95,175 @@
 
 <!-- Add the following JavaScript code for validation -->
 <script>
-  function validateForm() {
-    var firstName = document.getElementById("firstName").value;
-    var lastName = document.getElementById("lastName").value;
-    var email = document.getElementById("email").value;
-    var mobile = document.getElementById("mobile").value;
-    var password = document.getElementById("password").value;
-    var confirm_password = document.getElementById("confirm_password").value;
 
-    // Reset previous error messages
-    document.getElementById("firstNameError").innerHTML = "";
-    document.getElementById("lastNameError").innerHTML = "";
-    document.getElementById("emailError").innerHTML = "";
-    document.getElementById("mobileError").innerHTML = "";
-    document.getElementById("passwordError").innerHTML = "";
-    document.getElementById("confirmPasswordError").innerHTML = "";
 
-    // Check individual fields and display error messages
-    if (firstName.trim() === "") {
-      document.getElementById("firstNameError").innerHTML = "Please enter your first name.";
+
+
+
+
+
+  function validateFirstName(input) {
+    const firstNameError = document.getElementById("firstNameError");
+    const nameRegex = /^[a-zA-Z]+$/;
+
+    if (input.value.trim() === "") {
+      firstNameError.innerHTML = "Please enter your first name.";
+      input.classList.remove("valid");
+      input.classList.add("invalid");
+      return false;
+    } else if (!nameRegex.test(input.value)) {
+      firstNameError.innerHTML = "First name should contain only letters.";
+      input.classList.remove("valid");
+      input.classList.add("invalid");
+      return false;
+    } else {
+      firstNameError.innerHTML = "";
+      input.classList.remove("invalid");
+      input.classList.add("valid");
+      return true;
+    }
+  }
+
+  function validateLastName(input) {
+    const lastNameError = document.getElementById("lastNameError");
+    const nameRegex = /^[a-zA-Z]+$/;
+
+    if (input.value.trim() === "") {
+      lastNameError.innerHTML = "Please enter your last name.";
+      input.classList.remove("valid");
+      input.classList.add("invalid");
+      return false;
+    } else if (!nameRegex.test(input.value)) {
+      lastNameError.innerHTML = "Last name should contain only letters.";
+      input.classList.remove("valid");
+      input.classList.add("invalid");
+      return false;
+    } else {
+      lastNameError.innerHTML = "";
+      input.classList.remove("invalid");
+      input.classList.add("valid");
+      return true;
+    }
+  }
+
+  function validateEmail(input) {
+    const emailError = document.getElementById("emailError");
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (input.value.trim() === "") {
+      emailError.innerHTML = "Please enter an email address.";
+      input.classList.remove("valid");
+      input.classList.add("invalid");
+      return false;
+    } else if (!emailRegex.test(input.value)) {
+      emailError.innerHTML = "Please enter a valid email address.";
+      input.classList.remove("valid");
+      input.classList.add("invalid");
+      return false;
+    } else {
+      emailError.innerHTML = "";
+      input.classList.remove("invalid");
+      input.classList.add("valid");
+      return true;
+    }
+  }
+
+  function validateMobile(input) {
+    const mobileError = document.getElementById("mobileError");
+    const mobileRegex = /^(\+\d{1,3}[- ]?)?\d{10}$/;
+
+    if (input.value.trim() === "") {
+      mobileError.innerHTML = "Please enter a mobile number.";
+      input.classList.remove("valid");
+      input.classList.add("invalid");
+      return false;
+    } else if (!mobileRegex.test(input.value)) {
+      mobileError.innerHTML = "Please enter a valid 10-digit mobile number with or without country code.";
+      input.classList.remove("valid");
+      input.classList.add("invalid");
+      return false;
+    } else {
+      mobileError.innerHTML = "";
+      input.classList.remove("invalid");
+      input.classList.add("valid");
+      return true;
+    }
+  }
+
+  function validatePassword(input) {
+    const passwordError = document.getElementById("passwordError");
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[0-9a-zA-Z!@#$%^&*]{8,}$/;
+
+    if (input.value.trim() === "") {
+      passwordError.innerHTML = "Please enter a password.";
+      input.classList.remove("valid");
+      input.classList.add("invalid");
+      return false;
+    } else if (!passwordRegex.test(input.value)) {
+      passwordError.innerHTML = "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one digit, and one special character.";
+      input.classList.remove("valid");
+      input.classList.add("invalid");
+      return false;
+    } else {
+      passwordError.innerHTML = "";
+      input.classList.remove("invalid");
+      input.classList.add("valid");
+      return true;
+    }
+  }
+
+  function validateConfirmPassword(input) {
+    const confirmPasswordError = document.getElementById("confirmPasswordError");
+    const password = document.getElementById("password").value;
+
+    if (input.value.trim() === "") {
+      confirmPasswordError.innerHTML = "Please confirm your password.";
+      input.classList.remove("valid");
+      input.classList.add("invalid");
+      return false;
+    } else if (input.value !== password) {
+      confirmPasswordError.innerHTML = "Passwords do not match.";
+      input.classList.remove("valid");
+      input.classList.add("invalid");
+      return false;
+    } else {
+      confirmPasswordError.innerHTML = "";
+      input.classList.remove("invalid");
+      input.classList.add("valid");
+      return true;
+    }
+  }
+
+  function validateForm(event) {
+    const firstNameInput = document.getElementById("firstName");
+    const lastNameInput = document.getElementById("lastName");
+    const emailInput = document.getElementById("email");
+    const mobileInput = document.getElementById("mobile");
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirm_password");
+
+    if (
+      validateFirstName(firstNameInput) &&
+      validateLastName(lastNameInput) &&
+      validateEmail(emailInput) &&
+      validateMobile(mobileInput) &&
+      validatePassword(passwordInput) &&
+      validateConfirmPassword(confirmPasswordInput)
+    ) {
+      return true; // Allow form submission if all validations pass
+    } else {
+      event.preventDefault(); // Prevent form submission if any validation fails
       return false;
     }
-
-    if (lastName.trim() === "") {
-      document.getElementById("lastNameError").innerHTML = "Please enter your last name.";
-      return false;
-    }
-
-    // Validate email format
-    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      document.getElementById("emailError").innerHTML = "Please enter a valid email address.";
-      return false;
-    }
-
-    // Validate mobile number format
-    var mobileRegex = /^\d{10}$/;
-    if (!mobileRegex.test(mobile)) {
-      document.getElementById("mobileError").innerHTML = "Please enter a valid 10-digit mobile number.";
-      return false;
-    }
-
-    // Validate password length
-    if (password.length < 6) {
-      document.getElementById("passwordError").innerHTML = "Password must be at least 6 characters.";
-      return false;
-    }
-
-    // Validate password match
-    if (password !== confirm_password) {
-      document.getElementById("passwordError").innerHTML = "Passwords do not match.";
-      document.getElementById("confirmPasswordError").innerHTML = "Passwords do not match.";
-      return false;
-    }
-
-    // You can add more validation logic here for other fields
-
-    return true;
   }
 </script>
+
+<style>
+  .valid {
+    border-color: green !important;
+  }
+
+  .invalid {
+    border-color: red !important;
+  }
+</style>

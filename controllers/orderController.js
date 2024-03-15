@@ -118,6 +118,7 @@ const removeCartProduct = async (req, res) => {
   }
 };
 
+
 // ============================ PLACE ORDER ============================  
 const placeOrder = async (req, res) => {
   try {
@@ -149,16 +150,12 @@ const placeOrder = async (req, res) => {
 
     // Calculate discounted total for each product
     const orderProducts = cartData.products.map((cartProduct) => {
-      
       const discount = req.body.discountAmt || 0;
-
-
       const discountedTotal = calculateDiscountedTotal(
         cartProduct.price,
         cartProduct.quantity,
         discount
       );
-      
 
       return {
         product: cartProduct.productId,
@@ -173,10 +170,6 @@ const placeOrder = async (req, res) => {
       (total, product) => total + product.total,
       0
     );
-
- 
-
-
 
     // Create a new order document
     const newOrder = new Order({
@@ -194,7 +187,7 @@ const placeOrder = async (req, res) => {
     // Save the order to the database
     const savedOrder = await newOrder.save();
     console.log("orderidddddddddddddddddddd", savedOrder._id);
-    let orderid = savedOrder._id;
+    let orderid = savedOrder._id.toString()
 
     // Clear the user's cart
     await Cart.updateOne(
@@ -244,6 +237,33 @@ const placeOrder = async (req, res) => {
       // Handle cash-on-delivery order
       console.log("COD order placed");
       return res.json({ success: true });
+    } else if (paymentMethod === "wallet") {
+      // Handle wallet payment option
+      if (user.wallet >= updatedTotalAmount) {
+        // Sufficient balance in the wallet
+        user.wallet -= updatedTotalAmount;
+
+        // Create a wallet history entry
+        const walletHistoryEntry = {
+          date: new Date(),
+          amount: -updatedTotalAmount,
+          message: "Order placed",
+          type: "debit",
+        };
+
+        //push cheyyunu
+  user.walletHistory.push(walletHistoryEntry);
+
+
+        await user.save();
+        newOrder.paymentStatus = "completed";
+        console.log("Wallet payment successful");
+        return res.json({ order: newOrder, success: true });
+      } else {
+        // Insufficient balance in the wallet
+        console.log("Insufficient balance in the wallet");
+        return res.status(400).json({ error: "Insufficient balance in the wallet" });
+      }
     } else {
       // Invalid payment method
       console.log("Invalid payment method");
@@ -255,6 +275,7 @@ const placeOrder = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 
 // Function to calculate discounted total

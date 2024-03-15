@@ -9,7 +9,6 @@ const accountController = require("../controllers/accountController");
 const orderController = require("../controllers/orderController");
 const walletController = require("../controllers/walletController");
 const couponController = require("../controllers/couponController");
-const { isLogin, isLogout } = require("../middlewares/auth");
 
 user_route.set("view engine", "ejs");
 user_route.set("views", "./views/users");
@@ -22,6 +21,13 @@ user_route.use(
     // cookie: { secure: true }
   })
 );
+
+// Custom middleware to add user session to every response
+const addUserToResponse = (req, res, next) => {
+  res.locals.user = req.session.user_id;
+  next();
+};
+user_route.use(addUserToResponse);
 
 // ============================ HOME =======================================
 user_route.get("/", userController.loadHome);
@@ -55,60 +61,50 @@ user_route.get("/search", userController.searchProducts);
 
 // ============================ WISHLIST =======================================
 // Load Wishlist
-user_route.get('/wishlist', isLogin, userController.loadWishlist);
+user_route.get("/wishlist", userController.loadWishlist);
 
 // Add Product to Wishlist
-user_route.post("/addToWishlist", isLogin, userController.addtoWishlist);
+user_route.post("/addToWishlist", userController.addtoWishlist);
 
 // Delete Wishlist Product
-user_route.get(
-  "/deleteWishlistProduct",
-  isLogin,
-  userController.deleteWishlistproduct
-);
-
+user_route.get("/deleteWishlistProduct", userController.deleteWishlistproduct);
 
 // ============================ CART =======================================
-user_route.get("/cart", isLogin, cartController.loadCart);
-user_route.post("/addTocart", isLogin, cartController.addToCart);
-user_route.post(
-  "/updateCartQuantity",
-  isLogin,
-  cartController.updateCartQuantity
-);
-user_route.get("/removeCartProduct", isLogin, cartController.removeCartProduct);
+user_route.get("/cart", cartController.loadCart);
+user_route.post("/addTocart", cartController.addToCart);
+user_route.post("/updateCartQuantity", cartController.updateCartQuantity);
+user_route.get("/removeCartProduct", cartController.removeCartProduct);
 // ============================ LOGOUT =======================================
 
-user_route.get("/logout", isLogout, userController.logout);
+user_route.get("/logout", userController.logout);
 
 // ============================ ACCOUNT=======================================
-user_route.get("/profile", isLogin, accountController.loadMyAccount);
-user_route.get("/editAddress", isLogin, accountController.loadEditaddress);
-user_route.post("/editAddress", isLogin, accountController.editAddress);
-user_route.get("/addAddress", isLogin, accountController.loadAddAddress);
-user_route.post("/addAddress", isLogin, accountController.addAddress);
-user_route.post("/updateDetails", isLogin, accountController.userDetails);
+user_route.get("/profile", accountController.loadMyAccount);
+user_route.get("/editAddress", accountController.loadEditaddress);
+user_route.post("/editAddress", accountController.editAddress);
+user_route.get("/addAddress", accountController.loadAddAddress);
+user_route.post("/addAddress", accountController.addAddress);
+user_route.post("/updateDetails", accountController.userDetails);
 
 // ============================ WALLET  =======================================
 
-user_route.get('/wallet',isLogin,walletController.showWallet)
-user_route.post("/add-money", isLogin, walletController.addMoneyToWallet);
+user_route.get("/wallet", walletController.showWallet);
+user_route.post("/addMoney", walletController.addMoneyToWallet);
 
 // ============================ CHECKOUT =======================================
 
-user_route.get("/checkout", isLogin, orderController.loadCheckout);
+user_route.get("/checkout", orderController.loadCheckout);
 // ============================ ORDERS =======================================
-user_route.post("/cancelOrder", isLogin, orderController.cancelOrder);
-user_route.get("/orderSuccess", isLogin, orderController.orderSuccess);
-user_route.post("/orderPlace", isLogin, orderController.placeOrder);
+user_route.post("/cancelOrder", orderController.cancelOrder);
+user_route.get("/orderSuccess", orderController.orderSuccess);
+user_route.post("/orderPlace", orderController.placeOrder);
 
 // ============================ PAYMENT =======================================
-user_route.post("/verifyPayment", isLogin, orderController.verifyPayment);
-
+user_route.post("/verifyPayment", orderController.verifyPayment);
 
 //coupons
 
-user_route.post("/applyCoupon",isLogin,couponController.applyCoupon)
+user_route.post("/applyCoupon", couponController.applyCoupon);
 // ============================ EXPORTS =======================================
 
 module.exports = user_route;

@@ -16,17 +16,22 @@ const isLogin = async (req, res, next) => {
 };
 
 const isLogout = async (req, res, next) => {
-  try {
-    if (req.session.user_id) {
-      res.redirect("/");
-    } else {
-      next(); // Call next only if user is logged out
-    }
+ try {
+    // Destroy the session
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error destroying session:", err);
+        res.status(500).send("Internal Server Error");
+      } else {
+        // Redirect to the home page or any appropriate page after logout
+        res.redirect("/");
+      }
+    });
   } catch (error) {
-    console.log(error.message);
-    // Handle the error as needed
+    console.error("Error during logout:", error);
     res.status(500).send("Internal Server Error");
   }
+
 };
 
 const isBlocked = async (req, res, next) => {

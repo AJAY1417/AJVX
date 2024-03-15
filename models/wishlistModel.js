@@ -10,6 +10,7 @@ const wishlistSchema = new mongoose.Schema({
          required:true,
          ref:"Product"
 }
+
 })
 
 const Wishlist= mongoose.model('Wishlist', wishlistSchema);

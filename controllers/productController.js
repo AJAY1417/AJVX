@@ -52,8 +52,15 @@ const addProductLoad = async (req, res) => {
 const addProduct = async (req, res) => {
   try {
     const { productName, description, category, price, quantity } = req.body;
+    // this condition is to check validation of product name and quantity 
+    if (!productName || !quantity || isNaN(quantity) || quantity <= 0) {
+      return res
+        .status(400)
+        .render("addProduct", { message: "Invalid product name or quantity" });
+    }
+
     const categoryData = await categorySchema.findOne({ _id: category });
-    const coverPic = req.files.map(file => file.filename);
+    const coverPic = req.files.map((file) => file.filename);
 
     const productData = await productSchema.create({
       name: productName,

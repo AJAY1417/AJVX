@@ -6,13 +6,15 @@
     <!-- Breadcrumb HTML content -->
   </nav>
 
-  <div class="login-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17" style="background-image: url('/assets/images/backgrounds/login-bg.jpg')">
+  <div class="login-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17"
+    style="background-image: url('/assets/images/backgrounds/login-bg.jpg')">
     <div class="container">
       <div class="form-box">
         <div class="form-tab">
           <ul class="nav nav-pills nav-fill" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" id="signin-tab-2" data-toggle="tab" href="#signin-2" role="tab" aria-controls="signin-2" aria-selected="true">Sign In</a>
+              <a class="nav-link active" id="signin-tab-2" data-toggle="tab" href="#signin-2" role="tab"
+                aria-controls="signin-2" aria-selected="true">Sign In</a>
             </li>
           </ul>
           <div class="tab-content">
@@ -30,41 +32,39 @@
                   <p id="passwordError" class="error-message"></p>
                 </div><!-- End .form-group -->
 
-                <div class="form-footer">
-                  <button type="submit" class="btn btn-outline-primary-2">
-                    <span>LOG IN</span>
-                    <i class="icon-long-arrow-right"></i>
-                  </button>
-
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="signin-remember-2">
-                  </div><!-- End .custom-checkbox -->
-
-                  <a href="#" class="forgot-link">Forgot Your Password?</a>
-
-                  <p class="mt-3 mb-0">
-                    Not a member yet? <a href="/register" class="btn btn-outline-secondary">Sign up</a>
-                  </p>
+                <div class="form-footer d-flex justify-content-between align-items-center">
+                  <div>
+                    <button type="submit" class="btn btn-outline-primary-2">
+                      <span>LOG IN</span>
+                      <i class="icon-long-arrow-right"></i>
+                    </button>
+                  </div>
+                  <div>
+                    <a href="#" class="forgot-link">Forgot Your Password?</a>
+                  </div>
                 </div><!-- End .form-footer -->
 
-                <% if (typeof message !== 'undefined') { %>
-                  <p id="flashMessage" style="color: red;"><%= message %></p>  
-                  <script>
-                    // Set timeout to hide the message after 5000 milliseconds (5 seconds)
-                    setTimeout(function() {
-                      var flashMessage = document.getElementById('flashMessage');
-                      if (flashMessage) {
-                        flashMessage.style.display = 'none';
-                      }
-                    }, 5000);
-                  </script>
+                <div class="form-choice mt-3">
+                  <div class="d-flex justify-content-start">
+                    <p class="mb-0">Not a member yet? <a href="/register" class="btn-link">Sign up</a></p>
+                  </div>
+                </div><!-- End .form-choice -->
+
+                <% if (typeof message !=='undefined' ) { %>
+                <p id="flashMessage" style="color: red; text-align: center; font-weight: bold; font-size: 20px;">
+                  <%= message %>
+                </p>
+                <script>
+                  // Set timeout to hide the message after 5000 milliseconds (5 seconds)
+                  setTimeout(function () {
+                    var flashMessage = document.getElementById('flashMessage');
+                    if (flashMessage) {
+                      flashMessage.style.display = 'none';
+                    }
+                  }, 5000);
+                </script>
                 <% } %>
               </form>
-              <div class="form-choice">
-                <div class="row">
-                  <!-- Social login buttons can be added here if needed -->
-                </div><!-- End .row -->
-              </div><!-- End .form-choice -->
             </div><!-- .End .tab-pane -->
 
             <!-- Other tabs or content -->
