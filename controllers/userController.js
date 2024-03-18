@@ -491,23 +491,41 @@ const addtoWishlist = async (req, res) => {
   }
 };
 
-// ============================ DELETE THE PRODUCT FROM THE WISHLIST  =======================================
-
 const deleteWishlistproduct = async (req, res) => {
-    console.log('delete wish');
-    try {
-        const user = req.session.user_id;
-        const pro_id = req.query.id;
-        console.log(user, 'usernd');
-        console.log(pro_id, 'product ind');
-        await Wishlist.updateOne({ userId: user }, { $pull: { productid: pro_id } });
-        res.redirect('/wishlist')
+  try {
+    const user = req.session.user_id;
+    const pro_id = req.query.id;
 
-    } catch (error) {
-        console.log(error.message)
-        res.render('500')
+    // Find the wishlist entry for the user
+    const wishlist = await Wishlist.findOne({ userId: user });
+
+    if (!wishlist) {
+      console.log("Wishlist not found for user:", user);
+      return res
+        .status(404)
+        .json({ success: false, message: "Wishlist not found" });
     }
-}
+
+    // Check if the product ID exists in the wishlist
+    const productIndex = wishlist.productid.indexOf(pro_id);
+    if (productIndex === -1) {
+      console.log("Product not found in wishlist");
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found in wishlist" });
+    }
+
+    // Remove the product ID from the wishlist
+    wishlist.productid.splice(productIndex, 1);
+    await wishlist.save();
+
+    console.log("Product removed from wishlist");
+    res.redirect("/wishlist");
+  } catch (error) {
+    console.error("Error deleting product from wishlist:", error.message);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
 
 // =====================================================================================================================================
 

@@ -2,7 +2,7 @@ const Cart = require("../models/cartModel");
 const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const mongoose = require("mongoose");
-
+const Wishlist = require("../models/wishlistModel");
 //=========================================================================
 
 //============================ LOAD THE CART ==============================
@@ -54,12 +54,10 @@ const loadCart = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
-//=============================  ADD TO CART  =========================================
 const addToCart = async (req, res) => {
   try {
     const { id: productId } = req.body;
-    const { user_id: userId } = req.session;
+    const userId = req.session.user_id;
 
     if (!userId) {
       return res.json({ loginRequired: true });
@@ -83,7 +81,7 @@ const addToCart = async (req, res) => {
 
     if (userCart) {
       const productExistIndex = userCart.products.findIndex(
-        (product) => product.productId == productId
+        (product) => product.productId.toString() === productId
       );
 
       if (productExistIndex !== -1) {
@@ -111,6 +109,12 @@ const addToCart = async (req, res) => {
       });
       await data.save();
     }
+
+    // Remove the product from the wishlist
+    await Wishlist.updateOne(
+      { userId: userId },
+      { $pull: { productid: productId } }
+    );
 
     res.json({ success: true });
   } catch (error) {
@@ -176,11 +180,16 @@ const updateCartQuantity = async (req, res) => {
   }
 };
 
-//removing a product from cart
+
+
+
+//________________________________ REMOVE THE CART PRODUCTS HERE ___________________________________________________
 const removeCartProduct = async (req, res) => {
   try {
     const productId = req.query.id;
     const userId = req.session.user_id;
+
+    // Remove the product from the cart
     const cartData = await Cart.findOneAndUpdate(
       { user: userId },
       {
@@ -192,14 +201,20 @@ const removeCartProduct = async (req, res) => {
     );
 
     if (cartData) {
+      // Product successfully removed from the cart
       res.json({ success: true, message: "Product removed from the cart." });
     } else {
+      // No matching items found in the cart
       console.log("No matching items found in the cart.");
       res.json({
         success: false,
         message: "No matching items found in the cart.",
       });
     }
+
+    // No need to add the product back to the wishlist here
+    // If you're facing issues with products being re-added to the wishlist,
+    // make sure you're not inadvertently calling the addtoWishlist function from elsewhere.
   } catch (error) {
     console.log(error);
     res.json({
@@ -208,6 +223,10 @@ const removeCartProduct = async (req, res) => {
     });
   }
 };
+
+
+//____________________________________________________________________________________________________________________________________________________________________
+
 
 module.exports = {
   loadCart,
