@@ -1,88 +1,202 @@
 <%- include('../layouts/admin/header.ejs') %>
 
-  <!--  Body Wrapper -->
-  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
-    data-sidebar-position="fixed" data-header-position="fixed">
-    <!-- sidebar start-->
-    <%- include('../layouts/admin/sideBar.ejs') %>
-    <!-- sidebar end-->
-    <!--  Main wrapper -->
-    <div class="body-wrapper">
-      <!--  Header Start -->
-      <%- include('../layouts/admin/headerBar.ejs') %>
-      <!--  Header End -->
+<!--  Body Wrapper -->
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+  data-sidebar-position="fixed" data-header-position="fixed">
+  <!-- sidebar start-->
+  <%- include('../layouts/admin/sideBar.ejs') %>
+  <!-- sidebar end-->
+  <!--  Main wrapper -->
+  <div class="body-wrapper">
+    <!--  Header Start -->
+    <%- include('../layouts/admin/headerBar.ejs') %>
+    <!--  Header End -->
 
-      <!-- Categories Content Start -->
+    <!-- Categories Content Start -->
+    <div class="container-fluid">
       <div class="container-fluid">
-        <div class="container-fluid">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title fw-semibold mb-4">Add Category</h5>
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title fw-semibold mb-4">Add Category</h5>
 
-              <div class="card">
-                <% if (typeof message !== 'undefined') { %>
-                  <p id="flashMessage" style="color: red;"><%= message %></p>  
-                  <script>
-                    // Set timeout to hide the message after 5000 milliseconds (5 seconds)
-                    setTimeout(function() {
-                      var flashMessage = document.getElementById('flashMessage');
-                      if (flashMessage) {
-                        flashMessage.style.display = 'none';
-                      }
-                    }, 5000);
-                  </script>
-                <% } %>
-                <div class="card-body"> 
-                  <form action="/admin/addProduct" method="post" enctype="multipart/form-data">
-                    <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Product name</label>
-                      <input type="text" name="productName"  class="form-control" id="name" required >
-                    
-                    </div>
-                    <div class="mb-3">
-                      <label for="exampleInputPassword1" class="form-label">Category </label>
-                      <select class="form-control" id="category" name="category" required>
-                        <option value="" disabled selected>Select category</option>
-                        <% category.forEach(category => { %>
-                          <option value="<%= category._id %>"><%= category.name %></option>
-                        <% }); %>
-                      </select>
-                    </div>
+            <div class="card">
+              <% if (typeof message !== 'undefined') { %>
+                <p id="flashMessage" style="color: red;"><%= message %></p>
+                <script>
+                  // Set timeout to hide the message after 5000 milliseconds (5 seconds)
+                  setTimeout(function() {
+                    var flashMessage = document.getElementById('flashMessage');
+                    if (flashMessage) {
+                      flashMessage.style.display = 'none';
+                    }
+                  }, 5000);
+                </script>
+              <% } %>
+              <div class="card-body">
+                <form action="/admin/addProduct" method="post" enctype="multipart/form-data" onsubmit="return validateCategoryForm()">
+                  <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Product name</label>
+                    <input type="text" name="productName" class="form-control" id="name" required>
+                    <p class="error-message" id="nameError" style="color: red;"></p>
+                  </div>
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Category</label>
+                    <select class="form-control" id="category" name="category" required>
+                      <option value="" disabled selected>Select category</option>
+                      <% category.forEach(category => { %>
+                        <option value="<%= category._id %>"><%= category.name %></option>
+                      <% }); %>
+                    </select>
+                    <p class="error-message" id="categoryError" style="color: red;"></p>
+                  </div>
 
-                    <div class="mb-3">
-                      <label for="exampleInputPassword1" class="form-label">Description </label>
-                      <input type="text" name="description" class="form-control" id="Description" required>
-                    </div>
-                    
-                    
-                    <div class="mb-3">
-                      <label for="exampleInputPassword1" class="form-label">Quantity </label>
-                      <input type="number" name="quantity" class="form-control" id="Description" required>
-                    </div>
-                    <div class="mb-3">
-                      <label for="exampleInputPassword1" class="form-label">Price </label>
-                      <input type="number" name="price" class="form-control" id="Description" required>
-                    </div>
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Description</label>
+                    <input type="text" name="description" class="form-control" id="Description" required>
+                    <p class="error-message" id="descriptionError" style="color: red;"></p>
+                  </div>
 
-                    <div class="mb-3">
-                      <label for="exampleInputPassword1" class="form-label">images</label>
-                      <input type="file" multiple accept="image/*" name="images" class="form-control" id="image" required >
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                  </form>
-                </div>
+
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Quantity</label>
+                    <input type="number" name="quantity" class="form-control" id="quantity" required>
+                    <p class="error-message" id="quantityError" style="color: red;"></p>
+                  </div>
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Price</label>
+                    <input type="number" name="price" class="form-control" id="price" required>
+                    <p class="error-message" id="priceError" style="color: red;"></p>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Images</label>
+                    <input type="file" multiple accept="image/*" name="images" class="form-control" id="image" required>
+                    <p class="error-message" id="imageError" style="color: red;"></p>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
               </div>
-              
-              
             </div>
+
+
           </div>
         </div>
       </div>
-      <!-- Categories Content End -->
-
-     
     </div>
+    <!-- Categories Content End -->
+
+
   </div>
+</div>
+
+<%- include('../layouts/admin/footer.ejs') %>
+
+<script>
+  // Function to validate product name
+  function validateProductName() {
+    const nameInput = document.getElementById("name");
+    const nameError = document.getElementById("nameError");
+    nameError.textContent = "";
+
+    if (nameInput.value.trim() === "") {
+      nameError.textContent = "Product name is required.";
+      return false;
+    }
+    return true;
+  }
+
+  // Function to validate category
+  function validateCategory() {
+    const categoryInput = document.getElementById("category");
+    const categoryError = document.getElementById("categoryError");
+    categoryError.textContent = "";
+
+    if (categoryInput.value.trim() === "") {
+      categoryError.textContent = "Category is required.";
+      return false;
+    }
+    return true;
+  }
+
+  // Function to validate description
+  function validateDescription() {
+    const descriptionInput = document.getElementById("Description");
+    const descriptionError = document.getElementById("descriptionError");
+    descriptionError.textContent = "";
+
+    if (descriptionInput.value.trim() === "") {
+      descriptionError.textContent = "Description is required.";
+      return false;
+    }
+    return true;
+  }
+
+  // Function to validate quantity
+  function validateQuantity() {
+    const quantityInput = document.getElementById("quantity");
+    const quantityError = document.getElementById("quantityError");
+    quantity
+    // Error messages, if any, are cleared initially.
+    quantityError.textContent = "";
+
+    // Check if the quantity is empty or not a positive number.
+    if (quantityInput.value.trim() === "" || parseInt(quantityInput.value) <= 0) {
+      quantityError.textContent = "Please enter a valid quantity.";
+      return false;
+    }
+    return true;
+  }
+
+  // Function to validate price
+  function validatePrice() {
+    const priceInput = document.getElementById("price");
+    const priceError = document.getElementById("priceError");
+    priceError.textContent = "";
+
+    // Check if the price is empty or not a positive number.
+    if (priceInput.value.trim() === "" || parseFloat(priceInput.value) <= 0) {
+      priceError.textContent = "Please enter a valid price.";
+      return false;
+    }
+    return true;
+  }
+
+  // Function to validate images
+  function validateImages() {
+    const imageInput = document.getElementById("image");
+    const imageError = document.getElementById("imageError");
+    imageError.textContent = "";
+
+    // Check if at least one image is selected.
+    if (imageInput.files.length === 0) {
+      imageError.textContent = "Please select at least one image.";
+      return false;
+    }
+    return true;
+  }
+
+  // Add event listeners for real-time validation
+  document.getElementById("name").addEventListener("input", validateProductName);
+  document.getElementById("category").addEventListener("input", validateCategory);
+  document.getElementById("Description").addEventListener("input", validateDescription);
+  document.getElementById("quantity").addEventListener("input", validateQuantity);
+  document.getElementById("price").addEventListener("input", validatePrice);
+  document.getElementById("image").addEventListener("input", validateImages);
+
+  // Function to perform final validation on form submission
+  function validateCategoryForm() {
+    // Call all validation functions
+    const isNameValid = validateProductName();
+    const isCategoryValid = validateCategory();
+    const isDescriptionValid = validateDescription();
+    const isQuantityValid = validateQuantity();
+    const isPriceValid = validatePrice();
+    const isImagesValid = validateImages();
+
+    // Return true only if all validations pass
+    return isNameValid && isCategoryValid && isDescriptionValid && isQuantityValid && isPriceValid && isImagesValid;
+  }
+</script>
 
 <%- include('../layouts/admin/footer.ejs') %>
