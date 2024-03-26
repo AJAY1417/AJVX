@@ -180,9 +180,49 @@ const applyCoupon = async (req, res) => {
     res.render("500");
   }
 };
+//_________________________________________ REMOVE THE APPLIED COUPON _____________________________________
+const removeCoupon = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
 
+    // Find the user's cart
+    const cart = await Cart.findOne({ user: userId }).populate(
+      "products.productId"
+    );
 
+    if (!cart) {
+      return res.json({ success: false, message: "User cart not found" });
+    }
 
+    // Check if couponDiscountAmount is present in the cart object
+    if (!cart.couponDiscountAmount) {
+      return res.json({ success: false, message: "No coupon applied" });
+    }
+
+    // Restore the original cart total by adding back the coupon discount amount
+    cart.cartTotal += cart.couponDiscountAmount;
+
+    // Clear the coupon discount amount
+    cart.couponDiscountAmount = 0;
+
+    // Clear the discount for each product in the cart
+    cart.products.forEach((product) => {
+      product.discount = 0;
+    });
+
+    await cart.save(); // Save the updated cart
+
+    // Send success response with original total
+    return res.status(200).json({
+      success: true,
+      message: "Coupon removed successfully!",
+      originalTotal: cart.cartTotal, // Include the original total in the response
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.render("500");
+  }
+};
 
 module.exports = {
   loadCoupon,
@@ -192,4 +232,5 @@ module.exports = {
   editCoupon,
   deleteCoupon,
   applyCoupon,
+  removeCoupon
 };

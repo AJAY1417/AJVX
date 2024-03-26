@@ -1,0 +1,67 @@
+<%- include('../layouts/user/header.ejs') %>
+
+<main class="main">
+    <div class="page-header text-center" style="margin-top: 82px; background-image: url('user/images/page-header-bg.jpg')">
+        <div class="container">
+            <h1 class="page-title text-white"><i class="fa-thin fa-wallet"></i> Wallet History</h1>
+        </div><!-- End .container -->
+    </div><!-- End .page-header -->
+
+    <div class="container mt-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th class="text-center">No.</th>
+                                <th class="text-center">Date</th>
+                                <th class="text-center">Details</th>
+                                <th class="text-center">Type</th>
+                                <th class="text-center">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (wallet && wallet.walletHistory.length > 0) { %>
+                                <% wallet.walletHistory.reverse().forEach((data, index) => { %>
+                                    <tr>
+                                        <td class="text-center"><%= index + 1 %></td>
+                                        <td class="text-center"><%= new Date(data.transactionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+                                        <td class="text-center"><%= data.transactionDetails %></td>
+                                        <td class="text-center">
+                                            <% if (data.transactionType === 'Debit') { %>
+                                                <span class="text-danger">- <%= data.transactionType %></span>
+                                            <% } else { %>
+                                                <span class="text-success">+ <%= data.transactionType %></span>
+                                            <% } %>
+                                        </td>
+                                        <td class="text-center">
+                                            <% if (data.transactionAmount !== undefined) { %>
+                                                <% if (data.transactionType === 'Debit') { %>
+                                                    <span class="text-danger">- Rs. <%= Math.abs(data.transactionAmount).toFixed(2) %></span>
+                                                <% } else { %>
+                                                    <span class="text-success">+ Rs. <%= data.transactionAmount.toFixed(2) %></span>
+                                                <% } %>
+                                            <% } else { %>
+                                                N/A
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                 <% }) %>
+                                 
+                                
+                                
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="5" class="text-center">No transaction history</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div><!-- End .table-responsive -->
+            </div><!-- End .card-body -->
+        </div><!-- End .card -->
+    </div><!-- End .container -->
+</main>
+
+<%- include('../layouts/user/footer.ejs') %>

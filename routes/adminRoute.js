@@ -5,6 +5,8 @@ const admin_route = express();
 const couponController= require('../controllers/couponController')
 const adminController = require("../controllers/adminController");
 const productController = require("../controllers/productController");
+const offerController = require("../controllers/offerController");
+
 
 // Middleware
 admin_route.use(express.urlencoded({ extended: true }));
@@ -94,7 +96,18 @@ admin_route.post(
   productController.uploadProductImages
 );
 
+//======================== PRODUCT OFFER ROUTES ====================================
+// Route to load offers page
+admin_route.get('/offers', offerController.loadOffers);
 
+// Route to load add offer page
+admin_route.get('/addOff', offerController.loadAddOffer);
+
+// Route to add offer to the database
+admin_route.post('/addOfferDB', offerController.addOffers);
+
+// Route to delete offer from the database
+admin_route.get('/deleteOff', offerController.deleteOffer);
 
 
 

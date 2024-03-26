@@ -156,6 +156,14 @@ const updateCartQuantity = async (req, res) => {
     );
 
     if (cartData) {
+      // Check if the updated quantity is less than 1, set it to 1
+      if (cartData.products[0].quantity < 1) {
+        cartData.products[0].quantity = 1;
+        await cartData.save();
+        res.json({ result: "quantity_below_1" });
+        return;
+      }
+
       // Recalculate and update cartTotal
       const updatedCartTotal = cartData.products.reduce(
         (total, product) => total + product.quantity * product.price,

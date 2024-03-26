@@ -1,0 +1,108 @@
+
+  <!--  Body Wrapper -->
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <!-- sidebar start-->
+    <%- include('../layouts/admin/sideBar.ejs') %>
+    <!-- sidebar end-->
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+      <!--  Header Start -->
+      <%- include('../layouts/admin/headerBar.ejs') %>
+      <!--  Header End -->
+
+      <!-- Categories Content Start -->
+
+<div class="main-panel">
+    <div class="content-wrapper">
+  
+  
+     
+      <div class="page-header">
+        <h3 class="page-title" >  </h3>
+        
+        <div class="dropdown">
+          <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuOutlineButton1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Filter </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuOutlineButton1">
+            <h6 class="dropdown-header">Report Sorting</h6>
+            
+            <a class="dropdown-item" href="/admin/saleSortPage/<%= 1 %>">Daily</a>
+            <a class="dropdown-item" href="/admin/saleSortPage/<%= 7 %>">Weekly</a>
+            <a class="dropdown-item" href="/admin/saleSortPage/<%= 30 %>">Monthly</a>
+            <a class="dropdown-item" href="/admin/saleSortPage/<%= 365 %>">Yearly</a>
+            
+          </div>
+        </div>
+  
+  
+      </div>
+      <div class="page-header">
+        <div class="dropdown">
+          <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuOutlineButton1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Report Download </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuOutlineButton1">
+           
+            
+            <a class="dropdown-item" href="/admin/reportDown/<%= 1 %>/excel">Excel Format</a>
+            <a class="dropdown-item" href="/admin/reportDown/<%= 7 %>/pdf">Pdf Format</a>
+           
+            
+          </div>
+        </div>
+        
+      
+        
+      </div>
+      <div class="col-lg-13 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">FurniCube Sales Report Table</h4>
+            
+            </p>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    
+                    <th>Order Id</th>
+                    <th>Products - Qty</th>
+                    <th>Date</th>
+                    
+                    <th>Customer</th>
+                    <th>Total Amount</th>
+                    <!-- <th>Status</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if(orders.length > 0){ %>
+                    <% orders.forEach((data,i)=> { %>
+                  <tr>
+                    <td><%= i+1 %>.</td>
+                    <td><%= data.trackId%></td>
+                    <td><%= data.date.toLocaleDateString('en-US', { year:
+                      'numeric', month: 'short', day: '2-digit' }).replace(/\//g,
+                      '-') %></td>
+                      
+                      <td><%= data.userName %></td>
+                      <td><%= data.products.price * data.products.quantity%> </td>
+                      
+                      
+                      
+                    
+                  </tr>
+                  <% }) %>
+                  <% } %>                
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      
+    </div>
+    <!-- content-wrapper ends -->
+
+
+    <%- include('../layouts/admin/footer.ejs') %>

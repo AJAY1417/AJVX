@@ -4,6 +4,7 @@ const categorySchema = require("../models/categoryModel");
 const Wishlist = require("../models/wishlistModel");
 const bcrypt = require("bcrypt");
 const config = require("../config/config");
+const Offers = require('../models/productOfferModel')
 
 const nodemailer = require("nodemailer");
 
@@ -359,12 +360,15 @@ const shopLoad = async (req, res) => {
     const totalPages = Math.ceil(totalProductsCount / productsPerPage);
 
     const categories = await categorySchema.find();
+   const discount = await Offers.find({});
+
 
     res.render("shop", {
       products: products,
       categories: categories,
       currentPage: currentPage,
       totalPages: totalPages,
+      discount:discount
     });
   } catch (error) {
     console.log(error.message);
@@ -520,6 +524,7 @@ const deleteWishlistproduct = async (req, res) => {
     await wishlist.save();
 
     console.log("Product removed from wishlist");
+    
     res.redirect("/wishlist");
   } catch (error) {
     console.error("Error deleting product from wishlist:", error.message);

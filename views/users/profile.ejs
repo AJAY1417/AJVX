@@ -27,30 +27,29 @@
                         <!-- Sidebar Navigation -->
                         <aside class="col-md-4 col-lg-3">
                             <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
-
-                                <!-- Orders Tab -->
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="tab-orders-link" data-toggle="tab" href="#tab-orders"
-                                        role="tab" aria-controls="tab-orders" aria-selected="true">Orders</a>
-                                </li>
-
                                 <!-- Dashboard Tab -->
                                 <li class="nav-item">
                                     <a class="nav-link" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard"
                                         role="tab" aria-controls="tab-dashboard" aria-selected="false">Dashboard</a>
                                 </li>
+                                <!-- Orders Tab -->
+                                <li class="nav-item">
+                                    <a id="tab-orders-link" class="nav-link" data-toggle="tab" href="#tab-orders"
+                                        role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
+                                </li>
+
 
 
                                 <!-- Wallet Tab -->
                                 <li class="nav-item">
-                                    <a class="nav-link" id="tab-wallet-link" data-toggle="tab" href="#tab-wallet"
-                                        role="tab" aria-controls="tab-wallet" aria-selected="false">Wallet</a>
+                                    <a class="nav-link" href="/view-wallet">Wallet</a>
                                 </li>
 
                                 <!-- Address Tab -->
                                 <li class="nav-item">
-                                    <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address"
-                                        role="tab" aria-controls="tab-address" aria-selected="true">Address</a>
+                                    <a class="nav-link active" id="tab-address-link" data-toggle="tab"
+                                        href="#tab-address" role="tab" aria-controls="tab-address"
+                                        aria-selected="true">Address</a>
                                 </li>
 
                                 <!-- Sign Out Tab -->
@@ -66,7 +65,7 @@
                         <div class="col-md-8 col-lg-9">
                             <div class="tab-content">
                                 <!-- Dashboard Tab Pane -->
-                                <div class="tab-pane fade" id="tab-dashboard" role="tabpanel"
+                                <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel"
                                     aria-labelledby="tab-dashboard-link">
                                     <form method="post" action="/updateDetails" id="accountForm">
                                         <h3>Account Info</h3>
@@ -99,171 +98,104 @@
                                     </form>
                                 </div><!-- .End .tab-pane -->
                                 <!----------------------------------------------------------- DASHBOARD ENDS ----------------------------------------------------------->
+<!----------------------------------------------------------- ORDERS STARTS ----------------------------------------------------------->
+<!----------------------------------------------------------- ORDERS STARTS ----------------------------------------------------------->
+<!-- Orders Tab Pane -->
+<div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+    <!-- Orders Table -->
+    <table class="table table-cart table-mobile">
+        <thead>
+            <tr>
+                <th style="width: 40%;">Product</th>
+                <th style="width: 15%;">Price</th>
+                <th style="width: 20%;">Order Status</th>
+                <th style="width: 20%;"></th>
+                <th style="width: 20%;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Loop through order data -->
+            <% for (let j=0; j < orderData.length; j++) { %>
+                <% let product=orderData[j].products %>
+                    <% for (let i=0; i < product.length; i++) { %>
+                        <% const value=product[i].product; %>
+                            <!-- Individual Order Row -->
+                            <tr>
+                                <!-- Product Column -->
+                                <td class="product-col">
+                                    <div class="product">
+                                        <figure class="product-media">
+                                            <a href="#">
+                                                <img src="/public/images/products/<%= value.images[0] %>" alt="Product image">
+                                            </a>
+                                        </figure>
+                                        <h3 class="product-title">
+                                            <a href="#">
+                                                <%= value.name %>
+                                            </a>
+                                        </h3>
+                                    </div>
+                                </td>
 
-                                <!----------------------------------------------------------- ORDERS STARTS ----------------------------------------------------------->
-                                <!-- Orders Tab Pane -->
-                                <div class="tab-pane fade show active" id="tab-orders" role="tabpanel"
-                                    aria-labelledby="tab-orders-link">
-                                    <!-- Orders Table -->
-                                    <table class="table table-cart table-mobile">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 40%;">Product</th>
-                                                <th style="width: 15%;">Price</th>
-                                                <th style="width: 20%;">Order Status</th>
-                                                <th style="width: 20%;"></th>
-                                                <th style="width: 20%;"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Loop through order data -->
-                                            <% for (let j=0; j < orderData.length; j++) { %>
-                                                <% let product=orderData[j].products %>
-                                                    <% for (let i=0; i < product.length; i++) { %>
-                                                        <% const value=product[i].product; %>
-                                                            <!-- Individual Order Row -->
-                                                            <tr>
-                                                                <!-- Product Column -->
-                                                                <td class="product-col">
-                                                                    <div class="product">
-                                                                        <figure class="product-media">
-                                                                            <a href="#">
-                                                                                <img src="/public/images/products/<%= value.images[0] %>"
-                                                                                    alt="Product image">
-                                                                            </a>
-                                                                        </figure>
-                                                                        <h3 class="product-title">
-                                                                            <a href="#">
-                                                                                <%= value.name %>
-                                                                            </a>
-                                                                        </h3>
-                                                                    </div>
-                                                                </td>
+                                <!-- Price Column -->
+                                <td class="price-col">₹<%= product[i].total %></td>
 
-                                                                <!-- Price Column -->
-                                                                <td class="price-col">₹<%= product[i].total %>
-                                                                </td>
-                                                                </td>
+                                <!-- Order Status Column -->
+                                <td class="status-col">
+                                    <%= orderData[j].status %>
+                                </td>
 
-                                                                <!-- Order Status Column -->
-                                                                <td class="status-col">
-                                                                    <%= orderData[j].status %>
-                                                                        <!-- Cancel Order Button -->
-                                                                        <i data-toggle="modal"
-                                                                            data-target="#transparentModal"
-                                                                            class="bi bi-caret-up-square"
-                                                                            data-order-id="<%= orderData[j]._id %>"
-                                                                            data-product-name="<%= value.productname %>"
-                                                                            data-quantity="<%= product[i].count %>"
-                                                                            data-mrp="<%= value.price %>"
-                                                                            data-final-price="<%= product[i].total %>"
-                                                                            data-delivery-fullname="<%= orderData[j].deliveryDetails.address.address[0].fullname %>"
-                                                                            data-delivery-mobile="<%= orderData[j].deliveryDetails.address.address[0].mobile %>"
-                                                                            data-delivery-email="<%= orderData[j].deliveryDetails.address.address[0].email %>"
-                                                                            data-delivery-houseNo="<%= orderData[j].deliveryDetails.address.address[0].houseNo %>"
-                                                                            data-delivery-city="<%= orderData[j].deliveryDetails.address.address[0].city %>"
-                                                                            data-delivery-state="<%= orderData[j].deliveryDetails.address.address[0].state %>"
-                                                                            data-delivery-zip="<%= orderData[j].deliveryDetails.address.address[0].zipcode %>"
-                                                                            data-delivery-addetails="<%= orderData[j].deliveryDetails.address.address[0].additionalDetails %>"
-                                                                            data-order-status="<%= orderData[j].status %>"
-                                                                            data-date-of-order="<%= orderData[j].purchaseDate %>"
-                                                                            data-payment-method="<%= orderData[j].paymentMethod %>"
-                                                                            data-product-image="/images/products/<%= value.images[0] %>">
-                                                                        </i>
-                                                                </td>
+                                <!-- Return Column -->
+                                <td class="return-col">
+                                    <% if (orderData[j].status === 'Delivered') { %>
+                                        <!-- Return Order Button -->
+                                        <a href="#" class="btn btn-outline-primary-2 return-button" data-order-id="<%= orderData[j]._id %>">RETURN<i class="icon-long-arrow-right"></i></a>
+                                    <% } %>
+                                </td>
 
-                                                                <!-- Remove Column -->
-                                                               <!-- Remove Column -->
-<td class="remove-col">
-    <!-- Check if the order status is Delivered -->
-    <% if (orderData[j].status === 'Delivered') { %>
-        <!-- Return Order Button -->
-        <a href="#" data-type="return" data-id="<%= orderData[j]._id %>"
-           class="btn btn-outline-primary-2 return-button">RETURN<i class="icon-long-arrow-right"></i></a>
-    <% } else { %>
-        <!-- Cancel Order Button -->
-        <a href="#" data-type="order" data-id="<%= orderData[j]._id %>"
-           class="btn btn-outline-primary-2 cancel-button">CANCEL<i class="icon-long-arrow-right"></i></a>
-    <% } %>
-</td>
+                                <!-- Remove Column -->
+                                <td class="remove-col">
+                                    <% if (orderData[j].status !== 'Delivered') { %>
+                                        <!-- Cancel Order Button -->
+                                        <a href="#" data-type="order" data-id="<%= orderData[j]._id %>" class="btn btn-outline-primary-2 cancel-button">CANCEL<i class="icon-long-arrow-right"></i></a>
+                                    <% } %>
+                                </td>
+                            </tr>
+                    <% } %>
+            <% } %>
+        </tbody>
+    </table>
+</div><!-- .End .tab-pane -->
 
-
-                                                            </tr>
-                                                            <% } %>
-                                                                <% } %>
-                                        </tbody>
-                                    </table>
-                                </div><!-- .End .tab-pane -->
-                                <!----------------------------------------------------------- ORDER ENDS ----------------------------------------------------------->
 
                                 <!----------------------------------------------------------- WALLET STARTS ----------------------------------------------------------->
 
                                 <div class="tab-pane fade" id="tab-wallet" role="tabpanel"
                                     aria-labelledby="tab-wallet-link">
 
-
-                                     <!-- Add money to the wallet form -->
-                                     <div class="wallet-container">
-                                        <h5>Add Money to Wallet:</h5>
-                                        <form id="addMoneyForm" class="narrow-form">
-                                            <div class="form-group">
-                                                <label for="addMoneyAmount">Amount:</label>
-                                                <input type="number" class="form-control" id="addMoneyAmount" />
-                                            </div>
-                                            <button type="button" id="addMoneyButton" class="btn btn-dark"
-                                                onclick="initiateRazorpayPayment()">Add Money</button>
-
-                                        </form>
-                                        <input type="hidden" id="userId" value="<%= User._id %>" />
-
-                                    </div>
-
                                     <h5 class="card-title">Wallet Balance :<%= User.wallet %> <span
                                                 class="text-success">/-</span></h5><br>
                                     <p>Wallet History</p>
 
                                     <div class="card-body">
-                                        <div class="table-responsive">
 
-                                            <table class="table table-cart table-mobile">
-                                                <thead>
-                                                    <tr>
-                                                        <th style="width: 40%;">Date</th>
-                                                        <th style="width: 15%;">Amount</th>
-                                                        <th style="width: 20%;">Messages</th>
-                                                        <th style="width: 20%;">Type</th>
 
-                                                    </tr>
 
-                                                </thead>
-                                                <tbody>
-                                                    <% walletHistory.slice().reverse().forEach((history) => { %>
-                                                        <tr>
-                                                            <th scope="row">
-                                                                <%= history.date.toLocaleString('en-US', {
-                                                                    year: 'numeric' , month: 'short' , day: '2-digit' ,
-                                                                    hour: '2-digit' , minute: '2-digit' ,
-                                                                    second: '2-digit' }).replace(/,/, ''
-                                                                    ).replace(/\//g, '-' ) %>
-                                                            </th>
-                                                            <td>
-                                                                <%= history.amount %>
-                                                            </td>
-                                                            <td>
-                                                                <%= history.message %>
-                                                            </td>
-                                                            <td>
-                                                                <%= history.type %>
-                                                            </td>
-                                                        </tr>
-                                                    <% }); %>
-                                                </tbody>
-                                                
-                                            </table>
+                                        <!-- Add money to the wallet form -->
+                                        <div class="wallet-container">
+                                            <h5>Add Money to Wallet:</h5>
+                                            <form id="addMoneyForm" class="narrow-form">
+                                                <div class="form-group">
+                                                    <label for="addMoneyAmount">Amount:</label>
+                                                    <input type="number" class="form-control" id="addMoneyAmount" />
+                                                </div>
+                                                <button type="button" onclick="addMoney()" id="addMoneyButton"
+                                                    class="btn btn-dark">Add Money</button>
+
+                                            </form>
+                                            <input type="hidden" id="userId" value="<%= User._id %>" />
+
                                         </div>
-
-
-                                       
 
                                     </div>
                                 </div>
@@ -360,6 +292,14 @@
 
     <!-- Custom Scripts -->
     <script>
+
+        function addMoney() {
+            var number = document.getElementById('amount').value
+            var amount = parseInt(number)
+            addMoneyProcess(amount);
+        }
+
+
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('editIcon').addEventListener('click', function () {
                 toggleFormVisibility();
@@ -381,87 +321,136 @@
                 var confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
                 confirmPasswordGroup.style.display = confirmPasswordGroup.style.display === 'none' ? 'block' : 'none';
             }
-
-            document.getElementById('addMoneyForm').addEventListener('submit', function (event) {
-                event.preventDefault(); // Prevent the default form submission
-                initiateRazorpayPayment();
-            });
         });
 
-        $(document).ready(function () {
-    console.log('Cancel/Return button clicked');
-    // Handle the cancel/return button click event
-    $('.cancel-button').click(async function () {
-        const $button = $(this);
-        const type = $button.data('type');
-        const id = $button.data('id');
 
-        // Display SweetAlert confirmation dialog
-        const result = await Swal.fire({
-            title: type === 'order' ? 'Cancel Order' : 'Return Product',
-            html:
-                `<div>Select a reason for ${type === 'order' ? 'cancellation' : 'return'}:<br>` +
-                `<input type="radio" id="reason1" name="${type}-cancelReason" value="OverPriced"> <label for="reason1">OverPriced</label><br>` +
-                `<input type="radio" id="reason2" name="${type}-cancelReason" value="Not Satisfied"> <label for="reason2">Not Satisfied</label><br>` +
-                `<input type="radio" id="reason3" name="${type}-cancelReason" value="Looking for a Different Product"> <label for="reason3">Looking for a Different Product</label></div>`,
-            showCancelButton: true,
-            confirmButtonText: 'Proceed',
-            cancelButtonText: 'Cancel',
-            showLoaderOnConfirm: true,
-            preConfirm: async () => {
-                // Get the selected cancel/return reason
-                const cancelReason = $(`input[name='${type}-cancelReason']:checked`).val();
 
-                // Return an object with the cancel/return reason
-                return { cancelReason };
-            }
-        });
-
-        if (result.isConfirmed) {
-            try {
-                // Perform the cancel/return action with the selected reason
-                const response = await $.ajax({
-                    type: 'POST',
-                    url: '/cancelOrder',
-                    data: {
-                        type: type,
-                        id: id,
-                        reason: result.value.cancelReason
-                    }
+        // Add a click event listener to the "Return Order" button
+$('.return-button').click(function(event) {
+    event.preventDefault(); // Prevent the default link behavior
+    
+    var orderId = $(this).data('order-id'); // Get the order ID from the button's data attribute
+    
+    // Send an AJAX POST request to the backend
+    $.ajax({
+        url: '/returnOrder',
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            type: 'order',
+            id: orderId
+        },
+        success: function(response) {
+            // Handle success response
+            if (response.success) {
+                // Display a success message using Swal
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Order Returned Successfully!',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(function() {
+                    // Optionally, you can reload the page or perform other actions
+                    location.reload(); // Reload the page
                 });
-
-                if (response.success) {
-                    // Update the status column without reloading the page
-                    const statusColumn = $button.parent().find('.status-col');
-                    const newStatus = type === 'order' ? 'Order Status: cancelled' : 'Product Status: cancelled';
-                    statusColumn.text(newStatus);
-
-                    // Show a success message
-                    const successMessage = type === 'order' ? 'Order cancelled successfully.' : 'Product returned successfully.';
-                    Swal.fire('Success!', successMessage, 'success');
-
-                    // Reload the page after a short delay
-                    setTimeout(() => {
-                        // Activate the "Orders" tab using Bootstrap's Tab API
-                        $('#tab-orders-link').tab('show');
-
-                        // Optionally, you can also set the hash for URL consistency
-                        location.hash = '#tab-orders';
-
-                        location.reload();
-                    }, 1000);
-                } else {
-                    Swal.fire('Error!', `Failed to cancel/return ${type}.`, 'error');
-                }
-            } catch (error) {
-                console.error(error);
-                Swal.fire('Error!', 'An error occurred.', 'error');
+            } else {
+                // Display an error message using Swal
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed to Return Order',
+                    text: 'Please try again later',
+                });
             }
+        },
+        error: function(xhr, status, error) {
+            // Handle error response
+            console.error('Error:', error);
+            // Display an error message using Swal
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while processing your request',
+            });
         }
     });
 });
 
-        
+        $(document).ready(function () {
+            console.log('Cancel button clicked');
+            // Handle the cancel button click event
+            $('.cancel-button').click(async function () {
+                const $button = $(this);
+                const type = $button.data('type');
+                const id = $button.data('id');
+
+                // Display SweetAlert confirmation dialog
+                const result = await Swal.fire({
+                    title: 'Cancel Order',
+                    html:
+                        '<div>Select a reason for cancellation:<br>' +
+                        '<input type="radio" id="reason1" name="cancelReason" value="OverPriced"> <label for="reason1">OverPriced</label><br>' +
+                        '<input type="radio" id="reason2" name="cancelReason" value="Not Satisfied"> <label for="reason2">Not Satisfied</label><br>' +
+                        '<input type="radio" id="reason3" name="cancelReason" value="Looking for a Different Product"> <label for="reason3">Looking for a Different Product</label></div>',
+                    showCancelButton: true,
+                    confirmButtonText: 'Proceed',
+                    cancelButtonText: 'Cancel',
+                    showLoaderOnConfirm: true,
+                    preConfirm: async () => {
+                        // Get the selected cancel reason
+                        const cancelReason = $("input[name='cancelReason']:checked").val();
+
+                        // Return an object with the cancel reason
+                        return { cancelReason };
+                    }
+                });
+
+                if (result.isConfirmed) {
+                    try {
+                        // Perform the cancel action with the selected reason
+                        const response = await $.ajax({
+                            type: 'POST',
+                            url: '/cancelOrder',
+                            data: {
+                                type: type,
+                                id: id,
+                                reason: result.value.cancelReason
+                            }
+                        });
+
+                        if (response.success) {
+                            // Update the status column without reloading the page
+                            const statusColumn = $button.parent().find('.status-col');
+                            statusColumn.text(type === 'order' ? 'Order Status: cancelled' : 'Product Status: cancelled');
+
+                            // Optionally, you can dynamically add a new row for canceled order
+                            // Assuming you have a function to add a new row:
+                            // addCanceledOrderRow(response.canceledOrder);
+
+                            // Optionally, you can reload the order data or update the table
+                            // For example, if you have a function to reload order data:
+                            // reloadOrderData();
+
+                            // Show a success message
+                            Swal.fire('Success!', `${type} cancelled successfully.`, 'success');
+
+                            // Reload the page after a short delay
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            Swal.fire('Error!', `Failed to cancel ${type}.`, 'error');
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        Swal.fire('Error!', 'An error occurred.', 'error');
+                    }
+                }
+            });
+        });
+
+
+
+
         // Razorpay Integration
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('addMoneyButton').addEventListener('click', initiateRazorpayPayment);
@@ -481,32 +470,19 @@
                 console.log('User ID:', userId);
                 console.log('Add Money Amount:', addMoneyAmount);
                 // Fetch the Razorpay order ID from the server
-                const response = await fetch('/addMoney', {
-                    method: 'POST',
+                const response = await fetch(`/razorpay/create-order?amount=${addMoneyAmount}&userId=${userId}`, {
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        amount: addMoneyAmount,
-                        userId: userId,
-                    }),
                 });
-
-
-                if (!response.ok) {
-                    console.error('Failed to fetch Razorpay order. Status:', response.status);
-                    const errorText = await response.text();  // Get the error text if available
-                    console.error('Error details:', errorText);
-                    throw new Error(`Failed to fetch Razorpay order. Status: ${response.status}`);
-                }
-                console.log('Razorpay Order Response:', response);
 
                 const orderData = await response.json();
 
                 // Check if the order is created successfully
                 if (orderData && orderData.id) {
                     // Load CryptoJS if needed (you can remove this part if CryptoJS is not required)
-                    // await loadCryptoJS();
+                    await loadCryptoJS();
 
                     // Initialize Razorpay
                     const options = {
@@ -516,7 +492,7 @@
                         order_id: orderData.id,
                         name: 'AJVX',
                         description: 'Add Money to Wallet',
-                        image: "/public/user/assets/images/demos/demo-5/logo.png",
+                        image: 'URL_TO_YOUR_COMPANY_LOGO',
                         handler: function (response) {
                             handleRazorpaySuccess(response, addMoneyAmount, orderData);
                         },
@@ -538,13 +514,10 @@
                 } else {
                     console.error('Failed to create Razorpay order');
                     // Handle the error scenario
-                    Swal.fire('money has been added to the wallet')
                 }
             } catch (error) {
                 console.error('Error initiating Razorpay payment:', error);
                 // Handle the error scenario
-                Swal.fire('Error!', 'An error occurred while initiating Razorpay payment. Please try again.', 'error');
-
             }
         }
 
@@ -553,7 +526,7 @@
             try {
                 // Send the payment success details to the server for verification
                 const userId = getUserId();
-                const verifyPaymentResponse = await fetch('/verifPayment', {
+                const verifyPaymentResponse = await fetch('/razorpay/verify-payment', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

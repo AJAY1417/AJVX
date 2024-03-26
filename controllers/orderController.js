@@ -7,6 +7,7 @@ const Order = require("../models/orderModel");
 const Coupon = require("../models/couponModel");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
+require("dotenv").config();
 
 //================================================================================================================
 
@@ -119,7 +120,13 @@ const removeCartProduct = async (req, res) => {
 };
 
 
-// ============================ PLACE ORDER ============================  
+
+
+
+//_____________________________________________________________
+
+
+// Place Order Function
 const placeOrder = async (req, res) => {
   try {
     // Retrieve necessary data from the request
@@ -134,7 +141,6 @@ const placeOrder = async (req, res) => {
 
     // Check if user or address not found
     if (!user || !address) {
-      console.log("User or address not found");
       return res.status(400).json({ error: "User or address not found" });
     }
 
@@ -144,7 +150,6 @@ const placeOrder = async (req, res) => {
 
     // Check if cart data not found
     if (!cartData) {
-      console.log("Cart data not found");
       return res.status(400).json({ error: "Cart data not found" });
     }
 
@@ -186,8 +191,7 @@ const placeOrder = async (req, res) => {
 
     // Save the order to the database
     const savedOrder = await newOrder.save();
-    console.log("orderidddddddddddddddddddd", savedOrder._id);
-    let orderid = savedOrder._id.toString()
+    let orderid = savedOrder._id.toString();
 
     // Clear the user's cart
     await Cart.updateOne(
@@ -208,65 +212,50 @@ const placeOrder = async (req, res) => {
       const orderPromise = new Promise((resolve, reject) => {
         razorpayInstance.orders.create(options, (err, order) => {
           if (err) {
-            console.log("errrrrrrrrrrrrrr");
-            console.error(err);
             reject(err);
           } else {
-            console.log("no errorrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
             resolve(order);
           }
         });
       });
 
-      // Log the result of the orderPromise when it settles
-      orderPromise
-        .then((order) => {
-          console.log("Razorpay Order created:", order);
-          // Other handling if needed
-        })
-        .catch((error) => {
-          console.error("Error creating Razorpay Order:", error);
-          // Handle the error
-        });
-
-      console.log("orderPromise", orderPromise);
       // Get the Razorpay order and send it in the response
       const razorpayOrder = await orderPromise;
-      return res.json({ order: newOrder, razorpayOrder });
+      return res.json({ online: true, order: newOrder, razorpayOrder });
     } else if (paymentMethod === "cod") {
       // Handle cash-on-delivery order
-      console.log("COD order placed");
-      return res.json({ success: true });
+      return res.json({ cod: true });
     } else if (paymentMethod === "wallet") {
+      console.log(paymentMethod , "guguwswdwdwwdwdd_______________")
       // Handle wallet payment option
       if (user.wallet >= updatedTotalAmount) {
+       console.log(updatedTotalAmount);
         // Sufficient balance in the wallet
+        
         user.wallet -= updatedTotalAmount;
-
+        console.log(user.wallet,"________________________________")
+        console.log(updatedTotalAmount,"???????????????????????????????");
         // Create a wallet history entry
-        const walletHistoryEntry = {
-          date: new Date(),
-          amount: -updatedTotalAmount,
-          message: "Order placed",
-          type: "debit",
+        const walletHistory = {
+          transactionDate: new Date(),
+          transactionAmount: -updatedTotalAmount,
+          transactionDetails: "Order placed",
+          transactionType: "debit",
         };
-
-        //push cheyyunu
-  user.walletHistory.push(walletHistoryEntry);
-
-
+console.log(walletHistory,"RRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
+        user.walletHistory.push(walletHistory);
         await user.save();
         newOrder.paymentStatus = "completed";
-        console.log("Wallet payment successful");
+        await newOrder.save();
         return res.json({ order: newOrder, success: true });
       } else {
         // Insufficient balance in the wallet
-        console.log("Insufficient balance in the wallet");
-        return res.status(400).json({ error: "Insufficient balance in the wallet" });
+        return res
+          .status(400)
+          .json({ error: "Insufficient balance in the wallet" });
       }
     } else {
       // Invalid payment method
-      console.log("Invalid payment method");
       return res.status(400).json({ error: "Invalid payment method" });
     }
   } catch (error) {
@@ -276,14 +265,45 @@ const placeOrder = async (req, res) => {
   }
 };
 
-
-
 // Function to calculate discounted total
 const calculateDiscountedTotal = (totalPrice, quantity, discount) => {
   const discountedTotal = totalPrice * quantity - discount;
-  console.log("discount function___________________", discountedTotal);
   return discountedTotal;
 };
+
+// Verify Payment Function
+const verifyPayment = async (req, res) => {
+  try {
+    const user_id = req.session.user_id;
+
+    const cartData = await Cart.findOne({ user: req.session.user_id });
+    const details = req.body;
+    const payment = req.body.payment;
+  
+    // Create HMAC using the Razorpay secret key from environment variables
+    const hmac = crypto.createHmac("sha256", "f4QOCHAFThYVJH9z8lX8OPhN");
+    hmac.update(details.order._id + "|" + details.payment.razorpay_payment_id);
+    const hmacValue = hmac.digest("hex");
+
+
+    console.log("razorpay signature :", req.body.razorpay_signature);
+    if (hmacValue === req.body.razorpay_signature) {
+      // Compare with the retrieved Razorpay signature
+      await Order.findByIdAndUpdate(details.order.receipt, {
+        $set: {
+          paymentStatus: "placed",
+          paymentId: details.payment.razorpay_payment_id,
+        },
+      });
+      await Cart.deleteOne({ user: user_id });
+      return res.json({ placed: true });
+    }
+  } catch (error) {
+    console.log("Error in verifyPayment:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 
 //===================== RENDER ORDER SUCCESS PAGE ==========================
 
@@ -347,46 +367,7 @@ const cancelOrder = async (req, res) => {
   }
 };
 
-const verifyPayment = async (req, res) => {
-  console.log("****************************************************",req.body);
-  try {
-    const user_id = req.session.user_id;
-    const cartData = await Cart.findOne({ user: user_id });
-    const paymentData = req.body;
-    const products = cartData.products;
-    const details = req.body;
-    
-    // Logging relevant values
-    console.log("HMAC Value:", hmacValue);
-    console.log("Razorpay Signature:", paymentData.payment.razorpay_signature);
-    console.log("Order Receipt ID:", paymentData.order.receipt);
-    console.log(
-      "jjjjjjjjjjjjjjjjjjj",
-      paymentData.payment.razorpay_payment_id
-    );
-    const hmac = crypto.createHmac("sha256", "f4QOCHAFThYVJH9z8lX8OPhN");
-    hmac.update(
-      paymentData.payment.razorpay_order_id +
-      "|" +
-      paymentData.payment.razorpay_payment_id
-    );
-    const hmacValue = hmac.digest("hex");
 
-    if (hmacValue === paymentData.payment.razorpay_signature) {
-      // Correct the order of parameters in the update method
-      await Order.findByIdAndUpdate(
-        paymentData.order.receipt,
-        { $set: { paymentStatus: "placed", paymentId: paymentData.payment.razorpay_payment_id } }
-      );
-      await Cart.deleteOne({ userid: user_id });
-      console.log('Payment placed successfully');
-      return res.json({ placed: true });
-    }
-  } catch (error) {
-    console.log("Error in verifyPayment:", error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
 
 //========================== LOAD RETURN ORDER PAGE ==========================
 
@@ -400,63 +381,56 @@ const returnOrder = async (req, res) => {
 }
 
 //========================== RETURN ORDER ====================================================
+
 const orderReturnPOST = async (req, res) => {
-  console.log('Started the return function ')
+  console.log("Started the return function ");
   try {
     const type = req.body.type;
     const id = req.body.id;
+   
 
-    if (type === 'order') {
+    if (type === "order") {
       // Handle order return
       const order = await Order.findOne({ _id: id });
-      const count = order.products[0].count;
-      const tAmount = order.totalAmount
       const user = order.userId;
-      console.log(user, 'order user ID');
-      const walletData = await User.findOne({ userId: user })
-      const balWallet = walletData.balance
-      if (order) {
-        order.status = 'Returned';
-        await order.save();
-        for (const orderProduct of order.products) {
-          const proDB = await product.findOne({ _id: orderProduct.product });
-          if (proDB) {
-            proDB.quantity += count;
-            await proDB.save();
-          }
-        }
-        const newTransaction = {
-          date: new Date(),
-          amount: tAmount,
-          message: 'Order returned',
-          type: 'credit',
-        };
+       console.log(order, "______________");
+       
+  console.log(user, "____+++++++++__________");
 
-    
-        const updatedWallet = await User.findOneAndUpdate(
+      if (order) {
+        order.status = "Returned";
+        await order.save();
+
+        // Calculate refund amount and update user's wallet
+        const refundAmount = order.totalAmount;
+        const userWallet = await User.findOneAndUpdate(
           { _id: user },
-          { $push: { walletHistory: newTransaction }, $inc: { wallet: tAmount } },
-          { new: true, upsert: true }
+          { $inc: { wallet: refundAmount } },
+          { new: true }
         );
 
-        console.log(updatedWallet, 'updated aayath');
+        // Log transaction in user's wallet history
+        userWallet.walletHistory.push({
+          transactionDate: new Date(),
+          transactionDetails: "Order returned",
+          transactionType: "credit",
+          transactionAmount: refundAmount,
+        });
+        await userWallet.save();
 
         res.json({ success: true });
-
+      } else {
+        res.status(400).json({ error: "Order not found" });
       }
-
-      else {
-        res.status(400).json({ error: 'Order not found' });
-      }
-
     } else {
-      res.status(400).json({ error: 'Invalid request type' });
+      res.status(400).json({ error: "Invalid request type" });
     }
   } catch (error) {
     console.error(error);
-    res.render('500')
+    res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};
+
 
 module.exports = {
   loadCheckout,

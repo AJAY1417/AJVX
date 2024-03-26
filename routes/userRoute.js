@@ -84,12 +84,15 @@ user_route.get("/editAddress", accountController.loadEditaddress);
 user_route.post("/editAddress", accountController.editAddress);
 user_route.get("/addAddress", accountController.loadAddAddress);
 user_route.post("/addAddress", accountController.addAddress);
-user_route.post("/updateDetails", accountController.userDetails);
+user_route.post("/updateDeertails", accountController.userDetails);
+
 
 // ============================ WALLET  =======================================
-
-user_route.get("/wallet", walletController.showWallet);
-user_route.post("/addMoney", walletController.addMoneyToWallet);
+// ============================ WALLET  =======================================
+user_route.get("/view-wallet", walletController.loadWallet);
+user_route.post("/add-wallet", walletController.addMoneyWallet);
+user_route.post("/verifyWalletpayment", walletController.verifyWalletpayment);
+user_route.get("/wallet-history", walletController.loadHistory);
 
 // ============================ CHECKOUT =======================================
 
@@ -98,13 +101,16 @@ user_route.get("/checkout", orderController.loadCheckout);
 user_route.post("/cancelOrder", orderController.cancelOrder);
 user_route.get("/orderSuccess", orderController.orderSuccess);
 user_route.post("/orderPlace", orderController.placeOrder);
+user_route.post("/returnOrder", orderController.orderReturnPOST);
 
 // ============================ PAYMENT =======================================
 user_route.post("/verifyPayment", orderController.verifyPayment);
 
-//coupons
 
+// ============================ COUPONS =======================================
 user_route.post("/applyCoupon", couponController.applyCoupon);
+user_route.post("/removeCoupon", couponController.removeCoupon);
+
 // ============================ EXPORTS =======================================
 
 module.exports = user_route;

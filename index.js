@@ -51,7 +51,7 @@ app.use("/admin", adminRoute);
 
 app.use("/public", express.static(path.join(__dirname, "public")));
 
-const PORT = 3001;
+const PORT = 3000;
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

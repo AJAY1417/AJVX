@@ -22,6 +22,9 @@
             <div class="card-body p-5">
               <h5 class="card-title fw-semibold mb-4">PRODUCTS</h5>
 
+
+
+                          <!-- ith table heading   -->
               <div class="table-responsive">
                 <table class="table text-nowrap mb-0 align-middle w-100" id="user-table">
                   <thead class="text-dark fs-4">
@@ -56,9 +59,16 @@
                     </tr>
                   </thead>
                   <tbody>
+                    <!-- ith table heading   -->
+
+
+
+                    
                     <% for(let i=0;i<products.length;i++){%>
                     <tr>
-                      <td class="border-bottom-0"><h6 class="fw-semibold mb-0"><%=i+1%></h6></td>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0"><%=i+1%></h6>
+                      </td>
                       <td class="border-bottom-0">
                         <h6 class="fw-semibold mb-1"><%= products[i].name %></h6>
                       </td>
@@ -84,9 +94,11 @@
                       </td>
                       <td class="border-bottom-0">
                         <% if (products[i].is_deleted == false) { %>
-                          <button type="button" class="btn btn-danger" onclick="handleUserAction('<%= products[i]._id %>', 'block')">Block</button>
+                        <button type="button" class="btn btn-danger"
+                          onclick="handleUserAction('<%= products[i]._id %>', 'block')">Block</button>
                         <% } else { %>
-                          <button type="button" class="btn btn-success" onclick="handleUserAction('<%= products[i]._id %>', 'unblock')">Unblock</button>
+                        <button type="button" class="btn btn-success"
+                          onclick="handleUserAction('<%= products[i]._id %>', 'unblock')">Unblock</button>
                         <% } %>
                       </td>
                       <td class="border-bottom-0">
@@ -129,34 +141,143 @@
         }
       });
     }
-    
+
     function performUserAction(productId, actionType) {
       var url = "/admin/block-product?id=" + productId;
-  
+
       fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         },
       })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-  
-        // Reload the page after successful action
-        location.reload();
-      })
-      .then(data => {
-        console.log('Success:', data);
-        location.reload();
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        location.reload();
-      });
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+
+          // Reload the page after successful action
+          location.reload();
+        })
+        .then(data => {
+          console.log('Success:', data);
+          location.reload();
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          location.reload();
+        });
+    }
+
+    function validateProductForm(event) {
+      const productNameInput = document.getElementById("productName");
+      const categoryInput = document.getElementById("category");
+      const quantityInput = document.getElementById("quantity");
+      const descriptionInput = document.getElementById("description");
+      const priceInput = document.getElementById("price");
+
+      let isValid = true;
+
+      // Validation for Product Name
+      const productNameError = document.getElementById("productNameError");
+      productNameError.textContent = "";
+      if (productNameInput.value.trim() === "") {
+        productNameError.textContent = "Product name is required.";
+        productNameInput.focus();
+        isValid = false;
+        setTimeout(() => {
+          productNameError.textContent = "";
+        }, 5000);
+      } else if (productNameInput.value.trim().length < 3) {
+        productNameError.textContent = "Product name must be at least 3 characters long.";
+        productNameInput.focus();
+        isValid = false;
+        setTimeout(() => {
+          productNameError.textContent = "";
+        }, 5000);
+      } else if (!productNameInput.value.trim().includes(" ")) {
+        productNameError.textContent = "Product name must contain at least one space.";
+        productNameInput.focus();
+        isValid = false;
+        setTimeout(() => {
+          productNameError.textContent = "";
+        }, 5000);
+      }
+
+      // Validation for Category
+      const categoryError = document.getElementById("categoryError");
+      categoryError.textContent = "";
+      if (categoryInput.value.trim() === "") {
+        categoryError.textContent = "Category is required.";
+        categoryInput.focus();
+        isValid = false;
+        setTimeout(() => {
+          categoryError.textContent = "";
+        }, 5000);
+      }
+
+      // Validation for Quantity
+      const quantityError = document.getElementById("quantityError");
+      quantityError.textContent = "";
+      if (quantityInput.value.trim() === "") {
+        quantityError.textContent = "Quantity is required.";
+        quantityInput.focus();
+        isValid = false;
+        setTimeout(() => {
+          quantityError.textContent = "";
+        }, 5000);
+      } else if (isNaN(quantityInput.value.trim()) || parseInt(quantityInput.value.trim()) <= 0) {
+        quantityError.textContent = "Quantity must be a positive number.";
+        quantityInput.focus();
+        isValid = false;
+        setTimeout(() => {
+          quantityError.textContent = "";
+        }, 5000);
+      }
+
+      // Validation for Description
+      const descriptionError = document.getElementById("descriptionError");
+      descriptionError.textContent = "";
+      if (descriptionInput.value.trim() === "") {
+        descriptionError.textContent = "Description is required.";
+        descriptionInput.focus();
+        isValid = false;
+        setTimeout(() => {
+          descriptionError.textContent = "";
+        }, 5000);
+      } else if (descriptionInput.value.trim().length < 10) {
+        descriptionError.textContent = "Description must be at least 10 characters long.";
+        descriptionInput.focus();
+        isValid = false;
+        setTimeout(() => {
+          descriptionError.textContent = "";
+        }, 5000);
+      }
+
+      // Validation for Price
+      const priceError = document.getElementById("priceError");
+      priceError.textContent = "";
+      if (priceInput.value.trim() === "") {
+        priceError.textContent = "Price is required.";
+        priceInput.focus();
+        isValid = false;
+        setTimeout(() => {
+          priceError.textContent = "";
+        }, 5000);
+      } else if (isNaN(priceInput.value.trim()) || parseFloat(priceInput.value.trim()) <= 0) {
+        priceError.textContent = "Price must be a positive number.";
+        priceInput.focus();
+        isValid = false;
+        setTimeout(() => {
+          priceError.textContent = "";
+        }, 5000);
+      }
+
+      if (!isValid) {
+        event.preventDefault(); // Prevent form submission if any validation fails
+      }
+
+      return isValid; // Form is valid
     }
   </script>
-  
-
-  <%- include('../layouts/admin/footer.ejs') %>
+</div>

@@ -1,65 +1,129 @@
-// walletController.js
 const User = require("../models/userModel");
+const Razorpay = require("razorpay");
+const dotenv = require("dotenv");
+const crypto = require("crypto");
+dotenv.config();
+const razorpayInstance = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: RAZORPAY_SECRET_KEY,
+});
 
-const showWallet = async (req, res) => {
+// Load Wallet
+const loadWallet = async (req, res) => {
   try {
-    const user = await User.findById(req.session.user_id).exec();
+    // const name = req.session.firstName;
+    const userData = await User.findOne({ firstName: "Ajay" });
+    const userId = userData._id;
 
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
+    const wallet = await User.findOne({ _id: userId });
 
-    const walletBalance = user.wallet;
-    const walletHistory = user.walletHistory;
-
-    res.render("users/profile", {
-      User: user,
-      walletBalance: walletBalance,
-      walletHistory: walletHistory,
-      success: req.flash("success"),
+    res.render("wallet", {
+      user: req.session.firstName,
+      wallet: wallet,
     });
   } catch (error) {
-    console.error("Error rendering profile:", error);
-    res.status(500).send("Internal Server Error");
+    console.log(error);
+    res.render("500");
   }
 };
 
-const addMoneyToWallet = async (req, res) => {
+// Add Money to Wallet
+const addMoneyWallet = async (req, res) => {
   try {
-    const { userId, amount } = req.body;
-
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
-    }
-
-    user.wallet += parseFloat(amount);
-    user.walletHistory.push({
-      date: new Date(),
-      amount: parseFloat(amount),
-      message: "Added Money to Wallet",
-      type: "credit", // Change to lowercase to match enum values
-    });
-
-    await user.save();
-
-    return res.status(200).json({
-      success: true,
-      message: "Money added to wallet successfully",
-      updatedBalance: user.wallet,
+      //  const firstName = req.session.firstName;
+      //  console.log(firstName);
+    const amount = req.body.amount;
+    const parsedAmount = parseInt(amount);
+    console.log('kjhjhjkh',parsedAmount);
+    const id = await crypto.randomBytes(8).toString("hex");
+    console.log('idddddd',id);
+    const options = {
+      amount: parsedAmount * 100,
+      currency: "INR",
+      receipt: "" + id,
+    };
+    console.log('pjhjkhjkh',options);
+    razorpayInstance.orders.create(options, (err, order) => {
+      if (err) {
+        res.json({ status: false });
+      } else {
+        res.json({ status: true, payment: order });
+      }
     });
   } catch (error) {
-    console.error("Error adding money to wallet:", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal Server Error" });
+    res.render("500");
+  }
+};
+
+// Verify Wallet Payment
+const verifyWalletpayment = async (req, res) => {
+  try {
+  console.log('kjkeljkljkljlkjkljkl');
+    // const firstName = req.session.firstName;
+    // console.log(firstName);
+    const userData = await User.findOne({ firstName: 'Ajay' });
+    console.log('aaaaaa',userData);
+    const userId =userData._id
+
+    const details = req.body;
+    console.log('kkkkkkkkkkkkkkkk',details);
+    const amount = details.order.amount
+    console.log('amount',amount);
+    let hmac = crypto.createHmac("sha256", "f4QOCHAFThYVJH9z8lX8OPhN");
+     console.log('hmaccccccccccccccc',hmac);
+    hmac.update(
+      details.payment.razorpay_order_id +
+      "|" +
+      details.payment.razorpay_payment_id
+    );
+    hmac = hmac.digest("hex");
+    console.log('hhhhhhhhhhhhhhhhhhhhhh',hmac);
+    if (hmac == details.payment.razorpay_signature) {
+      const walletHistory = {
+        transactionDate: new Date(),
+        transactionDetails: "Deposited via Razorpay",
+        transactionType: "Credit",
+        transactionAmount: amount,
+        currentBalance: !isNaN(userId.wallet) ? userId.wallet + amount : amount,
+      };
+      await User.findOneAndUpdate(
+        { firstName: 'Ajay' },
+        {
+          $inc: {
+            wallet: amount,
+          },
+          $push: {
+            walletHistory,
+          },
+        }
+      );
+      res.json({ status: true });
+    } else {
+      res.json({ status: false });
+    }
+  } catch (error) {
+    console.log(error);
+    res.render("500");
+  }
+};
+
+// Load Wallet History
+const loadHistory = async (req, res) => {
+  try {
+    // const firstName = req.session.user;
+    const userData = await User.findOne({ firstName: 'Ajay' });
+    const userId = userData._id;
+    const details = await User.findOne({ _id: userId });
+
+    res.render("wallet-history", {  wallet: details });
+  } catch (error) {
+    res.render("500");
   }
 };
 
 module.exports = {
-  showWallet,
-  addMoneyToWallet,
+  loadWallet,
+  addMoneyWallet,
+  verifyWalletpayment,
+  loadHistory,
 };
