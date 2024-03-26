@@ -25,31 +25,36 @@
             <% } %>
 
             <div class="card-body">
-              <form action="/admin/editProduct/<%= product._id %>" method="post" enctype="multipart/form-data">
+              <form action="/admin/editProduct/<%= product._id %>" method="post" enctype="multipart/form-data" onsubmit="return validateProductForm()">
                 <div class="mb-3">
                   <label for="exampleInputEmail1" class="form-label">Product name</label>
-                  <input type="text" name="productName" class="form-control" id="name" value="<%= product.name %>" required>
+                  <input type="text" name="productName" class="form-control" id="productName" value="<%= product.name %>" required>
+                  <p class="error-message" id="productNameError" style="color: red;"></p>
                 </div>
                 <div class="mb-3">
-                  <label for="exampleInputPassword1" class="form-label">Category </label>
+                  <label for="exampleInputPassword1" class="form-label">Category</label>
                   <select class="form-control" id="category" name="category" required>
                     <option value="" disabled>Select category</option>
                     <% category.forEach(cat => { %>
                       <option value="<%= cat._id %>" <%= (cat._id.toString() === product.category.toString()) ? 'selected' : '' %>><%= cat.name %></option>
                     <% }); %>
                   </select>
+                  <p class="error-message" id="categoryError" style="color: red;"></p>
                 </div>
                 <div class="mb-3">
-                  <label for="exampleInputPassword1" class="form-label">Description </label>
-                  <input type="text" name="description" class="form-control" id="Description" value="<%= product.description %>" required>
+                  <label for="exampleInputPassword1" class="form-label">Description</label>
+                  <input type="text" name="description" class="form-control" id="description" value="<%= product.description %>" required>
+                  <p class="error-message" id="descriptionError" style="color: red;"></p>
                 </div>
                 <div class="mb-3">
-                  <label for="exampleInputPassword1" class="form-label">Quantity </label>
-                  <input type="number" name="quantity" class="form-control" id="Description" value="<%= product.quantity %>" required>
+                  <label for="exampleInputPassword1" class="form-label">Quantity</label>
+                  <input type="number" name="quantity" class="form-control" id="quantity" value="<%= product.quantity %>" required>
+                  <p class="error-message" id="quantityError" style="color: red;"></p>
                 </div>
                 <div class="mb-3">
-                  <label for="exampleInputPassword1" class="form-label">Price </label>
-                  <input type="number" name="price" class="form-control" id="Description" value="<%= product.price %>" required>
+                  <label for="exampleInputPassword1" class="form-label">Price</label>
+                  <input type="number" name="price" class="form-control" id="price" value="<%= product.price %>" required>
+                  <p class="error-message" id="priceError" style="color: red;"></p>
                 </div>
 
                 <% product.images.forEach((image, index) => { %>
@@ -82,7 +87,37 @@
   </div>
 </div>
 
+<%- include('../layouts/admin/footer.ejs') %>
+
 <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const productNameInput = document.getElementById("productName");
+    const categoryInput = document.getElementById("category");
+    const quantityInput = document.getElementById("quantity");
+    const descriptionInput = document.getElementById("description");
+    const priceInput = document.getElementById("price");
+
+    productNameInput.addEventListener("input", function() {
+      validateProductName();
+    });
+
+    categoryInput.addEventListener("change", function() {
+      validateCategory();
+    });
+
+    quantityInput.addEventListener("input", function() {
+      validateQuantity();
+    });
+
+    descriptionInput.addEventListener("input", function() {
+      validateDescription();
+    });
+
+    priceInput.addEventListener("input", function() {
+      validatePrice();
+    });
+  });
+
   async function confirmDelete(productId, index) {
     const result = await Swal.fire({
       title: 'Are you sure?',
@@ -100,37 +135,109 @@
           method: 'DELETE'
         });
 
-       // Inside your fetch success block
-if (response.ok) {
-  // Optionally display a success message
-  Swal.fire({
-    icon: 'success',
-    title: 'Success',
-    text: 'Image deleted successfully!',
-  });
+        // Inside your fetch success block
+        if (response.ok) {
+          // Optionally display a success message
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Image deleted successfully!',
+          });
 
-  // Reload the page after a short delay to ensure the server-side changes take effect
-  setTimeout(() => {
-    window.location.reload();
-  }, 1000); // Adjust the delay as needed
-} else {
-  // Display an error message
-  console.error('Failed to delete image. Status:', response.status);
-  Swal.fire({
-    icon: 'error',
-    title: 'Oops...',
-    text: 'Failed to delete the image!',
-  });
-}
+          // Reload the page after a short delay to ensure the server-side changes take effect
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000); // Adjust the delay as needed
+        } else {
+          // Display an error message
+          console.error('Failed to delete image. Status:', response.status);
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Failed to delete the image!',
+          });
+        }
 
       } catch (error) {
         console.error('Error during image deletion:', error);
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
-          text: 'An error occurred during image deletion!',
+          text
+          : 'An error occurred during image deletion!',
         });
       }
+    }
+  }
+
+  function validateProductName() {
+    const productNameInput = document.getElementById("productName");
+    const productNameError = document.getElementById("productNameError");
+    productNameError.textContent = "";
+    if (productNameInput.value.trim() === "") {
+      productNameError.textContent = "Product name is required.";
+    } else if (productNameInput.value.trim().length > 20) {
+      productNameError.textContent = "Product name should be less than or equal to 20 characters.";
+    }
+  }
+
+  function validateCategory() {
+    const categoryInput = document.getElementById("category");
+    const categoryError = document.getElementById("categoryError");
+    categoryError.textContent = "";
+    if (categoryInput.value.trim() === "") {
+      categoryError.textContent = "Category is required.";
+    }
+  }
+
+  function validateQuantity() {
+    const quantityInput = document.getElementById("quantity");
+    const quantityError = document.getElementById("quantityError");
+    quantityError.textContent = "";
+    const quantityValue = parseInt(quantityInput.value.trim());
+    if (isNaN(quantityValue) || quantityValue <= 0) {
+      quantityError.textContent = "Quantity must be a positive integer.";
+    }
+  }
+
+  function validateDescription() {
+    const descriptionInput = document.getElementById("description");
+    const descriptionError = document.getElementById("descriptionError");
+    descriptionError.textContent = "";
+    if (descriptionInput.value.trim() === "") {
+      descriptionError.textContent = "Description is required.";
+    } else if (descriptionInput.value.trim().length > 50) {
+      descriptionError.textContent = "Description should be less than or equal to 50 characters.";
+    }
+  }
+
+  function validatePrice() {
+    const priceInput = document.getElementById("price");
+    const priceError = document.getElementById("priceError");
+    priceError.textContent = "";
+    const priceValue = parseFloat(priceInput.value.trim());
+    if (isNaN(priceValue) || priceValue <= 0) {
+      priceError.textContent = "Price must be a positive number.";
+    }
+  }
+
+  function validateProductForm() {
+    validateProductName();
+    validateCategory();
+    validateQuantity();
+    validateDescription();
+    validatePrice();
+
+    const productNameError = document.getElementById("productNameError");
+    const categoryError = document.getElementById("categoryError");
+    const quantityError = document.getElementById("quantityError");
+    const descriptionError = document.getElementById("descriptionError");
+    const priceError = document.getElementById("priceError");
+
+    if (productNameError.textContent || categoryError.textContent || quantityError.textContent || descriptionError.textContent || priceError.textContent) {
+      return false; // Validation failed
+    } else {
+      return true; // Validation passed
     }
   }
 </script>
