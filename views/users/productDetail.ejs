@@ -64,16 +64,22 @@
                                         <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews )</a>
                                     </div><!-- End .rating-container -->
 
-                                    <div class="product-price">
-                                        $<%= product.price %>
+                                     <div class="product-price text-center" style="color: red; font-weight: bold;">
+                                        <% let smallestPrice=Math.min(product.price,
+                                            product.discountPricepro || Infinity, product.discountPricecat
+                                            || Infinity); %>
+                                            <div class="product-price">
+                                                <% if (smallestPrice && smallestPrice < product.price) { %>
+                                                    <strike>$<%= product.price %></strike>
+                                            </div>
+                                            <div class="product-price">
+                                                <b> $<%= smallestPrice %> </b>
+                                                <% } else { %>
+                                                    $<%= product.price %>
+                                                        <% } %>
 
-                                        <style>
-                                            .product-price {
-                                                display: block; /* Make it a block element */
-                                                text-align: center; /* Center text */
-                                                color: orange; /* Change text color to orange */
-                                            }
-                                        </style>
+                                            </div>
+
                                     </div><!-- End .product-price -->
 
                                     <div class="product-content">

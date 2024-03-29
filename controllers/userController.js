@@ -4,7 +4,8 @@ const categorySchema = require("../models/categoryModel");
 const Wishlist = require("../models/wishlistModel");
 const bcrypt = require("bcrypt");
 const config = require("../config/config");
-const Offers = require('../models/productOfferModel')
+const Offers = require("../models/productOfferModel");
+const categoryOffer = require("../models/categoryOfferModel");
 
 const nodemailer = require("nodemailer");
 
@@ -107,7 +108,6 @@ const insertUser = async (req, res, next) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 
 // ============================  MAIL VERIFICATION  =======================================
 const sendVerifyMail = async (name, email, otpsend) => {
@@ -247,13 +247,13 @@ const verifyOtp = async (req, res, next) => {
         const savedUser = await user.save();
         console.log("User saved:", savedUser);
 
-            // Clear sensitive data from the session
-            // delete req.session.otpsend;
-            // delete req.session.firstName;
-            // delete req.session.lastName;
-            // delete req.session.email;
-            // delete req.session.mobile;
-            // delete req.session.password;
+        // Clear sensitive data from the session
+        // delete req.session.otpsend;
+        // delete req.session.firstName;
+        // delete req.session.lastName;
+        // delete req.session.email;
+        // delete req.session.mobile;
+        // delete req.session.password;
 
         // Render the login page with a success message
         return res.render("login", {
@@ -280,7 +280,6 @@ const verifyOtp = async (req, res, next) => {
     return res.status(500).send("Internal Server Error");
   }
 };
-
 
 // ============================ RESEND OTP =======================================
 const resendOtp = async (req, res, next) => {
@@ -342,39 +341,47 @@ const productList = async (req, res) => {
   res.render("productList", { ProductDB: [] });
 };
 
+// ============================  SHOP PAGE LOADING  =======================================
 const shopLoad = async (req, res) => {
-  try {
-    const productsPerPage = 9; // Change this based on your desired number of products per page
-    const currentPage = parseInt(req.query.page) || 1;
+ 
+try {
+  const productsPerPage = 9; // Change this based on your desired number of products per page
+  const currentPage = parseInt(req.query.page) || 1;
 
-    // Fetch only active (not blocked) products
-    const products = await Product.find({ is_deleted: false })
-      .populate("category")
-      .skip((currentPage - 1) * productsPerPage)
-      .limit(productsPerPage)
-      .exec();
+  // Fetch only active (not blocked) products
+  const products = await Product.find({ is_deleted: false })
+    .populate("category")
+    .skip((currentPage - 1) * productsPerPage)
+    .limit(productsPerPage)
+    .exec();
 
-    const totalProductsCount = await Product.countDocuments({
-      is_deleted: false,
-    });
-    const totalPages = Math.ceil(totalProductsCount / productsPerPage);
+  const totalProductsCount = await Product.countDocuments({
+    is_deleted: false,
+  });
+  const totalPages = Math.ceil(totalProductsCount / productsPerPage);
 
-    const categories = await categorySchema.find();
-   const discount = await Offers.find({});
-
-
-    res.render("shop", {
-      products: products,
-      categories: categories,
-      currentPage: currentPage,
-      totalPages: totalPages,
-      discount:discount
-    });
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).send("Internal Server Error");
-  }
-};
+  const categories = await categorySchema.find();
+  const discount = await Offers.find({});//ith product offer
+  const discountCategory = await categoryOffer.find({})
+ const renderData = {
+   products:products,
+   categories,
+   discCat:discountCategory,
+   discPrice:discount,
+ }
+  res.render("shop", {
+    products,
+    categories,
+    currentPage,
+    totalPages,
+    discount,
+    renderData
+  });
+} catch (error) {
+  console.log(error.message);
+  res.status(500).send("Internal Server Error");
+}
+}
 
 // ============================ PRODUCT DETAIL LOAD  =======================================
 const productDetailLoad = async (req, res) => {
@@ -524,7 +531,7 @@ const deleteWishlistproduct = async (req, res) => {
     await wishlist.save();
 
     console.log("Product removed from wishlist");
-    
+
     res.redirect("/wishlist");
   } catch (error) {
     console.error("Error deleting product from wishlist:", error.message);

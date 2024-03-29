@@ -49,8 +49,12 @@
                                                                         { year: 'numeric', month: 'short', day: '2-digit' }).replace(/\//g, '-') %>
                                                                 </td>
                                                                 <td>
-                                                                    <a href="/admin/deleteOff?id=<%= offerDB[i]._id %>" class="delete-link">
-                                                                        <i class="bi bi-trash-fill"></i>
+                                                                    <td>
+                                                                        <a href="/admin/deleteOff?id=<%= offerDB[i]._id %>" class="delete-link">
+                                                                            <i class="bi bi-trash-fill"></i> Delete
+                                                                        </a>
+                                                                    </td>
+                                                                    
                                                                     </a>
                                                                 </td>
                                                             </tr>

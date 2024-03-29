@@ -3,7 +3,11 @@ const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const mongoose = require("mongoose");
 const Wishlist = require("../models/wishlistModel");
+const offers = require("../models/productOfferModel")
+const category = require("../models/categoryOfferModel")
 //=========================================================================
+
+//============================ LOAD THE CART ==============================
 
 //============================ LOAD THE CART ==============================
 const loadCart = async (req, res) => {
@@ -44,6 +48,7 @@ const loadCart = async (req, res) => {
         totalSum,
         datatotal,
         totalQuantity,
+        
       });
     } else {
       console.log("Rendering Cart Page with Empty Cart");
@@ -53,8 +58,7 @@ const loadCart = async (req, res) => {
     console.error("Error in loadCart:", error);
     res.status(500).send("Internal Server Error");
   }
-};
-const addToCart = async (req, res) => {
+};const addToCart = async (req, res) => {
   try {
     const { id: productId } = req.body;
     const userId = req.session.user_id;
@@ -75,9 +79,20 @@ const addToCart = async (req, res) => {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    const userCart = await Cart.findOne({ user: userId });
-
+    // Determine the product price with discount
     let productPrice = productData.price;
+    const discountPrices = [
+      productData.discountPricepro,
+      productData.discountPricecat,
+    ].filter((discount) => discount !== null && discount !== undefined);
+    const smallestDiscount = discountPrices.length
+      ? Math.min(...discountPrices)
+      : undefined;
+    if (smallestDiscount !== undefined) {
+      productPrice = smallestDiscount;
+    }
+
+    const userCart = await Cart.findOne({ user: userId });
 
     if (userCart) {
       const productExistIndex = userCart.products.findIndex(
@@ -93,13 +108,23 @@ const addToCart = async (req, res) => {
         } else {
           await Cart.updateOne(
             { user: userId, "products.productId": productId },
-            { $inc: { "products.$.quantity": 1 } }
+            {
+              $inc: { "products.$.quantity": 1 },
+              "products.$.price": productPrice,
+            } // Update price if necessary
           );
         }
       } else {
         await Cart.updateOne(
           { user: userId },
-          { $push: { products: { productId: productId, price: productPrice } } }
+          {
+            $push: {
+              products: {
+                productId: productId,
+                price: productPrice,
+              },
+            },
+          }
         );
       }
     } else {
@@ -136,7 +161,7 @@ const updateCartQuantity = async (req, res) => {
     const productData = await Product.findById({ _id: productId });
 
     if (!productData) {
-      // Product not found
+      // Product not found0
       console.error("Product not found for productId:", productId);
       res.json({ result: "product_not_found" });
       return;

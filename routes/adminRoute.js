@@ -110,6 +110,13 @@ admin_route.post('/addOfferDB', offerController.addOffers);
 admin_route.get('/deleteOff', offerController.deleteOffer);
 
 
+//====================== CATEGORY OFFER ROUTES ====================================
+
+admin_route.get("/offersCat",offerController.loadCategoryOffers);
+admin_route.get("/addoffersCat", offerController.loadAddCategoryOffer);
+admin_route.post("/addOfferCatDB", offerController.addCategoryOffer);
+admin_route.get("/deletecatOff",  offerController.deleteCategoryOffer);
+
 
 
 
