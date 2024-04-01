@@ -6,6 +6,8 @@ const couponController= require('../controllers/couponController')
 const adminController = require("../controllers/adminController");
 const productController = require("../controllers/productController");
 const offerController = require("../controllers/offerController");
+const salesController = require("../controllers/salesController");
+const dashboardController = require("../controllers/dashboardController");
 
 
 // Middleware
@@ -22,7 +24,7 @@ admin_route.post("/adminLogin", adminController.adminVerifyLogin);
 admin_route.get("/logout", adminController.logout);
 
 // =================== ADMIN DASHBOARD ===============================
-admin_route.get("/dashboard", adminController.loadDashboard);
+admin_route.get("/dashboard", dashboardController.loadDashboard);
 
 // =================== USER MANAGEMENT ===============================
 admin_route.get("/users", adminController.loadUsers);
@@ -138,6 +140,10 @@ admin_route.post("/addCouponDB",  couponController.addCoupon);
 admin_route.get("/loadEditCoupon",couponController.loadEditCoupon);
 admin_route.post("/editCouponDB",  couponController.editCoupon);
 admin_route.get("/deleteCoupon", couponController.deleteCoupon);
+
+//============================= COUPON ==================================
+
+admin_route.post("/salesReport",salesController.loadSalesReport);
 
 
 

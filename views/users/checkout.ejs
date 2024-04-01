@@ -306,210 +306,221 @@
         });
 
         $('#myform').submit(function (event) {
-            event.preventDefault();
+    event.preventDefault();
 
-            var formData = $(this).serializeArray();
+    // Disable submit button to prevent multiple submissions
+    $('#myform button[type="submit"]').prop('disabled', true);
 
-            let discountAmt = $('#couponDiscountAmount').val();
-            formData.push({ name: "discountAmt", value: discountAmt });
+    var formData = $(this).serializeArray();
 
-            // Check if an address and payment method are selected
-            var selectedAddress = $('input[name="selectedAddress"]:checked').val();
-            var selectedPaymentMethod = $('input[name="payment-method"]:checked').val();
+    let discountAmt = $('#couponDiscountAmount').val();
+    formData.push({ name: "discountAmt", value: discountAmt });
 
-            if (!selectedAddress) {
-                // Show a SweetAlert if an address is not selected
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select an address!',
-                });
-            } else if (!selectedPaymentMethod) {
-                // Show a different SweetAlert if a payment method is not selected
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select a payment method!',
-                });
-            } else {
-                // Add discount amount to form data
-                $.ajax({
-                    url: '/orderPlace',
-                    method: 'POST',
-                    data: formData,
-                    success: function (response) {
-                        console.log('hjhjkh', response);
-                        // alert(response)
-                        if (response.online === true) {
-                            // alert('onlineeee')
-                            razorpayPayment(response.order);
-                            // window.location.href = '/orderSuccess';
-                        } else if (response.cod === true) {
-                            window.location.href = '/orderSuccess';
-                        } else if (response.success === true) {
-                            // Handle wallet payment success
-                            window.location.href = '/orderSuccess';
-                        } else if (response.error === 'Insufficient funds in wallet') {
-                            // Display SweetAlert for insufficient funds
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Insufficient funds in wallet. Please add funds.',
-                            });
-                        } else {
-                            console.log('ressss', response);
-                            // razorpayPayment(response.order);
-                        }
-                    },
-                    error: function (error) {
-                        console.error('Error:', error);
-                    }
-                });
+    var selectedAddress = $('input[name="selectedAddress"]:checked').val();
+    var selectedPaymentMethod = $('input[name="payment-method"]:checked').val();
+
+    if (!selectedAddress) {
+        // Show a SweetAlert if an address is not selected
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Please select an address!',
+        });
+        // Re-enable submit button
+        $('#myform button[type="submit"]').prop('disabled', false);
+    } else if (!selectedPaymentMethod) {
+        // Show a SweetAlert if a payment method is not selected
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Please select a payment method!',
+        });
+        // Re-enable submit button
+        $('#myform button[type="submit"]').prop('disabled', false);
+    } else {
+        // Add discount amount to form data
+        $.ajax({
+            url: '/orderPlace',
+            method: 'POST',
+            data: formData,
+            success: function (response) {
+                console.log('Response:', response);
+                if (response.online === true) {
+                    // Handle online payment
+                    razorpayPayment(response.order);
+                } else if (response.cod === true || response.success === true) {
+                    // Handle cash-on-delivery or wallet payment success
+                    window.location.href = '/orderSuccess';
+                } else if (response.error === 'Insufficient balance in the wallet') {
+                    // Display SweetAlert for insufficient funds
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Insufficient funds in wallet. Please add funds.',
+                    });
+                } else {
+                    // Handle other errors
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'An error occurred. Please try again later.',
+                    });
+                }
+                // Re-enable submit button
+                $('#myform button[type="submit"]').prop('disabled', false);
+            },
+            error: function (error) {
+                // Handle AJAX request error
+                console.error('Error:', error);
+                // Re-enable submit button
+                $('#myform button[type="submit"]').prop('disabled', false);
             }
         });
+    }
+});
 
 
 
 
-        function razorpayPayment(order) {
-            var options = {
-                "key": "rzp_test_Rr5LK4XJjm8rxm",
-                "amount": order.totalAmount * 100,
-                "currency": "INR",
-                "name": "AJVX",
-                "description": "Test Transaction",
-                "image": "/public/user/assets/images/demos/demo-5/logo.png",
-                "order_id": order.id,
-                "handler": function (response) {
+                function razorpayPayment(order) {
+                    var options = {
+                        "key": "rzp_test_Rr5LK4XJjm8rxm",
+                        "amount": order.totalAmount * 100,
+                        "currency": "INR",
+                        "name": "AJVX",
+                        "description": "Test Transaction",
+                        "image": "/public/user/assets/images/demos/demo-5/logo.png",
+                        "order_id": order.id,
+                        "handler": function (response) {
 
-                    verifyPayment(response, order);
-                },
-                "prefill": {
-                    "name": "AJVX",
-                    "email": "AJVX.com",
-                    "contact": "9000090000"
-                },
-                "notes": {
-                    "address": "AJVX CORPORATE OFFICE"
-                },
-                "theme": {
-                    "color": "#3399cc"
+                            verifyPayment(response, order);
+                        },
+                        "prefill": {
+                            "name": "AJVX",
+                            "email": "AJVX.com",
+                            "contact": "9000090000"
+                        },
+                        "notes": {
+                            "address": "AJVX CORPORATE OFFICE"
+                        },
+                        "theme": {
+                            "color": "#3399cc"
+                        }
+                    };
+                    var rzp1 = new Razorpay(options);
+
+                    rzp1.open();
                 }
-            };
-            var rzp1 = new Razorpay(options);
 
-            rzp1.open();
-        }
+                function verifyPayment(payment, order) {
+                    console.log(payment, order);
+                    const amount2 = document.getElementById("total").value;
+                    $.ajax({
+                        url: '/verifyPayment',
+                        method: "post",
+                        data: {
+                            payment: payment,
+                            order: order,
+                            amount2: amount2,
+                        },
+                        success: (response) => {
+                            if (response.placed == true) {
+                                window.location.href = '/orderSuccess';
+                            } else {
+                                Swal.fire({
+                                    positon: "center",
+                                    icon: "error",
+                                    title: "Payment failed",
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                });
+                            }
+                        }
+                    });
+                };
 
-        function verifyPayment(payment, order) {
-            console.log(payment, order);
-            const amount2 = document.getElementById("total").value;
-            $.ajax({
-                url: '/verifyPayment',
-                method: "post",
-                data: {
-                    payment: payment,
-                    order: order,
-                    amount2: amount2,
-                },
-                success: (response) => {
-                    if (response.placed == true) {
-                        window.location.href = '/orderSuccess';
-                    } else {
-                        Swal.fire({
-                            positon: "center",
-                            icon: "error",
-                            title: "Payment failed",
-                            showConfirmButton: false,
-                            timer: 1500,
+
+
+
+                $(document).ready(function () {
+                    // Event listener for the "Apply Coupon" form submission
+                    $('#applyCouponForm').submit(function (event) {
+                        event.preventDefault();
+                        var formData = $(this).serializeArray();
+
+                        $.ajax({
+                            url: '/applyCoupon',
+                            method: 'POST',
+                            data: formData,
+                            success: function (response) {
+                                if (response.success === true) {
+                                    $('#total').text('$' + response.discountedTotal);
+                                    $('#couponDiscountAmount').text('- ₹' + response.couponDiscountAmount);
+                                    $('#couponDiscountAmount').val(response.couponDiscountAmount);
+                                    $('#applyCouponForm button[type="submit"]').hide(); // Hide "Apply Coupon" button
+                                    $('.copy-button').hide(); // Hide button to show available coupons
+                                    $('#removeCouponForm').show(); // Show "Remove Coupon" button
+
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Coupon Applied!',
+                                        text: 'The coupon has been applied successfully.',
+                                    });
+                                } else if (response.alreadyClaimed === true) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'You have already claimed this coupon.',
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: response.message,
+                                    });
+                                }
+                            },
+                            error: function (error) {
+                                console.error('Error:', error);
+                            }
                         });
-                    }
-                }
-            });
-        };
+                    });
 
+                    // Event listener for the "Remove Coupon" form submission
+                    $('#removeCouponForm').submit(function (event) {
+                        event.preventDefault();
 
+                        $.ajax({
+                            url: '/removeCoupon',
+                            method: 'POST',
+                            success: function (response) {
+                                if (response.success === true) {
+                                    $('#total').text('$' + response.originalTotal);
+                                    $('#couponDiscountAmount').text('');
+                                    $('#couponDiscountAmount').val('');
+                                    $('#applyCouponForm button[type="submit"]').show(); // Show "Apply Coupon" button
+                                    $('.copy-button').show(); // Show button to show available coupons
+                                    $('#removeCouponForm').hide(); // Hide "Remove Coupon" button
 
-
-        $(document).ready(function () {
-            // Event listener for the "Apply Coupon" form submission
-            $('#applyCouponForm').submit(function (event) {
-                event.preventDefault();
-                var formData = $(this).serializeArray();
-
-                $.ajax({
-                    url: '/applyCoupon',
-                    method: 'POST',
-                    data: formData,
-                    success: function (response) {
-                        if (response.success === true) {
-                            $('#total').text('$' + response.discountedTotal);
-                            $('#couponDiscountAmount').text('- ₹' + response.couponDiscountAmount);
-                            $('#couponDiscountAmount').val(response.couponDiscountAmount);
-                            $('#applyCouponForm button[type="submit"]').hide(); // Hide "Apply Coupon" button
-                            $('.copy-button').hide(); // Hide button to show available coupons
-                            $('#removeCouponForm').show(); // Show "Remove Coupon" button
-
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Coupon Applied!',
-                                text: 'The coupon has been applied successfully.',
-                            });
-                        } else if (response.alreadyClaimed === true) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'You have already claimed this coupon.',
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: response.message,
-                            });
-                        }
-                    },
-                    error: function (error) {
-                        console.error('Error:', error);
-                    }
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Coupon Removed!',
+                                        text: 'The applied coupon has been removed successfully.',
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'Failed to remove the coupon. Please try again.',
+                                    });
+                                }
+                            },
+                            error: function (error) {
+                                console.error('Error:', error);
+                            }
+                        });
+                    });
                 });
-            });
-
-            // Event listener for the "Remove Coupon" form submission
-            $('#removeCouponForm').submit(function (event) {
-                event.preventDefault();
-
-                $.ajax({
-                    url: '/removeCoupon',
-                    method: 'POST',
-                    success: function (response) {
-                        if (response.success === true) {
-                            $('#total').text('$' + response.originalTotal);
-                            $('#couponDiscountAmount').text('');
-                            $('#couponDiscountAmount').val('');
-                            $('#applyCouponForm button[type="submit"]').show(); // Show "Apply Coupon" button
-                            $('.copy-button').show(); // Show button to show available coupons
-                            $('#removeCouponForm').hide(); // Hide "Remove Coupon" button
-
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Coupon Removed!',
-                                text: 'The applied coupon has been removed successfully.',
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Failed to remove the coupon. Please try again.',
-                            });
-                        }
-                    },
-                    error: function (error) {
-                        console.error('Error:', error);
-                    }
-                });
-            });
-        });
 
     </script>
 

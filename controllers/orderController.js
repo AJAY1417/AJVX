@@ -250,9 +250,7 @@ console.log(walletHistory,"RRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
         return res.json({ order: newOrder, success: true });
       } else {
         // Insufficient balance in the wallet
-        return res
-          .status(400)
-          .json({ error: "Insufficient balance in the wallet" });
+        return res.json({ error: "Insufficient balance in the wallet" });
       }
     } else {
       // Invalid payment method
