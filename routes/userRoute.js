@@ -55,6 +55,7 @@ user_route.post("/resendOtp", userController.resendOtp);
 
 // ============================ PRODUCT =======================================
 
+
 user_route.get("/shop", userController.shopLoad);
 user_route.get("/productDetail", userController.productDetailLoad);
 user_route.get("/search", userController.searchProducts);

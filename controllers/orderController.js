@@ -161,12 +161,12 @@ const placeOrder = async (req, res) => {
         cartProduct.quantity,
         discount
       );
-
       return {
         product: cartProduct.productId,
         count: cartProduct.quantity,
         total: discountedTotal,
         productPrice: cartProduct.price,
+        status: "pending", // Set the status for each product
       };
     });
 

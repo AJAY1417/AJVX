@@ -1,8 +1,11 @@
 const admin = require("../models/adminModel");
 const User = require("../models/userModel");
-const Category = require("../models/categoryModel")
+const Category = require("../models/categoryModel");
 const Order = require("../models/orderModel");
-const bcrypt = require("bcrypt"); //  line to import the 'bcrypt' module
+const bcrypt = require("bcrypt");
+const fs = require("fs");
+const path = require("path");
+const excel = require("exceljs"); //  line to import the 'bcrypt' module
 
 //=================================  ADMIN LOGIN PAGE    ============================================//
 
@@ -21,7 +24,6 @@ const logout = (req, res) => {
   // Redirect to the adminLogin page
   res.redirect("/admin/adminLogin");
 };
-
 
 //=================================  ADMIN VERIFY LOGIN    ============================================//
 const adminVerifyLogin = async (req, res, next) => {
@@ -59,11 +61,10 @@ const adminVerifyLogin = async (req, res, next) => {
 
 //===================================== CATEGORY PAGE RENDER  ================================================//
 
-
 const loadCategories = async (req, res) => {
   try {
     const categories = await Category.find(); //fetch categories from database
-    res.render("categories", { categoryList:categories }); // passing categoryData
+    res.render("categories", { categoryList: categories }); // passing categoryData
   } catch (error) {
     console.log(error.message);
   }
@@ -72,13 +73,12 @@ const loadCategories = async (req, res) => {
 //===================================== ADD CATEGORY PAGE RENDER  ================================================//
 const loadAddCategory = async (req, res) => {
   try {
-     //fetch categories from database
+    //fetch categories from database
     res.render("addCategory"); // passing categoryData
   } catch (error) {
     console.log(error.message);
   }
 };
-
 
 //===================================== ADD CATEGORY  ================================================//
 const addCategory = async (req, res) => {
@@ -112,9 +112,6 @@ const addCategory = async (req, res) => {
   }
 };
 
-
-
-
 //===================================== RENDER DASHBOARD  ================================================//
 
 const loadDashboard = async (req, res) => {
@@ -128,10 +125,10 @@ const loadDashboard = async (req, res) => {
 
 //===================================== RENDER USER PAGE  ================================================//
 
-const loadUsers= async (req, res) => {
+const loadUsers = async (req, res) => {
   try {
-    const userList = await User.find(); //finding  
-    res.render("users",{userList:userList}); //and passing users
+    const userList = await User.find(); //finding
+    res.render("users", { userList: userList }); //and passing users
   } catch (error) {
     console.log(error.message);
   }
@@ -168,19 +165,18 @@ const blockUser = async (req, res) => {
 //===================================== EDIT CATEGORY PAGE RENDER ================================================//
 
 // Render the edit category page
-const editCategoryLoad= async (req, res) => {
+const editCategoryLoad = async (req, res) => {
   const categoryId = req.params.id;
-  console.log(categoryId)
+  console.log(categoryId);
 
   try {
     const category = await Category.findById(categoryId);
-    res.render("editCategory", { category:category });
+    res.render("editCategory", { category: category });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send("Internal Server Error");
   }
 };
-
 
 //===================================== EDIT CATEGORY  ================================================//
 const editCategory = async (req, res) => {
@@ -193,10 +189,8 @@ const editCategory = async (req, res) => {
     coverPic = req.file.filename;
   }
 
+  console.log(coverPic, "________________________________");
 
-
-  console.log(coverPic,"________________________________");
-  
   try {
     // Construct the update object based on whether req.file exists
     const updateObject = {
@@ -249,7 +243,6 @@ const unlistCategory = async (req, res, next) => {
 //===================================== LOAD ORDER MANAGEMENT PAGE  ================================================//
 
 const loadOrder = async (req, res) => {
-
   console.log("entered the function ");
   try {
     const orderDat = await Order.find({})
@@ -260,7 +253,6 @@ const loadOrder = async (req, res) => {
       .populate("products.product")
       .sort({ purchaseDate: -1 });
 
-      
     console.log(orderDat);
 
     if (orderDat.length > 0) {
@@ -272,24 +264,291 @@ const loadOrder = async (req, res) => {
     console.log(error.message);
     res.status(500).send("Internal Server Error");
   }
+
+
+  
 };
 
+//===================================== UPDATE ORDER STATUS  ================================================//
 
-//===================================== UPDATING THE ORDER STATUS  ================================================//
 
 const updateOrderStatus = async (req, res) => {
   try {
     const { orderId, newStatus } = req.body;
-    console.log("here");
-    const orderStatus = await Order.updateOne(
+    // Update the order status and each product status within the order
+    const orderUpdateResult = await Order.updateOne(
       { _id: orderId },
-      { status: newStatus }
+      {
+        $set: {
+          status: newStatus, // Update the order's status
+          "products.$[].status": newStatus, // Update all products' status within the order
+        },
+      }
     );
-    console.log(orderStatus);
+
+    if (orderUpdateResult.nModified === 0) {
+      // Handle the case where the document was not modified
+      return res.status(404).json({
+        success: false,
+        message: "Order not found or status unchanged",
+      });
+    }
+
+    // Respond to the client that the update was successful
+    return res.json({
+      success: true,
+      message: "Order and product statuses updated successfully",
+    });
   } catch (error) {
-    console.log(error.mesaage);
+    console.error("Error updating order status:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+//=================================================================================================//
+                                        // SALES REPORT //
+
+// const salesreportLoad = async (req, res, next) => {
+//   try {
+//     const formatTime = (date) => {
+//       const options = {
+//         hour: "numeric",
+//         minute: "numeric",
+//         second: "numeric",
+//         timeZoneName: "short",
+//       };
+//       return new Intl.DateTimeFormat("en-US", options).format(date);
+//     };
+
+    // _______________________  sales report data ividen pass cheyyum ___________________________________
+// const salesData = await Order.aggregate([
+//   {
+//     $match: {
+//       $or: [
+//         {
+//           paymentMethod: "cod",
+//           "products.status": "Delivered",
+//           $and: [{ "products.status": { $nin: ["Returned", "cancelled"] } }],
+//         },
+//         {
+//           paymentMethod: { $in: ["online", "wallet"] },
+//           "products.status": { $in: ["placed", "Shipped", "Delivered"] },
+//           $and: [{ "products.status": { $nin: ["Returned", "cancelled"] } }],
+//         },
+//       ],
+//     },
+//   },
+//   {
+//     $unwind: "$products",
+//   },
+//   {
+//     $match: {
+//       "products.status": { $nin: ["Returned", "cancelled"] },
+//     },
+//   },
+//   {
+//     $lookup: {
+//       from: "products",
+//       localField: "products.product",
+//       foreignField: "_id",
+//       as: "productDetails",
+//     },
+//   },
+//   {
+//     $lookup: {
+//       from: "users",
+//       localField: "userId",
+//       foreignField: "_id",
+//       as: "userData",
+//     },
+//   },
+//   {
+//     $project: {
+//       _id: 1,
+//       "userData.firstName": 1,
+//       "productDetails.name": 1,
+//       "productDetails.category": 1,
+//       "products.total": 1,
+//       "products.count": 1,
+//       purchaseDate: 1,
+//       paymentMethod: 1,
+//       "products.status": 1,
+//     },
+//   },
+// ]);
+
+
+//     console.log("Sales Data:", salesData);
+
+//     if (req.query.export === "csv") {
+//       const excelData = salesData.map((order) => ({
+//         "Order ID": order._id,
+//         Username: order.userData[0]?.username || "",
+//         Product: order.productDetails[0]?.product_name || "",
+//         Category: order.productDetails[0]?.category || "",
+//         Price: order.products.total.toFixed(2) || "",
+//         Quantity: order.products.count || "",
+//         "Order Date": order.orderDate.toDateString(),
+//         Time: formatTime(new Date(order.orderDate)),
+//         "Payment Method": order.paymentMethod || "",
+//         "Order Status": order.products.status || "",
+//       }));
+
+//       const json2csvParser = new Parser();
+//       const excel = json2csvParser.parse(excelData);
+
+//       res.setHeader(
+//         "Content-Type",
+//         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+//       );
+//       res.setHeader(
+//         "Content-Disposition",
+//         "attachment; filename=sales-report.csv"
+//       );
+//       res.status(200).send(excel);
+//     } else {
+//       res.render("salesreport", { salesData });
+//     }
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
+
+const salesreportLoad = async (req, res, next) => {
+  try {
+    const formatTime = (date) => {
+      const options = {
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        timeZoneName: "short",
+      };
+      return new Intl.DateTimeFormat("en-US", options).format(date);
+    };
+
+    const salesData = await Order.find({
+      $or: [
+        {
+          paymentMethod: "cod",
+          "products.status": "Delivered",
+          $and: [{ "products.status": { $nin: ["Returned", "cancelled"] } }],
+        },
+        {
+          paymentMethod: { $in: ["online", "wallet"] },
+          "products.status": { $in: ["placed", "Shipped", "Delivered"] },
+          $and: [{ "products.status": { $nin: ["Returned", "cancelled"] } }],
+        },
+      ],
+    })
+      .populate({
+        path: "products.product",
+        select: "name category", // Select the fields to populate
+        populate: { path: "category", select: "name -_id" }, // Populate the category and select only the name
+      })
+      .populate("userId", "firstName"); // Populate user details
+
+
+      
+
+    if (req.query.export === "csv") {
+      const excelData = salesData.map((order) => ({
+        "Order ID": order._id,
+        Username: order.userId.firstName || "",
+        Product: order.products[0]?.product?.name || "",
+        Category: order.products[0]?.product?.category || "",
+        Price: order.products[0]?.total.toFixed(2) || "",
+        Quantity: order.products[0]?.count || "",
+        "Order Date": order.purchaseDate.toDateString(),
+        Time: formatTime(new Date(order.purchaseDate)),
+        "Payment Method": order.paymentMethod || "",
+        "Order Status": order.products[0]?.status || "",
+      }));
+
+      const json2csvParser = new Parser();
+      const excel = json2csvParser.parse(excelData);
+
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=sales-report.csv"
+      );
+      res.status(200).send(excel);
+    } else {
+      res.render("salesreport", { salesData });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+//===================================== invoice download =========================================//
+
+// Assuming salesData is an array of sales objects
+const salesData = [
+    {
+        _id: 1,
+        userId: { firstName: 'John' },
+        products: [{ product: { name: 'Product 1', category: 'Category 1' }, total: 100, count: 2, status: 'Completed' }],
+        purchaseDate: new Date(),
+        paymentMethod: 'Credit Card'
+    },
+    // Add more sales objects as needed
+];
+
+function downloadSalesDataAsExcel() {
+    // Create a workbook and add a worksheet
+    const workbook = new excel.Workbook();
+    const worksheet = workbook.addWorksheet('Sales Data');
+
+    // Define column headers
+    worksheet.columns = [
+        { header: 'Order ID', key: '_id', width: 10 },
+        { header: 'Username', key: 'username', width: 20 },
+        { header: 'Product', key: 'productName', width: 20 },
+        { header: 'Category', key: 'category', width: 20 },
+        { header: 'Price (INR)', key: 'price', width: 15 },
+        { header: 'Quantity', key: 'quantity', width: 10 },
+        { header: 'Order Date', key: 'orderDate', width: 20 },
+        { header: 'Payment Method', key: 'paymentMethod', width: 20 },
+        { header: 'Order Status', key: 'orderStatus', width: 15 },
+    ];
+
+    // Add sales data to the worksheet
+    salesData.forEach((sale) => {
+        worksheet.addRow({
+            _id: sale._id,
+            username: sale.userId.firstName,
+            productName: sale.products[0]?.product.name || 'N/A',
+            category: sale.products[0]?.product.category || 'N/A',
+            price: sale.products[0]?.total.toFixed(2) || 'N/A',
+            quantity: sale.products[0]?.count || 'N/A',
+            orderDate: sale.purchaseDate ? sale.purchaseDate.toDateString() : 'N/A',
+            paymentMethod: sale.paymentMethod || 'N/A',
+            orderStatus: sale.products[0]?.status || 'N/A'
+        });
+    });
+
+    // Set up file path for saving the Excel file
+    const filePath = path.join(__dirname, 'sales_data.xlsx');
+
+    // Write the workbook to a file
+    workbook.xlsx.writeFile(filePath)
+        .then(() => {
+            console.log('Excel file created successfully.');
+        })
+        .catch((error) => {
+            console.error('Error creating Excel file:', error);
+        });
+}
+
+// Call the function to generate and download the Excel file
+downloadSalesDataAsExcel();
+
+
+//=================================================================================================//
 
 //===================================== EXPORTING  ================================================//
 module.exports = {
@@ -307,4 +566,6 @@ module.exports = {
   unlistCategory,
   loadOrder,
   updateOrderStatus,
+  salesreportLoad,
+  downloadSalesDataAsExcel,
 };

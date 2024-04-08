@@ -25,6 +25,7 @@ admin_route.get("/logout", adminController.logout);
 
 // =================== ADMIN DASHBOARD ===============================
 admin_route.get("/dashboard", dashboardController.loadDashboard);
+admin_route.get("/revenueData/:interval", dashboardController.getRevenueData);
 
 // =================== USER MANAGEMENT ===============================
 admin_route.get("/users", adminController.loadUsers);
@@ -140,10 +141,15 @@ admin_route.post("/addCouponDB",  couponController.addCoupon);
 admin_route.get("/loadEditCoupon",couponController.loadEditCoupon);
 admin_route.post("/editCouponDB",  couponController.editCoupon);
 admin_route.get("/deleteCoupon", couponController.deleteCoupon);
+//============================= COUPON END ==================================
 
-//============================= COUPON ==================================
 
-admin_route.post("/salesReport",salesController.loadSalesReport);
+
+//============================= SALES REPORT ==================================
+admin_route.get("/salesReport", adminController.salesreportLoad);
+
+//============================= SALES REPORT ==================================
+
 
 
 

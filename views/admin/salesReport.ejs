@@ -1,134 +1,156 @@
 <%- include('../layouts/admin/header.ejs') %>
 
-  <!--  Body Wrapper -->
-  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
-    data-sidebar-position="fixed" data-header-position="fixed">
-<!-- sidebar start-->
-    <%- include('../layouts/admin/sideBar.ejs') %>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+<style>
+  .page-wrapper {
+    font-family: 'Nunito Sans', sans-serif;
+  }
 
-<!-- sidebar end-->
-    <!--  Main wrapper -->
-    <div class="body-wrapper">
-      <!--  Header Start -->
+  .card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    border-radius: 5px;
+  }
 
-      <%- include('../layouts/admin/headerBar.ejs') %>
-            <div class="main-panel">
-                <div class="content-wrapper">
+  .card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  }
 
-                    <div class="col-lg-12 grid-margin stretch-card">
-                        <div class="card">
-                            <div class="card-body">
+  .card-body {
+    padding: 20px;
+  }
 
-                                <form action="/admin/salesReport" method="GET" class="mb-4">
-                                    <div class="form-row">
-                                        <div class="form-group col-md-4">
-                                            <label for="startDate">Start Date</label>
-                                            <input type="date" class="form-control" id="startDate" name="startDate">
-                                        </div>
-                                        <div class="form-group col-md-4">
-                                            <label for="endDate">End Date</label>
-                                            <input type="date" class="form-control" id="endDate" name="endDate">
-                                        </div>
-                                        <div class="form-group col-md-2">
-                                            <button type="submit" style="height: 37px;"
-                                                class="btn btn-inverse-success mt-4">Filter</button>
-                                        </div>
-                                        <div class="form-group col-md-2">
-                                            <button onclick="downloadSalesReport()" type="button" style="height: 37px;"
-                                                class="btn btn-inverse-primary mt-4">Download Report</button>
-                                        </div>
-                                    </div>
-                                </form>
+  .table-responsive {
+    margin-top: 20px;
+  }
 
-                                <% if (startDate && endDate) { %>
-                                    <p>Showing sales data from <%= startDate %> to <%= endDate %>
-                                    </p>
-                                    <% } %>
+  .dataTables_wrapper .dataTables_filter {
+    float: right;
+    text-align: right;
+  }
 
+  .dataTables_wrapper .dataTables_filter input {
+    margin-left: 0.5em;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    padding: 5px;
+  }
 
-                                        <h2 class="card-title" style="text-align: center;">SALES REPORT</h2>
-                                        <div class="table-responsive">
-                                            <% if (salesData.length> 0) { %>
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter,
+  .dataTables_wrapper .dataTables_info,
+  .dataTables_wrapper .dataTables_paginate {
+    padding: 10px;
+  }
 
-                                                <table id="search-table" class="table table-dark">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Order ID</th>
-                                                            <th>Username</th>
-                                                            <th>Product</th>
-                                                            <th>Price</th>
-                                                            <th>Qty</th>
-                                                            <th>Order Date</th>
-                                                            <th>Time</th>
-                                                            <th>Payment Method</th>
-                                                            <th>Order Status</th>
-                                                            <th>Category</th>
+  .dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white !important;
+    border-radius: 20px;
+    margin: 0 2px;
+    border: 0;
+    transition: background-color 0.3s;
+  }
 
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <% salesData.reverse().forEach(sale=> { %>
-                                                            <tr>
-                                                                <td>
-                                                                    <%= sale._id %>
-                                                                </td>
-                                                                <td>
-                                                                    <%= sale.userData[0]?.firstName || '' %>
-                                                                </td>
-                                                                <td>
-                                                                    <%= sale.productDetails[0]?.productName || '' %>
-                                                                </td>
-                                                                <td>&#8377; <%= sale.products.price.toFixed(2) || '' %>
-                                                                </td>
-                                                                <td>
-                                                                    <%= sale.products.quantity || '' %>
-                                                                </td>
-                                                                <td>
-                                                                    <%= sale.orderDate.toDateString() %>
-                                                                </td>
-                                                                <td>
-                                                                    <%= sale.orderDate.toLocaleTimeString() %>
-                                                                </td>
-                                                                <td>
-                                                                    <%= sale.paymentOption || '' %>
-                                                                </td>
-                                                                <td>
-                                                                    <%= sale.products.orderStatus || '' %>
-                                                                </td>
-                                                                <td>
-                                                                    <%= sale.productDetails[0]?.productCategory || '' %>
-                                                                </td>
+  .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: #0056b3;
+  }
 
-                                                            </tr>
-                                                            <% }) %>
-                                                                <% } else { %>
-                                                                    <tr>
-                                                                        <td colspan="9" class="text-center">
-                                                                            <p style="text-align: center;">No sales
-                                                                                found.</p>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <% } %>
-                                                    </tbody>
-                                                </table>
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background-color: #004094;
+  }
 
-                                        </div>
+  /* Large Heading Style */
+  .large-heading {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+</style>
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+  data-sidebar-position="fixed" data-header-position="fixed">
+  <%- include('../layouts/admin/sideBar.ejs') %>
 
-                            </div>
-                        </div>
-                    </div>
+  <div class="body-wrapper">
+    <%- include('../layouts/admin/headerBar.ejs') %>
 
-                </div>
+    <div class="container-fluid mt-3">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-body">
+              <h1 class="large-heading text-center">Sales Report</h1>
+              <div class="table-responsive">
+                <table class="table table-hover mb-0" id="salesDataTable">
+                  <thead class="bg-primary text-white">
+                    <tr>
+                      <th scope="col">Order ID</th>
+                      <th scope="col">Username</th>
+                      <th scope="col">Product</th>
+                      <th scope="col">Category</th>
+                      <th scope="col">Price (INR)</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Order Date</th>
+                      <th scope="col">Order Time</th>
+                      <th scope="col">Payment Method</th>
+                      <th scope="col">Order Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (salesData.length > 0) { %>
+                        <% salesData.forEach(sale => { %>
+                          <tr>
+                            <td><%= sale._id %></td>
+                            <td><%= sale.userId.firstName || 'N/A' %></td>
+                            <td><%= sale.products[0]?.product.name || 'N/A' %></td>
+                            <td><%= sale.products[0]?.product.category || 'N/A' %></td>
+                            <td>&#8377; <%= sale.products[0]?.total.toFixed(2) || 'N/A' %></td>
+                            <td><%= sale.products[0]?.count || 'N/A' %></td>
+                            <td><%= sale.purchaseDate ? sale.purchaseDate.toDateString() : 'N/A' %></td>
+                            <td><%= sale.purchaseDate ? sale.purchaseDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A' %></td>
+                            <td><%= sale.paymentMethod || 'N/A' %></td>
+                            <td><%= sale.products[0]?.status || 'N/A' %></td>
+                          </tr>
+                        <% }) %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="10" class="text-center">No sales found.</td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-                <script src="/car/adminAssets/assets/js/clientSideSearch.js"></script>
-                <script>
-                    function downloadSalesReport() {
-                        // Your JavaScript code to handle the download action
-                        var startDate = "<%= startDate %>";
-                        var endDate = "<%= endDate %>";
-                        // Perform actions, such as redirecting to the download URL
-                        window.location.href = "/admin/exportSalesReport?startDate=" + startDate + "&endDate=" + endDate;
-                    }
-                </script>
+  </div>
+</div>
+<%- include('../layouts/admin/footer.ejs') %>
 
-                <%- include('./layouts/footer.ejs') %>
+<script src="/public/admin/js/core/popper.min.js"></script>
+<script src="/public/admin/js/core/bootstrap.min.js"></script>
+<script src="/public/admin/js/plugins/perfect-scrollbar.min.js"></script>
+<script src="/public/admin/js/plugins/smooth-scrollbar.min.js"></script>
+<script src="/public/admin/js/plugins/chartjs.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#salesDataTable').DataTable({
+      responsive: true
+    });
+  });
+</script>
+<style>
+  #salesDataTable td {
+    word-break: break-word;
+  }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.8/xlsx.full.min.js"></script>

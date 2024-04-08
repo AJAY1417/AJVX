@@ -12,7 +12,7 @@ const orderDetails = new mongoose.Schema({
   products: [
     {
       product: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId, // Corrected type here
         required: true,
         ref: "Product",
       },
@@ -26,8 +26,16 @@ const orderDetails = new mongoose.Schema({
       },
       status: {
         type: String,
-        enum:['Pending','Processing','Shipped','Delivered','cancelled','Returned'],
-        default: "Pending",
+        enum: [
+          "pending",
+          "Processing",
+          "Shipped",
+          "Delivered",
+          "cancelled",
+          "Returned",
+          "placed",
+        ],
+        required: true,
       },
     },
   ],
@@ -40,6 +48,15 @@ const orderDetails = new mongoose.Schema({
   },
   status: {
     type: String,
+    enum: [
+      "pending",
+      "Processing",
+      "Shipped",
+      "Delivered",
+      "cancelled",
+      "Returned",
+      "placed",
+    ],
     required: true,
   },
   paymentMethod: {
@@ -62,4 +79,4 @@ const orderDetails = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("order", orderDetails);
+module.exports = mongoose.model("Order", orderDetails); // Corrected model name here

@@ -1,7 +1,9 @@
 const User = require("../models/userModel");
 const Order = require("../models/orderModel");
-const Product = require("../models/productModel");
-const Category = require("../models/categoryModel");
+
+
+// ____________________________________________________________________________________________________________________________________
+
 
 const loadDashboard = async (req, res, next) => {
   try {
@@ -23,142 +25,157 @@ const loadDashboard = async (req, res, next) => {
     const averageOrderValue =
       totalOrders !== 0 ? totalRevenue / totalOrders : 0;
 
-    const allProducts = await Product.find({}, "productName");
+    const dailyRevenue = await getDailyRevenueData(); // This line fetches the daily revenue data
 
-    const revenuePerProduct = await Order.aggregate([
-      {
-        $unwind: "$products",
-      },
-      {
-        $match: {
-          $or: [
-            { paymentOption: "COD", "products.orderStatus": "Delivered" },
-            {
-              paymentOption: { $in: ["Razorpay", "Wallet"] },
-              "products.orderStatus": {
-                $in: ["Placed", "Shipped", "Out for delivery", "Delivered"],
-              },
-            },
-          ],
-          "products.returnOrder.returnStatus": { $ne: "Refund" },
-        },
-      },
-      {
-        $group: {
-          _id: "$products.productId",
-          totalAmount: {
-            $sum: { $multiply: ["$products.price", "$products.quantity"] },
-          },
-        },
-      },
-    ]);
 
-    const productIds = revenuePerProduct.map((product) => product._id);
-
-    const productMap = new Map(
-      allProducts.map((product) => [product._id.toString(), product])
-    );
-
-    const productData = allProducts.map((product) => {
-      const revenueProduct = revenuePerProduct.find(
-        (rp) => rp._id.toString() === product._id.toString()
-      );
-      return {
-        name: product.productName,
-        revenue: revenueProduct ? revenueProduct.totalAmount : 0,
-      };
-    });
-
-    const sortedProducts = productData.sort((a, b) => b.revenue - a.revenue);
-
-    const top3Products = sortedProducts.slice(0, 3);
-
-    const productLabels = top3Products.map((product) => product.name);
-    const productRevenues = top3Products.map((product) => product.revenue);
-
-    const revenuePerCategory = await Order.aggregate([
-      {
-        $unwind: "$products",
-      },
-      {
-        $match: {
-          $or: [
-            { paymentOption: "COD", "products.orderStatus": "Delivered" },
-            {
-              paymentOption: { $in: ["Razorpay", "Wallet"] },
-              "products.orderStatus": {
-                $in: ["Placed", "Shipped", "Out for delivery", "Delivered"],
-              },
-            },
-          ],
-          "products.returnOrder.returnStatus": { $ne: "Refund" },
-        },
-      },
-      {
-        $lookup: {
-          from: "products",
-          localField: "products.productId",
-          foreignField: "_id",
-          as: "productDetails",
-        },
-      },
-      {
-        $unwind: "$productDetails",
-      },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "productDetails.productCategory",
-          foreignField: "_id",
-          as: "categoryDetails",
-        },
-      },
-      {
-        $unwind: "$categoryDetails",
-      },
-      {
-        $group: {
-          _id: "$categoryDetails.categoryName",
-          totalAmount: {
-            $sum: { $multiply: ["$products.price", "$products.quantity"] },
-          },
-        },
-      },
-    ]);
-
-    const allCategories = await Category.find({}, "categoryName");
-
-    const categoryData = allCategories.map((category) => ({
-      name: category.categoryName,
-      revenue:
-        revenuePerCategory.find((c) => c._id === category.categoryName)
-          ?.totalAmount || 0,
-    }));
-
-    const sortedCategories = categoryData.sort((a, b) => b.revenue - a.revenue);
-
-    const top3Categories = sortedCategories.slice(0, 3);
-
-    const categoryLabels = top3Categories.map((category) => category.name);
-    const categoryRevenues = top3Categories.map((category) => category.revenue);
-
+    
     res.render("dashboard", {
       totalUsers,
       totalOrders,
       totalRevenue,
       averageOrderValue,
-      productLabels,
-      productRevenues,
-      categoryLabels,
-      categoryRevenues,
-      top3Categories,
-      top3Products,
+      revenueData: JSON.stringify({
+        daily: dailyRevenue,
+        // Include other revenue data if needed here, make sure they are retrieved above like dailyRevenueData
+        // weekly: await getWeeklyRevenueData(),
+        // monthly: await getMonthlyRevenueData(),
+        // yearly: await getYearlyRevenueData(),
+      }),
     });
   } catch (error) {
     next(error);
   }
 };
 
+// ____________________________________________________________________________________________________________________________________
+
+const getRevenueData = async (req, res, next) => {
+  try {
+    const interval = req.params.interval; // Get interval from query parameters
+
+    let revenueData = [];
+
+    if (interval === "daily") {
+      revenueData = await getDailyRevenueData();
+    } else if (interval === "weekly") {
+      revenueData = await getWeeklyRevenueData();
+    } else if (interval === "monthly") {
+      revenueData = await getMonthlyRevenueData();
+    } else if (interval === "custom") {
+    
+    }
+
+    res.json({ revenueData }); 
+  } catch (error) {
+    next(error);
+  }
+};
+
+              //------------------------------------------//
+async function getDailyRevenueData() {
+  try {
+   const sevenDaysAgo = new Date();
+   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7); // Calculate date 7 days ago
+
+   const dailyRevenue = await Order.aggregate([
+     {
+       $match: {
+         purchaseDate: { $gte: sevenDaysAgo }, // Filter orders from the last 7 days
+       },
+     },
+     {
+       $group: {
+         _id: { $dateToString: { format: "%Y-%m-%d", date: "$purchaseDate" } },
+         totalIncome: { $sum: "$totalAmount" },
+       },
+     },
+     {
+       $sort: { _id: 1 }, 
+     },
+   ]);
+    console.log(dailyRevenue,"___________this isdaily revenue");
+    return dailyRevenue;
+  } catch (error) {
+    console.error("Error fetching daily revenue data:", error);
+    throw error;
+  }
+}
+              //------------------------------------------//
+
+async function getWeeklyRevenueData() {
+  try {
+    const weeklyRevenue = await Order.aggregate([
+      {
+        $group: {
+          _id: { $isoWeek: "$purchaseDate" },
+          totalRevenue: { $sum: "$totalAmount" },
+        },
+      },
+    ]);
+    console.log(weeklyRevenue,"___________ughkghukhuk")
+    return weeklyRevenue;
+  } catch (error) {
+    console.error("Error fetching weekly revenue data:", error);
+    throw error;
+  }
+}
+
+                            //------------------------------------------//
+
+async function getMonthlyRevenueData() {
+  try {
+    const monthlyRevenue = await Order.aggregate([
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$purchaseDate" } },
+          totalRevenue: { $sum: "$totalAmount" },
+        },
+      },
+      {
+        $sort: { _id: -1 }
+      },
+      {
+        $limit: 8
+      }
+    ]);
+    return monthlyRevenue.reverse();
+  } catch (error) {
+    console.error("Error fetching monthly revenue data:", error);
+    throw error;
+  }
+}
+
+             //------------------------------------------//
+async function getYearlyRevenueData() {
+  try {
+    const yearlyRevenue = await Order.aggregate([
+      {
+        $group: {
+          _id: { $year: "$purchaseDate" },
+          totalRevenue: { $sum: "$totalAmount" },
+        },
+      },
+      {
+        $sort: { _id: -1 }
+      },
+      {
+        $limit: 8
+      }
+    ]);
+    return yearlyRevenue.reverse();
+  } catch (error) {
+    console.error("Error fetching yearly revenue data:", error);
+    throw error;
+  }
+}
+
+
+// _________________________________________________      EXPORTS    _______________________________________________________________________
 module.exports = {
   loadDashboard,
+  getRevenueData,
+  getDailyRevenueData,
+  getWeeklyRevenueData,
+  getMonthlyRevenueData,
+  getYearlyRevenueData,
 };
