@@ -1,393 +1,417 @@
+
 <%- include('../layouts/admin/header.ejs') %>
 
-  <!--  Body Wrapper -->
-  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
-    data-sidebar-position="fixed" data-header-position="fixed">
-    <!-- sidebar start-->
-    <%- include('../layouts/admin/sideBar.ejs') %>
+<!-- Body Wrapper -->
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+  data-sidebar-position="fixed" data-header-position="fixed">
+  <!-- sidebar start-->
+  <%- include('../layouts/admin/sideBar.ejs') %>
+    <!-- sidebar end-->
+    <!-- Main wrapper -->
+    <div class="body-wrapper">
+      <!-- Header Start -->
+      <%- include('../layouts/admin/headerBar.ejs') %>
+        <!-- Header End -->
 
-      <!-- sidebar end-->
-      <!--  Main wrapper -->
-      <div class="body-wrapper">
-        <!--  Header Start -->
-        <%- include('../layouts/admin/headerBar.ejs') %>
-          <!--  Header End -->
-
-          <div class="container-fluid">
-            <!-- Additional Section -->
-            <div class="row">
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">₹<%= totalRevenue.toFixed(1) %>
-                          </h3>
-                          <!-- Assuming totalRevenue is in currency format, adjust the formatting as needed -->
-                          <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success ">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
+        <div class="container-fluid">
+          <!-- Additional Section -->
+          <div class="row">
+            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-9">
+                      <div class="d-flex align-items-center align-self-start">
+                        <h3 class="mb-0">₹<%= totalRevenue.toFixed(1) %></h3>
+                        <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Total Revenue</h6>
+                    <div class="col-3">
+                      <div class="icon icon-box-success ">
+                        <span class="mdi mdi-arrow-top-right icon-item"></span>
+                      </div>
+                    </div>
                   </div>
+                  <h6 class="text-muted font-weight-normal">Total Revenue</h6>
                 </div>
               </div>
+            </div>
 
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">
-                            <%= totalUsers %>
-                          </h3>
-                          <p class="text-success ml-2 mb-0 font-weight-medium">+11%</p>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
+            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-9">
+                      <div class="d-flex align-items-center align-self-start">
+                        <h3 class="mb-0"><%= totalUsers %></h3>
+                        <p class="text-success ml-2 mb-0 font-weight-medium">+11%</p>
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Total Users</h6>
+                    <div class="col-3">
+                      <div class="icon icon-box-success">
+                        <span class="mdi mdi-arrow-top-right icon-item"></span>
+                      </div>
+                    </div>
                   </div>
+                  <h6 class="text-muted font-weight-normal">Total Users</h6>
                 </div>
               </div>
+            </div>
 
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">
-                            <%= totalOrders %>
-                          </h3>
-                          <p class="text-danger ml-2 mb-0 font-weight-medium">-2.4%</p>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-danger">
-                          <span class="mdi mdi-arrow-bottom-left icon-item"></span>
-                        </div>
+            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-9">
+                      <div class="d-flex align-items-center align-self-start">
+                        <h3 class="mb-0"><%= totalOrders %></h3>
+                        <p class="text-danger ml-2 mb-0 font-weight-medium">-2.4%</p>
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Total Orders</h6>
+                    <div class="col-3">
+                      <div class="icon icon-box-danger">
+                        <span class="mdi mdi-arrow-bottom-left icon-item"></span>
+                      </div>
+                    </div>
                   </div>
+                  <h6 class="text-muted font-weight-normal">Total Orders</h6>
                 </div>
               </div>
+            </div>
 
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">₹<%= averageOrderValue.toFixed(1) %>
-                          </h3>
-                          <!-- Assuming averageOrderValue is in currency format, adjust the formatting as needed -->
-                          <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success ">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
+            <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-9">
+                      <div class="d-flex align-items-center align-self-start">
+                        <h3 class="mb-0">₹<%= averageOrderValue.toFixed(1) %></h3>
+                        <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
                       </div>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Average Order Value</h6>
+                    <div class="col-3">
+                      <div class="icon icon-box-success ">
+                        <span class="mdi mdi-arrow-top-right icon-item"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <h6 class="text-muted font-weight-normal">Average Order Value</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Chart Section WEEKLY-->
+          <div class="row mt-4">
+            <div class="col-lg-4 col-md-6 mt-4 mb-4">
+              <div class="card z-index-2 ">
+                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+                  <div class=" shadow-primary border-radius-lg py-3 pe-1">
+                    <div class="chart">
+                      <canvas id="myChart4" class="chart-canvas" height="170"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <h6 class="mb-0 ">Weekly revenue</h6>
+                  <p class="text-sm "></p>
+                  <hr class="dark horizontal">
+                  <div class="d-flex ">
+                    <i class="material-icons text-sm my-auto me-1">schedule</i>
+                    <p class="mb-0 text-sm"> just updated </p>
                   </div>
                 </div>
               </div>
             </div>
-            <!-- End Additional Section -->
-
-            <!--  Row 1 -->
-            <div class="row">
-              <div class="col-lg-8 d-flex align-items-strech">
-                <div class="card w-100">
-                  <div class="card-body">
-                    <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
-                      <div class="mb-3 mb-sm-0">
-                        <h5 class="card-title fw-semibold">Sales Overview</h5>
-                      </div>
-                      <div>
-
-                        <!-- Added id attribute to the select element -->
-                        <select id="interval-select" class="form-select">
-                          <option value="/admin/revenueData/daily">
-                            Daily
-                          </option>
-                          <option value="/admin/revenueData/weekly">
-                            Weekly
-                          </option>
-                          <option value="/admin/revenueData/monthly">
-                            Monthly
-                          </option>
-                          <option value="/admin/revenueData/yearly">
-                            Yearly
-                          </option>
-                        </select>
-
-                      </div>
+            <div class="col-lg-4 col-md-6 mt-4 mb-4">
+              <div class="card z-index-2  ">
+                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+                  <div class=" shadow-success border-radius-lg py-3 pe-1">
+                    <div class="chart">
+                      <canvas id="chart-line" class="chart-canvas " height="170"></canvas>
                     </div>
-                    <div id="chart"></div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <h6 class="mb-0 "> Monthly revenue </h6>
+                  <hr class="dark horizontal">
+                  <div class="d-flex ">
+                    <i class="material-icons text-sm my-auto me-1">schedule</i>
+                    <p class="mb-0 text-sm"> just updated </p>
                   </div>
                 </div>
               </div>
-              <!-- //1 -->
             </div>
+            <div class="col-lg-4 mt-4 mb-3">
+              <div class="card z-index-2 ">
+                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+                  <div class=" shadow-dark border-radius-lg py-3 pe-1">
+                    <div class="chart">
+                      <canvas id="myChart6" class="chart-canvas" height="170"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <h6 class="mb-0 ">Yearly revenue</h6>
+                  <p class="text-sm "></p>
+                  <hr class="dark horizontal">
+                  <div class
 
-            <!-- 2 -->
+="d-flex ">
+                    <i class="material-icons text-sm my-auto me-1">schedule</i>
+                    <p class="mb-0 text-sm">just updated</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-            <!-- 3 -->
+          <!-- Second Chart Section -->
+          <div class="row mt-4">
+            <div class="col-lg-4 col-md-6 mt-4 mb-4">
+              <div class="card z-index-2 ">
+                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+                  <div class=" shadow-primary border-radius-lg py-3 pe-1">
+                    <div class="chart">
+                      <canvas id="myChart" class="chart-canvas" height="170"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <h6 class="mb-0 ">Top 3 selling products</h6>
+                  <p class="text-sm "></p>
+                  <hr class="dark horizontal">
+                  <div class="d-flex ">
+                    <i class="material-icons text-sm my-auto me-1">schedule</i>
+                    <p class="mb-0 text-sm"> just updated </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mt-4 mb-4">
+              <div class="card z-index-2  ">
+                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+                  <div class=" shadow-success border-radius-lg py-3 pe-1">
+                    <div class="chart">
+                      <canvas id="myChart2" class="chart-canvas " height="170"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <h6 class="mb-0 "> Category revenue </h6>
+                  <hr class="dark horizontal">
+                  <div class="d-flex ">
+                    <i class="material-icons text-sm my-auto me-1">schedule</i>
+                    <p class="mb-0 text-sm"> just updated </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4 mt-4 mb-3">
+              <div class="card z-index-2 ">
+                <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+                  <div class=" shadow-dark border-radius-lg py-3 pe-1">
+                    <div class="chart">
+                      <canvas id="myChart3" class="chart-canvas" height="170"></canvas>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <h6 class="mb-0 ">Payment methods used</h6>
+                  <p class="text-sm "></p>
+                  <hr class="dark horizontal">
+                  <div class="d-flex ">
+                    <i class="material-icons text-sm my-auto me-1">schedule</i>
+                    <p class="mb-0 text-sm">just updated</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
 
+<!-- Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-            <!--  Footer Start -->
+<!-- JavaScript code for Chart.js charts -->
+<script>
+  // Weekly Revenue Chart
+  var ctx4 = document.getElementById("myChart4").getContext('2d');
+  var myChart4 = new Chart(ctx4, {
+    type: 'bar',
+    data: {
+      labels: weeklyRevenueLabels,
+      datasets: [{
+        label: 'Weekly Revenue',
+        data: [10,23,100,50,87],
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
 
+  // Monthly Revenue Chart
+  var ctxLine = document.getElementById("chart-line").getContext('2d');
+  var myChartLine = new Chart(ctxLine, {
+    type: 'bar',
+    data: {
+      labels: monthlyRevenueLabels,
+      datasets: [{
+        label: 'Monthly Revenue',
+        data: monthlyRevenueData,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
 
-            <%- include('../layouts/admin/footer.ejs') %>
-              <script>
-              
-                document.getElementById('interval-select').addEventListener('change', function () {
-                  var selectedRoute = this.value;
-                  window.location.href = selectedRoute; 
-                });
-              </script>
+  // Yearly Revenue Chart
+  var ctx6 = document.getElementById("myChart6").getContext('2d');
+  var myChart6 = new Chart(ctx6, {
+    type: 'bar',
+    data: {
+      labels: yearlyRevenueLabels,
+      datasets: [{
+        label: 'Yearly Revenue',
+        data: yearlyRevenueData,
+        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+        borderColor: 'rgba(255, 159, 64, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
 
+  // Top 3 Selling Products Chart
+  var ctx = document.getElementById("myChart").getContext('2d');
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: productLabels,
+      datasets: [{
+        label: 'Product Revenue',
+        data: productRevenues,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
 
-<div id="total-revenue"></div>
-<div id="chart"></div>
+  // Category Revenue Chart
+  var ctx2 = document.getElementById("myChart2").getContext('2d');
+  var myChart2 = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: categoryLabels,
+      datasets: [{
+        label: 'Category Revenue',
+        data: categoryRevenues,
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
+
+  // Payment Methods Chart
+  var ctx3 = document.getElementById("myChart3").getContext('2d');
+  var myChart3 = new Chart(ctx3, {
+    type
+
+: 'bar',
+    data: {
+      labels: paymentMethodsLabels,
+      datasets: [{
+        label: 'Payment Methods Count',
+        data: paymentMethodsCount,
+        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+        borderColor: 'rgba(255, 206, 86, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
+</script>
+
+<!-- End of JavaScript code for Chart.js charts -->
+
+<!-- Additional JavaScript libraries -->
+<script src="/public/admin/js/core/popper.min.js"></script>
+<script src="/public/admin/js/core/bootstrap.min.js"></script>
+<script src="/public/admin/js/plugins/perfect-scrollbar.min.js"></script>
+<script src="/public/admin/js/plugins/smooth-scrollbar.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="/public/admin/js/material-dashboard.min.js?v=3.0.0"></script>
+<!-- End of Additional JavaScript libraries -->
 
 <script>
-    $(function () {
-        function renderStaticChart(data) {
-            var chartOptions = {
-                series: [{
-                    name: "Earnings this week:",
-                    data: data
-                }],
-                chart: {
-                    type: "bar",
-                    height: 345,
-                    offsetX: -15,
-                    toolbar: { show: true },
-                    foreColor: "#adb0bb",
-                    fontFamily: "inherit",
-                    sparkline: { enabled: false },
-                },
-                colors: ["#5D87FF", "#49BEFF"],
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        columnWidth: "35%",
-                        borderRadius: [6],
-                        borderRadiusApplication: "end",
-                        borderRadiusWhenStacked: "all",
-                    },
-                },
-                markers: { size: 0 },
-                dataLabels: {
-                    enabled: false,
-                },
-                legend: {
-                    show: false,
-                },
-                grid: {
-                    borderColor: "rgba(0,0,0,0.1)",
-                    strokeDashArray: 3,
-                    xaxis: {
-                        lines: {
-                            show: false,
-                        },
-                    },
-                },
-                xaxis: {
-                    type: "category",
-                    categories: [
-                        "Monday",
-                        "Tuesday",
-                        "Wednesday",
-                        "Thursday",
-                        "Friday",
-                        "Saturday",
-                        "Sunday",
-                    ],
-                    labels: {
-                        style: { cssClass: "grey--text lighten-2--text fill-color" },
-                    },
-                },
-                yaxis: {
-                    show: true,
-                    min: 0,
-                    max: Math.max(...data) * 1.2, 
-                    tickAmount: 4,
-                    labels: {
-                        style: {
-                            cssClass: "grey--text lighten-2--text fill-color",
-                        },
-                    },
-                },
-                stroke: {
-                    show: true,
-                    width: 3,
-                    lineCap: "butt",
-                    colors: ["transparent"],
-                },
-                tooltip: { theme: "light" },
-                responsive: [
-                    {
-                        breakpoint: 600,
-                        options: {
-                            plotOptions: {
-                                bar: {
-                                    borderRadius: 3,
-                                },
-                            },
-                        },
-                    },
-                ],
-            };
-
-            var staticChart = new ApexCharts(document.querySelector("#chart"), chartOptions);
-            staticChart.render();
-        }
-
-        function week(selectedRoute){
-            fetch(`${selectedRoute}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(res=>{
-                console.log(res); // Data is here now 
-                renderChart(res);
-                renderStaticChart([500, 300, 300, 350, 390, 180, 355]); // Render static chart initially
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
-        }
-
-        document.getElementById('interval-select').addEventListener('change', function() {
-            var selectedRoute = this.value;
-            week(selectedRoute);
-        });
-
-        function renderChart(data) {
-            const totalRevenue = data.length > 0 ? data[0].totalRevenue : 0;
-
-            // Display the total revenue
-            document.getElementById("total-revenue").innerText = `Total Revenue: ${totalRevenue}`;
-
-            // No need to render the chart if total revenue is 0
-            if (totalRevenue === 0) {
-                return;
-            }
-
-            const categories = data.map(item => item.date);
-            const seriesData = data.map(item => item.revenue);
-
-            // Chart configuration
-            var chart = {
-                series: [{
-                    name: "Sales",
-                    data: seriesData
-                }],
-
-                chart: {
-                    type: "bar",
-                    height: 345,
-                    offsetX: -15,
-                    toolbar: { show: true },
-                    foreColor: "#adb0bb",
-                    fontFamily: "inherit",
-                    sparkline: { enabled: false },
-                },
-
-                colors: ["#5D87FF"],
-
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        columnWidth: "35%",
-                        borderRadius: [6],
-                        borderRadiusApplication: "end",
-                        borderRadiusWhenStacked: "all",
-                    },
-                },
-                markers: { size: 0 },
-
-                dataLabels: {
-                    enabled: false,
-                },
-
-                legend: {
-                    show: false,
-                },
-
-                grid: {
-                    borderColor: "rgba(0,0,0,0.1)",
-                    strokeDashArray: 3,
-                    xaxis: {
-                        lines: {
-                            show: false,
-                        },
-                    },
-                },
-
-                xaxis: {
-                    type: "category",
-                    categories: categories,
-                    labels: {
-                        style: { cssClass: "grey--text lighten-2--text fill-color" },
-                    },
-                },
-
-                yaxis: {
-                    show: true,
-                    min: 0,
-                    labels: {
-                        style: {
-                            cssClass: "grey--text lighten-2--text fill-color",
-                        },
-                    },
-                },
-                stroke: {
-                    show: true,
-                    width: 3,
-                    lineCap: "butt",
-                    colors: ["transparent"],
-                },
-
-                tooltip: { theme: "light" },
-
-                responsive: [
-                    {
-                        breakpoint: 600,
-                        options: {
-                            plotOptions: {
-                                bar: {
-                                    borderRadius: 3,
-                                },
-                            },
-                        },
-                    },
-                ],
-            };
-
-            var chart = new ApexCharts(document.querySelector("#chart"), chart);
-            chart.render();
-        }
-    });
+  // Initialize scrollbar if the platform is Windows
+  var win = navigator.platform.indexOf('Win') > -1;
+  if (win && document.querySelector('#sidenav-scrollbar')) {
+    var options = {
+      damping: '0.5'
+    }
+    Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+  }
 </script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+</body>
+
+</html>

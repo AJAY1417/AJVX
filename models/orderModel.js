@@ -78,5 +78,20 @@ const orderDetails = new mongoose.Schema({
     type: String,
   },
 });
-
+orderDetails.statics.getDailyRevenueData = async function () {
+  // Get today's date
+  const today = new Date();
+  // Get the start of today
+  const startOfToday = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
+  // Get the end of today
+  const endOfToday = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() + 1
+  );
+};
 module.exports = mongoose.model("Order", orderDetails); // Corrected model name here

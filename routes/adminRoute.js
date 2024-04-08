@@ -25,7 +25,7 @@ admin_route.get("/logout", adminController.logout);
 
 // =================== ADMIN DASHBOARD ===============================
 admin_route.get("/dashboard", dashboardController.loadDashboard);
-admin_route.get("/revenueData/:interval", dashboardController.getRevenueData);
+// admin_route.get("/revenueData/:interval", dashboardController.getRevenueData);
 
 // =================== USER MANAGEMENT ===============================
 admin_route.get("/users", adminController.loadUsers);
