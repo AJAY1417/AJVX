@@ -201,10 +201,9 @@ const loadDashboard = async (req, res, next) => {
       };
     });
 
-    const weeklyRevenueLabels = formattedWeeklyRevenueChartData.map(
-      (entry) => entry.date
-    );
-
+   const weeklyRevenueLabels = formattedWeeklyRevenueChartData.map(
+     (entry) => entry.date
+   );
     // ---------------------------- //
     // Monthly revenue
     const monthlyRevenueOrders = await Order.aggregate([
@@ -353,7 +352,9 @@ const loadDashboard = async (req, res, next) => {
     );
 
     // ---------------------------- //
-    // Weekly revenue data
+    // Weekly revenue data //   
+
+
     const weeklyRevenueData = await Order.aggregate([
       {
         $match: {
@@ -377,6 +378,9 @@ const loadDashboard = async (req, res, next) => {
         $sort: { _id: 1 }, // Sort by date in ascending order
       },
     ]);
+
+
+    
 
     // ---------------------------- //
     // Monthly revenue data
@@ -424,6 +428,7 @@ const loadDashboard = async (req, res, next) => {
         $sort: { _id: 1 },
       },
     ]);
+    console.log(weeklyRevenueData,' weeklyRevenueData');
 
     // ____________________________________________________________________________________________________________________________
 
@@ -437,7 +442,7 @@ const loadDashboard = async (req, res, next) => {
       allProducts,
       revenuePerCategory,
       allCategories,
-      weeklyRevenueData,
+     
       monthlyRevenueData,
       yearlyRevenueData,
       formattedWeeklyRevenueChartData,
