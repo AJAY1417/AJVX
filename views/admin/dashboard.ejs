@@ -230,12 +230,18 @@
         </div>
     </div>
 </div>
+<!-- ____________________________________________________________________________________ -->
 
 <!-- Chart.js library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- JavaScript code for Chart.js charts -->
 <script>
+
+
+  const weeklyRevenueLabels = JSON.parse('<%- JSON.stringify(weeklyRevenueLabels) %>');
+  const weeklyRevenueData = JSON.parse('<%- JSON.stringify(weeklyRevenueData) %>');
+console.log(weeklyRevenueData,"________________________________________________________________")
   // Weekly Revenue Chart
   var ctx4 = document.getElementById("myChart4").getContext('2d');
   var myChart4 = new Chart(ctx4, {
@@ -244,7 +250,7 @@
       labels: weeklyRevenueLabels,
       datasets: [{
         label: 'Weekly Revenue',
-        data: [10,23,100,50,87],
+        data: weeklyRevenueData,
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1
@@ -261,7 +267,12 @@
     }
   });
 
+  // ----------------------------------------------------------------------------------------- // 
   // Monthly Revenue Chart
+
+  const monthlyRevenueLabels = JSON.parse('<%- JSON.stringify(monthlyRevenueLabels) %>');
+  const monthlyRevenueData = JSON.parse('<%- JSON.stringify(monthlyRevenueData) %>');
+
   var ctxLine = document.getElementById("chart-line").getContext('2d');
   var myChartLine = new Chart(ctxLine, {
     type: 'bar',
@@ -285,8 +296,16 @@
       }
     }
   });
+  
+
+    // ----------------------------------------------------------------------------------------- // 
+
 
   // Yearly Revenue Chart
+  const yearlyRevenueLabels = JSON.parse('<%- JSON.stringify(yearlyRevenueLabels) %>');
+  const yearlyRevenueData = JSON.parse('<%- JSON.stringify(yearlyRevenueData) %>');
+
+
   var ctx6 = document.getElementById("myChart6").getContext('2d');
   var myChart6 = new Chart(ctx6, {
     type: 'bar',
@@ -311,7 +330,15 @@
     }
   });
 
+   // ----------------------------------------------------------------------------------------- // 
+
+
   // Top 3 Selling Products Chart
+  const productLabels = JSON.parse('<%- JSON.stringify(productLabels) %>');
+  const productRevenues = JSON.parse('<%- JSON.stringify(productRevenues) %>');
+  
+
+
   var ctx = document.getElementById("myChart").getContext('2d');
   var myChart = new Chart(ctx, {
     type: 'bar',
@@ -336,7 +363,16 @@
     }
   });
 
+   // ----------------------------------------------------------------------------------------- // 
+
+
+  // Top 3 Selling Products Chart
+
   // Category Revenue Chart
+
+  const categoryLabels = JSON.parse('<%- JSON.stringify(categoryLabels) %>');
+    const categoryRevenues = JSON.parse('<%- JSON.stringify(categoryRevenues) %>');
+   
   var ctx2 = document.getElementById("myChart2").getContext('2d');
   var myChart2 = new Chart(ctx2, {
     type: 'bar',
@@ -361,7 +397,13 @@
     }
   });
 
+   // ----------------------------------------------------------------------------------------- // 
+
   // Payment Methods Chart
+  const paymentMethodsLabels = JSON.parse('<%- JSON.stringify(paymentMethodsLabels) %>');
+  const paymentMethodsCount = JSON.parse('<%- JSON.stringify(paymentMethodsCount) %>');
+ 
+
   var ctx3 = document.getElementById("myChart3").getContext('2d');
   var myChart3 = new Chart(ctx3, {
     type

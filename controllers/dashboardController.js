@@ -29,6 +29,19 @@ const loadDashboard = async (req, res, next) => {
 
     const dailyRevenue = await Order.getDailyRevenueData();
     // ---------------------------- //
+    const paymentMethodsData = await Order.aggregate([
+      {
+        $group: {
+          _id: "$paymentMethod",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    const paymentMethodsLabels = paymentMethodsData.map((method) => method._id);
+    const paymentMethodsCount = paymentMethodsData.map(
+      (method) => method.count
+    );
+    // ---------------------------- //
 
     // Revenue per product
     const revenuePerProduct = await Order.aggregate([
@@ -134,15 +147,23 @@ const loadDashboard = async (req, res, next) => {
     const categoryData = allCategories.map((category) => ({
       name: category.name,
       revenue:
-        revenuePerCategory.find((c) => c._id === category._id)?.totalAmount ||
-        0,
+        revenuePerCategory.find((c) => c._id.equals(category._id))
+          ?.totalAmount || 0,
     }));
+    console.log(categoryData, "categoryData ");
 
     const sortedCategories = categoryData.sort((a, b) => b.revenue - a.revenue);
-    const allCategoryLabels = allCategories.map((category) => category.name);
+    console.log(sortedCategories, "sortedCategories ");
+
     const top4Categories = sortedCategories.slice(0, 4);
+    console.log(top4Categories, "top4Categories ");
+
     const categoryLabels = top4Categories.map((category) => category.name);
+    console.log(categoryLabels, "categoryLabels ");
+
     const categoryRevenues = top4Categories.map((category) => category.revenue);
+    console.log(categoryRevenues, "categoryRevenues ");
+
     // ---------------------------- //
 
     const today = new Date();
@@ -154,31 +175,31 @@ const loadDashboard = async (req, res, next) => {
     });
     // ---------------------------- //
     // Weekly revenue
-   const weeklyRevenueOrders = await Order.aggregate([
-     {
-       $match: {
-         purchaseDate: { $gte: lastWeekStartDate, $lte: today },
-         $or: [
-           { paymentMethod: "cod", "products.status": "Delivered" },
-           {
-             paymentMethod: { $in: ["online", "Wallet"] },
-             "products.status": { $in: ["placed", "Shipped", "Delivered"] },
-           },
-         ],
-       },
-     },
-     {
-       $group: {
-         _id: { $dateToString: { format: "%Y-%m-%d", date: "$purchaseDate" } },
-         totalAmount: { $sum: "$totalAmount" },
-       },
-     },
-     {
-       $sort: { _id: 1 },
-     },
-   ]);
+    const weeklyRevenueOrders = await Order.aggregate([
+      {
+        $match: {
+          purchaseDate: { $gte: lastWeekStartDate, $lte: today },
+          $or: [
+            { paymentMethod: "cod", "products.status": "Delivered" },
+            {
+              paymentMethod: { $in: ["online", "Wallet"] },
+              "products.status": { $in: ["placed", "Shipped", "Delivered"] },
+            },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$purchaseDate" } },
+          totalAmount: { $sum: "$totalAmount" },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
 
-   console.log("Weekly Revenue Orders: ", weeklyRevenueOrders);
+    console.log("Weekly Revenue Orders: ", weeklyRevenueOrders);
 
     console.log("wwwwww", weeklyRevenueOrders);
     // ---------------------------- //
@@ -201,75 +222,81 @@ const loadDashboard = async (req, res, next) => {
       };
     });
 
-   const weeklyRevenueLabels = formattedWeeklyRevenueChartData.map(
-     (entry) => entry.date
-   );
+    const weeklyRevenueLabels = formattedWeeklyRevenueChartData.map(
+      (entry) => entry.date
+    );
+
+    const weeklyRevenueData = formattedWeeklyRevenueChartData.map(
+      (entry) => entry.amount
+    );
+
     // ---------------------------- //
     // Monthly revenue
     const monthlyRevenueOrders = await Order.aggregate([
-      {
-        $match: {
-          orderDate: { $lte: today },
-          $or: [
-            { paymentOption: "cod", "products.status": "Delivered" },
-            {
-              paymentOption: { $in: ["Razorpay", "Wallet"] },
-              "cart.products.orderStatus": {
-                $in: ["placed", "Shipped", "Delivered"],
-              },
-            },
-          ],
+  {
+    $match: {
+      purchaseDate: { $lte: today },
+      $or: [
+        { paymentMethod: "cod", "products.status": "Delivered" },
+        {
+          paymentMethod: { $in: ["online", "Wallet"] },
+          "products.status": {
+            $in: ["placed", "Shipped", "Delivered"],
+          },
         },
-      },
-      {
-        $group: {
-          _id: { $dateToString: { format: "%Y-%m", date: "$purchaseDate" } },
-          totalAmount: { $sum: "$totalAmount" },
-        },
-      },
-      {
-        $sort: {
-          _id: 1,
-        },
-      },
-    ]);
+      ],
+    },
+  },
+  {
+    $group: {
+      _id: { $dateToString: { format: "%Y-%m", date: "$purchaseDate" } },
+      totalAmount: { $sum: "$totalAmount" },
+    },
+  },
+  {
+    $sort: {
+      _id: 1,
+    },
+  },
+]);
 
-    // Monthly revenue chart data
-    const allMonths = [];
-    let currentMonthDate = new Date(today.getFullYear(), 0, 1); // Start from January
-    while (currentMonthDate <= today) {
-      allMonths.push(
-        currentMonthDate.toISOString().split("T")[0].substring(0, 7)
-      ); // Format as "YYYY-MM"
-      currentMonthDate.setMonth(currentMonthDate.getMonth() + 1);
-    }
+console.log("Monthly Revenue Orders: ", monthlyRevenueOrders);
 
-    const formattedMonthlyRevenueChartData = allMonths.map((month) => {
-      const matchingMonthEntry = monthlyRevenueOrders.find(
-        (entry) => entry._id === month
-      );
-      return {
-        month: month,
-        amount: matchingMonthEntry ? matchingMonthEntry.totalAmount : 0,
-      };
-    });
+// Monthly revenue chart data
+const allMonths = [];
+let currentMonthDate = new Date(today.getFullYear(), 0, 1); // Start from January
+console.log(currentMonthDate, "currentMonthDate");
+while (currentMonthDate  <= today) {
+  allMonths.push(currentMonthDate.toISOString().split("T")[0].substring(0, 7)); // Format as "YYYY-MM"
+  currentMonthDate.setMonth(currentMonthDate.getMonth() + 1);
+}
 
-    const currentMonth = today.toISOString().split("T")[0].substring(0, 7);
-    const currentMonthRevenue = monthlyRevenueOrders.reduce((total, entry) => {
-      if (entry._id === currentMonth) {
-        total += entry.totalAmount;
-      }
-      return total;
-    }, 0);
+console.log(allMonths,"allMonths")
 
-    formattedMonthlyRevenueChartData.push({
-      month: currentMonth,
-      amount: currentMonthRevenue,
-    });
+const formattedMonthlyRevenueChartData = allMonths.map((month) => {
+  const matchingMonthEntry = monthlyRevenueOrders.find(
+    (entry) => entry._id.toString() === month
+  );
 
-    const monthlyRevenueLabels = formattedMonthlyRevenueChartData.map(
-      (entry) => entry.month
-    );
+  return {
+    month: month,
+    amount: matchingMonthEntry ? matchingMonthEntry.totalAmount : 0,
+  };
+});
+
+console.log(
+  formattedMonthlyRevenueChartData,
+  "formattedMonthlyRevenueChartData"
+);
+const monthlyRevenueLabels = formattedMonthlyRevenueChartData.map(
+  (entry) => entry.month
+);
+const monthlyRevenueData = formattedMonthlyRevenueChartData.map(
+  (entry) => entry.amount
+);
+console.log(monthlyRevenueData, "monthlyRevenueData");
+
+
     // ---------------------------- //
 
     // Yearly revenue
@@ -347,89 +374,87 @@ const loadDashboard = async (req, res, next) => {
       amount: currentYearRevenue,
     });
 
-    const yearlyRevenueLabels = formattedFiveYearsRevenueChartData.map(
-      (entry) => entry.year
-    );
-
     // ---------------------------- //
-    // Weekly revenue data //   
+    // Weekly revenue data //
 
-
-    const weeklyRevenueData = await Order.aggregate([
-      {
-        $match: {
-          purchaseDate: {
-            $gte: { $subtract: [new Date(), 604800000] }, // 604800000 milliseconds = 7 days
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            $dateToString: {
-              format: "%Y-%m-%d",
-              date: "$purchaseDate",
-            },
-          },
-          totalAmount: { $sum: "$totalAmount" },
-        },
-      },
-      {
-        $sort: { _id: 1 }, // Sort by date in ascending order
-      },
-    ]);
-
-
-    
+    //   const weeklyRevenueData = await Order.aggregate([
+    //     {
+    //       $match: {
+    //         purchaseDate: {
+    //           $gte: { $subtract: [new Date(), 604800000] }, // 604800000 milliseconds = 7 days
+    //         },
+    //       },
+    //     },
+    //     {
+    //       $group: {
+    //         _id: {
+    //           $dateToString: {
+    //             format: "%Y-%m-%d",
+    //             date: "$purchaseDate",
+    //           },
+    //         },
+    //         totalAmount: { $sum: "$totalAmount" },
+    //       },
+    //     },
+    //     {
+    //       $sort: { _id: 1 }, // Sort by date in ascending order
+    //     },
+    //   ]);
+    // console.log("weeklyRevenueData", weeklyRevenueData);
 
     // ---------------------------- //
     // Monthly revenue data
-    const monthlyRevenueData = await Order.aggregate([
-      {
-        $match: {
-          purchaseDate: {
-            $gte: {
-              $subtract: [new Date(), { $multiply: [30, 24, 60, 60, 1000] }],
-            }, // 30 days ago
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            $dateToString: {
-              format: "%Y-%m",
-              date: "$purchaseDate",
-            },
-          },
-          totalAmount: { $sum: "$totalAmount" },
-        },
-      },
-      {
-        $sort: { _id: 1 }, // Sort by month in ascending order
-      },
-    ]);
-
+    //     const monthlyRevenueData = await Order.aggregate([
+    //       {
+    //         $match: {
+    //           purchaseDate: {
+    //             $gte: {
+    //               $subtract: [new Date(), { $multiply: [30, 24, 60, 60, 1000] }],
+    //             }, // 30 days ago
+    //           },
+    //         },
+    //       },
+    //       {
+    //         $group: {
+    //           _id: {
+    //             $dateToString: {
+    //               format: "%Y-%m",
+    //               date: "$purchaseDate",
+    //             },
+    //           },
+    //           totalAmount: { $sum: "$totalAmount" },
+    //         },
+    //       },
+    //       {
+    //         $sort: { _id: 1 }, // Sort by month in ascending order
+    //       },
+    //     ]);
+    // console.log("monthlyRevenueData", monthlyRevenueData);
     // ---------------------------- //
     // Yearly revenue data
-    const yearlyRevenueData = await Order.aggregate([
-      {
-        $group: {
-          _id: {
-            $dateToString: {
-              format: "%Y",
-              date: "$purchaseDate",
-            },
-          },
-          totalAmount: { $sum: "$totalAmount" },
-        },
-      },
-      {
-        $sort: { _id: 1 },
-      },
-    ]);
-    console.log(weeklyRevenueData,' weeklyRevenueData');
-
+    // const yearlyRevenueData = await Order.aggregate([
+    //   {
+    //     $group: {
+    //       _id: {
+    //         $dateToString: {
+    //           format: "%Y",
+    //           date: "$purchaseDate",
+    //         },
+    //       },
+    //       totalAmount: { $sum: "$totalAmount" },
+    //     },
+    //   },
+    //   {
+    //     $sort: { _id: 1 },
+    //   },
+    // ]);
+    // console.log(weeklyRevenueData,' weeklyRevenueData');
+    const yearlyRevenueLabels = formattedFiveYearsRevenueChartData.map(
+      (entry) => entry.year
+    );
+    const yearlyRevenueData = formattedFiveYearsRevenueChartData.map(
+      (entry) => entry.amount
+    );
     // ____________________________________________________________________________________________________________________________
 
     res.render("dashboard", {
@@ -442,15 +467,21 @@ const loadDashboard = async (req, res, next) => {
       allProducts,
       revenuePerCategory,
       allCategories,
-     
-      monthlyRevenueData,
+      yearlyRevenueLabels,
       yearlyRevenueData,
       formattedWeeklyRevenueChartData,
-      monthlyRevenueData,
+      monthlyRevenueLabels,
       monthlyRevenueData,
       weeklyRevenueLabels,
       weeklyRevenueData,
       fiveYearsRevenueOrders,
+      productLabels,
+      productRevenues,
+      categoryLabels,
+      categoryRevenues,
+      paymentMethodsLabels,
+      paymentMethodsCount,
+      // currentMonthRevenue,
     });
   } catch (error) {
     next(error);
