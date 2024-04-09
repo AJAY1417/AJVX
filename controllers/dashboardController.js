@@ -264,7 +264,7 @@ console.log("Monthly Revenue Orders: ", monthlyRevenueOrders);
 
 // Monthly revenue chart data
 const allMonths = [];
-let currentMonthDate = new Date(today.getFullYear(), 0, 1); // Start from January
+let currentMonthDate = new Date(today.getFullYear(), 0, 5); // Start from January
 console.log(currentMonthDate, "currentMonthDate");
 while (currentMonthDate  <= today) {
   allMonths.push(currentMonthDate.toISOString().split("T")[0].substring(0, 7)); // Format as "YYYY-MM"
