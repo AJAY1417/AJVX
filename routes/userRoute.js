@@ -42,41 +42,31 @@ user_route.post("/login", userController.verifyLogin);
 
 // ============================ OTP =======================================
 user_route.get("/otp", (req, res) => {
-  // Handle rendering of the OTP page, e.g., res.render("otp");
-  // You can add any necessary logic here
+ 
   res.render("otp");
 });
-
-// Handle POST requests to /otp for OTP verification
 user_route.post("/otp", userController.verifyOtp);
-
-// Resend OTP
 user_route.post("/resendOtp", userController.resendOtp);
 
 // ============================ PRODUCT =======================================
-
-
 user_route.get("/shop", userController.shopLoad);
 user_route.get("/productDetail", userController.productDetailLoad);
 user_route.get("/search", userController.searchProducts);
 
 // ============================ WISHLIST =======================================
-// Load Wishlist
 user_route.get("/wishlist", userController.loadWishlist);
-
-// Add Product to Wishlist
 user_route.post("/addToWishlist", userController.addtoWishlist);
-
-// Delete Wishlist Product
 user_route.get("/deleteWishlistProduct", userController.deleteWishlistproduct);
+
 
 // ============================ CART =======================================
 user_route.get("/cart", cartController.loadCart);
 user_route.post("/addTocart", cartController.addToCart);
 user_route.post("/updateCartQuantity", cartController.updateCartQuantity);
 user_route.get("/removeCartProduct", cartController.removeCartProduct);
-// ============================ LOGOUT =======================================
 
+
+// ============================ LOGOUT =======================================
 user_route.get("/logout", userController.logout);
 
 // ============================ ACCOUNT=======================================
@@ -88,7 +78,7 @@ user_route.post("/addAddress", accountController.addAddress);
 user_route.post("/updateDeertails", accountController.userDetails);
 
 
-// ============================ WALLET  =======================================
+
 // ============================ WALLET  =======================================
 user_route.get("/view-wallet", walletController.loadWallet);
 user_route.post("/add-wallet", walletController.addMoneyWallet);
@@ -96,8 +86,9 @@ user_route.post("/verifyWalletpayment", walletController.verifyWalletpayment);
 user_route.get("/wallet-history", walletController.loadHistory);
 
 // ============================ CHECKOUT =======================================
-
 user_route.get("/checkout", orderController.loadCheckout);
+
+
 // ============================ ORDERS =======================================
 user_route.post("/cancelOrder", orderController.cancelOrder);
 user_route.get("/orderSuccess", orderController.orderSuccess);
@@ -113,5 +104,4 @@ user_route.post("/applyCoupon", couponController.applyCoupon);
 user_route.post("/removeCoupon", couponController.removeCoupon);
 
 // ============================ EXPORTS =======================================
-
 module.exports = user_route;

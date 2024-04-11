@@ -30,19 +30,19 @@ const loadWallet = async (req, res) => {
 // Add Money to Wallet
 const addMoneyWallet = async (req, res) => {
   try {
-      //  const firstName = req.session.firstName;
-      //  console.log(firstName);
-    const amount = req.body.amount;
-    const parsedAmount = parseInt(amount);
-    console.log('kjhjhjkh',parsedAmount);
+     
+    const amountInRupees = req.body.amount;
+    const amountInPaise = parseInt(amountInRupees) ;
+   
+    console.log("kjhjhjkh", amountInPaise);
     const id = await crypto.randomBytes(8).toString("hex");
     console.log('idddddd',id);
     const options = {
-      amount: parsedAmount * 100,
+      amount: amountInPaise*100,
       currency: "INR",
       receipt: "" + id,
     };
-    console.log('pjhjkhjkh',options);
+    // console.log('pjhjkhjkh',options);
     razorpayInstance.orders.create(options, (err, order) => {
       if (err) {
         res.json({ status: false });
@@ -59,16 +59,17 @@ const addMoneyWallet = async (req, res) => {
 const verifyWalletpayment = async (req, res) => {
   try {
   console.log('kjkeljkljkljlkjkljkl');
-    // const firstName = req.session.firstName;
-    // console.log(firstName);
+    
     const userData = await User.findOne({ firstName: 'Ajay' });
     console.log('aaaaaa',userData);
     const userId =userData._id
 
     const details = req.body;
     console.log('kkkkkkkkkkkkkkkk',details);
+
     const amount = details.order.amount
     console.log('amount',amount);
+    
     let hmac = crypto.createHmac("sha256", "f4QOCHAFThYVJH9z8lX8OPhN");
      console.log('hmaccccccccccccccc',hmac);
     hmac.update(

@@ -304,116 +304,8 @@ const updateOrderStatus = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
-//=================================================================================================//
-                                        // SALES REPORT //
 
-// const salesreportLoad = async (req, res, next) => {
-//   try {
-//     const formatTime = (date) => {
-//       const options = {
-//         hour: "numeric",
-//         minute: "numeric",
-//         second: "numeric",
-//         timeZoneName: "short",
-//       };
-//       return new Intl.DateTimeFormat("en-US", options).format(date);
-//     };
-
-    // _______________________  sales report data ividen pass cheyyum ___________________________________
-// const salesData = await Order.aggregate([
-//   {
-//     $match: {
-//       $or: [
-//         {
-//           paymentMethod: "cod",
-//           "products.status": "Delivered",
-//           $and: [{ "products.status": { $nin: ["Returned", "cancelled"] } }],
-//         },
-//         {
-//           paymentMethod: { $in: ["online", "wallet"] },
-//           "products.status": { $in: ["placed", "Shipped", "Delivered"] },
-//           $and: [{ "products.status": { $nin: ["Returned", "cancelled"] } }],
-//         },
-//       ],
-//     },
-//   },
-//   {
-//     $unwind: "$products",
-//   },
-//   {
-//     $match: {
-//       "products.status": { $nin: ["Returned", "cancelled"] },
-//     },
-//   },
-//   {
-//     $lookup: {
-//       from: "products",
-//       localField: "products.product",
-//       foreignField: "_id",
-//       as: "productDetails",
-//     },
-//   },
-//   {
-//     $lookup: {
-//       from: "users",
-//       localField: "userId",
-//       foreignField: "_id",
-//       as: "userData",
-//     },
-//   },
-//   {
-//     $project: {
-//       _id: 1,
-//       "userData.firstName": 1,
-//       "productDetails.name": 1,
-//       "productDetails.category": 1,
-//       "products.total": 1,
-//       "products.count": 1,
-//       purchaseDate: 1,
-//       paymentMethod: 1,
-//       "products.status": 1,
-//     },
-//   },
-// ]);
-
-
-//     console.log("Sales Data:", salesData);
-
-//     if (req.query.export === "csv") {
-//       const excelData = salesData.map((order) => ({
-//         "Order ID": order._id,
-//         Username: order.userData[0]?.username || "",
-//         Product: order.productDetails[0]?.product_name || "",
-//         Category: order.productDetails[0]?.category || "",
-//         Price: order.products.total.toFixed(2) || "",
-//         Quantity: order.products.count || "",
-//         "Order Date": order.orderDate.toDateString(),
-//         Time: formatTime(new Date(order.orderDate)),
-//         "Payment Method": order.paymentMethod || "",
-//         "Order Status": order.products.status || "",
-//       }));
-
-//       const json2csvParser = new Parser();
-//       const excel = json2csvParser.parse(excelData);
-
-//       res.setHeader(
-//         "Content-Type",
-//         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-//       );
-//       res.setHeader(
-//         "Content-Disposition",
-//         "attachment; filename=sales-report.csv"
-//       );
-//       res.status(200).send(excel);
-//     } else {
-//       res.render("salesreport", { salesData });
-//     }
-//   } catch (err) {
-//     next(err);
-//   }
-// };
-
-
+//===================================== RENDER SALES REPORT PAGE  ================================================//
 const salesreportLoad = async (req, res, next) => {
   try {
     const formatTime = (date) => {
@@ -426,7 +318,12 @@ const salesreportLoad = async (req, res, next) => {
       return new Intl.DateTimeFormat("en-US", options).format(date);
     };
 
-    const salesData = await Order.find({
+  
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+
+    
+    const queryCriteria = {
       $or: [
         {
           paymentMethod: "cod",
@@ -439,113 +336,103 @@ const salesreportLoad = async (req, res, next) => {
           $and: [{ "products.status": { $nin: ["Returned", "cancelled"] } }],
         },
       ],
-    })
+    };
+
+   
+    if (startDate && endDate) {
+      queryCriteria.purchaseDate = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    }
+
+    let salesData = await Order.find(queryCriteria)
       .populate({
         path: "products.product",
-        select: "name category", // Select the fields to populate
-        populate: { path: "category", select: "name -_id" }, // Populate the category and select only the name
+        select: "name category",
+        populate: { path: "category", select: "name -_id" },
       })
-      .populate("userId", "firstName"); // Populate user details
+      .populate("userId", "firstName");
+
+   
+    salesData.forEach((order) => {
+      order.purchaseDateFormatted = formatTime(order.purchaseDate);
+    });
 
 
-      
+    salesData = salesData.sort((a, b) => b.purchaseDate - a.purchaseDate);
 
-    if (req.query.export === "csv") {
-      const excelData = salesData.map((order) => ({
-        "Order ID": order._id,
-        Username: order.userId.firstName || "",
-        Product: order.products[0]?.product?.name || "",
-        Category: order.products[0]?.product?.category || "",
-        Price: order.products[0]?.total.toFixed(2) || "",
-        Quantity: order.products[0]?.count || "",
-        "Order Date": order.purchaseDate.toDateString(),
-        Time: formatTime(new Date(order.purchaseDate)),
-        "Payment Method": order.paymentMethod || "",
-        "Order Status": order.products[0]?.status || "",
-      }));
-
-      const json2csvParser = new Parser();
-      const excel = json2csvParser.parse(excelData);
-
-      res.setHeader(
-        "Content-Type",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-      );
-      res.setHeader(
-        "Content-Disposition",
-        "attachment; filename=sales-report.csv"
-      );
-      res.status(200).send(excel);
-    } else {
-      res.render("salesreport", { salesData });
-    }
+    res.render("salesreport", { salesData });
   } catch (err) {
     next(err);
   }
 };
 
-//===================================== invoice download =========================================//
 
-// Assuming salesData is an array of sales objects
-const salesData = [
-    {
-        _id: 1,
-        userId: { firstName: 'John' },
-        products: [{ product: { name: 'Product 1', category: 'Category 1' }, total: 100, count: 2, status: 'Completed' }],
-        purchaseDate: new Date(),
-        paymentMethod: 'Credit Card'
-    },
-    // Add more sales objects as needed
-];
 
-function downloadSalesDataAsExcel() {
-    // Create a workbook and add a worksheet
-    const workbook = new excel.Workbook();
-    const worksheet = workbook.addWorksheet('Sales Data');
 
-    // Define column headers
-    worksheet.columns = [
-        { header: 'Order ID', key: '_id', width: 10 },
-        { header: 'Username', key: 'username', width: 20 },
-        { header: 'Product', key: 'productName', width: 20 },
-        { header: 'Category', key: 'category', width: 20 },
-        { header: 'Price (INR)', key: 'price', width: 15 },
-        { header: 'Quantity', key: 'quantity', width: 10 },
-        { header: 'Order Date', key: 'orderDate', width: 20 },
-        { header: 'Payment Method', key: 'paymentMethod', width: 20 },
-        { header: 'Order Status', key: 'orderStatus', width: 15 },
-    ];
+const formatTime = (date) => {
+  if (!date instanceof Date || isNaN(date.getTime())) {
+    return "Invalid Date";
+  }
 
-    // Add sales data to the worksheet
-    salesData.forEach((sale) => {
-        worksheet.addRow({
-            _id: sale._id,
-            username: sale.userId.firstName,
-            productName: sale.products[0]?.product.name || 'N/A',
-            category: sale.products[0]?.product.category || 'N/A',
-            price: sale.products[0]?.total.toFixed(2) || 'N/A',
-            quantity: sale.products[0]?.count || 'N/A',
-            orderDate: sale.purchaseDate ? sale.purchaseDate.toDateString() : 'N/A',
-            paymentMethod: sale.paymentMethod || 'N/A',
-            orderStatus: sale.products[0]?.status || 'N/A'
-        });
-    });
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  return date.toLocaleDateString('en-US', options);
+};
 
-    // Set up file path for saving the Excel file
-    const filePath = path.join(__dirname, 'sales_data.xlsx');
+//===================================== CUSTOM DATE SALES REPORT PAGE  ================================================//
+// const customDateLoad = async (req, res, next) => {
+//   console.log("entered the function");
+//   try {
+//     const { startDate, endDate } = req.body;
 
-    // Write the workbook to a file
-    workbook.xlsx.writeFile(filePath)
-        .then(() => {
-            console.log('Excel file created successfully.');
-        })
-        .catch((error) => {
-            console.error('Error creating Excel file:', error);
-        });
-}
+//     const start = new Date(startDate);
+//     const end = new Date(endDate);
 
-// Call the function to generate and download the Excel file
-downloadSalesDataAsExcel();
+//     if (start >= end) {
+//       return res
+//         .status(400)
+//         .json({ message: "Start date must be before end date" });
+//     }
+
+//     const salesData = await Order.aggregate([
+//       {
+//         $match: {
+//           $or: [
+//             {
+//               $and: [
+//                 { paymentMethod: "cod" },
+//                 { "products.status": "Delivered" },
+//                 { "products.status": { $nin: ["Returned", "cancelled"] } },
+//               ],
+//             },
+//             {
+//               $and: [
+//                 { paymentMethod: { $in: ["online", "wallet"] } },
+//                 {
+//                   "products.status": {
+//                     $in: ["placed", "Shipped", "Delivered"],
+//                   },
+//                 },
+//                 { "products.status": { $nin: ["Returned", "cancelled"] } },
+//               ],
+//             },
+//           ],
+//           purchaseDate: { $gte: start, $lte: end },
+//           status: "Delivered",
+//         },
+//       },
+//     ]);
+
+//     salesData.sort((a, b) => b.purchaseDate - a.purchaseDate);
+// console.log(salesData,"salesData")
+//     res.render("salesreport", { salesData });
+//   } catch (error) {
+//     console.error("Error fetching sales data within custom date range:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
 
 
 //=================================================================================================//
@@ -567,5 +454,5 @@ module.exports = {
   loadOrder,
   updateOrderStatus,
   salesreportLoad,
-  downloadSalesDataAsExcel,
+  // customDateLoad,
 };

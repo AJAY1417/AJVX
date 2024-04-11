@@ -15,43 +15,41 @@ admin_route.use(express.urlencoded({ extended: true }));
 admin_route.set("view engine", "ejs");
 admin_route.set("views", "views/admin");
 
-// =================== ADMIN LOGIN ===============================
+//============================== ADMIN LOGIN ===============================
 admin_route.get("/adminLogin", adminController.adminLoadLogin);
 admin_route.post("/adminLogin", adminController.adminVerifyLogin);
 
-// =================== ADMIN LOGOUT ===============================
-
+//==============================  ADMIN LOGOUT ===============================
 admin_route.get("/logout", adminController.logout);
 
-// =================== ADMIN DASHBOARD ===============================
+//============================== ADMIN DASHBOARD ===============================
 admin_route.get("/dashboard", dashboardController.loadDashboard);
-// admin_route.get("/revenueData/:interval", dashboardController.getRevenueData);
 
-// =================== USER MANAGEMENT ===============================
+
+//==============================  USER MANAGEMENT ===============================
 admin_route.get("/users", adminController.loadUsers);
 admin_route.get("/block-user", adminController.blockUser);
 
-// =================== PRODUCT MANAGEMENT ===============================
+//==============================  PRODUCT MANAGEMENT ===============================
 admin_route.get("/product", productController.productLoad);
 
-// =================== CATEGORY MANAGEMENT ===============================
-// Display all categories
+//==============================  CATEGORY MANAGEMENT ===============================
 admin_route.get("/categories", adminController.loadCategories);
 
-// Add a new category (GET)
+
 admin_route.get("/addCategory", adminController.loadAddCategory);
 
-// Add a new category (POST)
+
 admin_route.post(
   "/addCategory",
   imageUploader.uploadCategory.single("image"),
   adminController.addCategory
 );
 
-// Edit category page (GET)
+
 admin_route.get("/editCategory/:id", adminController.editCategoryLoad);
 
-// Edit category (POST)
+
 admin_route.post(
   "/editCategory",
   imageUploader.uploadCategory.single("image"),
@@ -61,14 +59,12 @@ admin_route.post(
 admin_route.get("/block-category", adminController.unlistCategory);
 
 
-// =================== PRODUCT MANAGEMENT ===============================
+//==============================  PRODUCT MANAGEMENT ============================== 
 
 admin_route.delete(
   "/deleteProductImage/:productId/:imageIndex",
   productController.deleteProductImage
 );
-
-
 
 
 admin_route.get("/addProduct", productController.addProductLoad);
@@ -83,7 +79,7 @@ admin_route.post(
 
 admin_route.get("/block-product", productController.blockProduct);
 admin_route.get("/editProduct/:productId", productController.editProduct);
-// Route for handling image uploads for a product
+
 admin_route.post(
   "/editProduct/:productId",
   imageUploader.uploadProduct.array("newImages", 5), // Update to "newImages" to match form field name
@@ -91,7 +87,7 @@ admin_route.post(
   productController.updateProduct
 );
 
-// Add a new route for handling image uploads
+
 admin_route.post(
   "/uploadProductImages/:productId",
   imageUploader.uploadProduct.array("newImages", 5),
@@ -99,21 +95,15 @@ admin_route.post(
   productController.uploadProductImages
 );
 
-//======================== PRODUCT OFFER ROUTES ====================================
-// Route to load offers page
+//==============================  PRODUCT OFFER ROUTES ====================================
+
 admin_route.get('/offers', offerController.loadOffers);
-
-// Route to load add offer page
 admin_route.get('/addOff', offerController.loadAddOffer);
-
-// Route to add offer to the database
 admin_route.post('/addOfferDB', offerController.addOffers);
-
-// Route to delete offer from the database
 admin_route.get('/deleteOff', offerController.deleteOffer);
 
 
-//====================== CATEGORY OFFER ROUTES ====================================
+//============================== CATEGORY OFFER ROUTES ====================================
 
 admin_route.get("/offersCat",offerController.loadCategoryOffers);
 admin_route.get("/addoffersCat", offerController.loadAddCategoryOffer);
@@ -122,34 +112,25 @@ admin_route.get("/deletecatOff",  offerController.deleteCategoryOffer);
 
 
 
-
-
-
-
-//============================= ORDER MANAGEMENT ROUTES ==================================
-
-
+//==============================  ORDER MANAGEMENT ROUTES ==================================
 admin_route.get('/orderManagement', adminController.loadOrder);
 admin_route.post("/updateOrderStatus", adminController.updateOrderStatus);
 
 
 
-//============================= COUPON ==================================
+//==============================  COUPON ==================================
 admin_route.get("/coupon", couponController.loadCoupon);
 admin_route.get("/loadAddCoupon", couponController.loadAddCoupon);
 admin_route.post("/addCouponDB",  couponController.addCoupon);
 admin_route.get("/loadEditCoupon",couponController.loadEditCoupon);
 admin_route.post("/editCouponDB",  couponController.editCoupon);
 admin_route.get("/deleteCoupon", couponController.deleteCoupon);
-//============================= COUPON END ==================================
 
 
 
-//============================= SALES REPORT ==================================
+
+//==============================  SALES REPORT ==================================
 admin_route.get("/salesReport", adminController.salesreportLoad);
-
-//============================= SALES REPORT ==================================
-
 
 
 

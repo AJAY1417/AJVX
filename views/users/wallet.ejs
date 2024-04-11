@@ -71,7 +71,9 @@
     document.getElementById('wallet-form').addEventListener('submit', (e) => {
         e.preventDefault();
 
-        const amount = document.getElementById('amount').value.trim();
+        const amountInRupees = document.getElementById('amount').value.trim();
+        
+        const amountInPaise = parseFloat(amountInRupees);
         if (!amount) {
             console.log('No amount entered');
             return; // Exit early if amount is empty
@@ -85,7 +87,7 @@
         $.ajax({
             url: '/add-wallet',
             method: 'post',
-            data: { amount },
+            data: { amount: amountInPaise },
             success: (res) => {
                 if (res.status) {
                     console.log('Opening Razorpay', res.payment);
@@ -102,8 +104,8 @@
 
     function razorpay(order) {
         var options = {
-            key: "rzp_test_Rr5LK4XJjm8rxm", // Replace with your actual Razorpay key
-            amount: order.amount, // Convert amount to paise
+            key: "rzp_test_Rr5LK4XJjm8rxm", 
+            amount: order.amount, 
             currency: "INR",
             name: "AJVX",
             description: "Test Transaction",
