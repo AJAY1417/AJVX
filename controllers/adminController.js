@@ -264,13 +264,9 @@ const loadOrder = async (req, res) => {
     console.log(error.message);
     res.status(500).send("Internal Server Error");
   }
-
-
-  
 };
 
 //===================================== UPDATE ORDER STATUS  ================================================//
-
 
 const updateOrderStatus = async (req, res) => {
   try {
@@ -308,6 +304,8 @@ const updateOrderStatus = async (req, res) => {
 //===================================== RENDER SALES REPORT PAGE  ================================================//
 const salesreportLoad = async (req, res, next) => {
   try {
+    let errorMessage; 
+
     const formatTime = (date) => {
       const options = {
         hour: "numeric",
@@ -318,11 +316,18 @@ const salesreportLoad = async (req, res, next) => {
       return new Intl.DateTimeFormat("en-US", options).format(date);
     };
 
-  
     const startDate = req.query.startDate;
     const endDate = req.query.endDate;
 
-    
+    if (startDate && endDate) {
+      const startDateTime = new Date(startDate);
+      const endDateTime = new Date(endDate);
+
+      if (endDateTime < startDateTime) {
+        errorMessage = "End date cannot be earlier than start date";
+      }
+    }
+
     const queryCriteria = {
       $or: [
         {
@@ -338,7 +343,6 @@ const salesreportLoad = async (req, res, next) => {
       ],
     };
 
-   
     if (startDate && endDate) {
       queryCriteria.purchaseDate = {
         $gte: new Date(startDate),
@@ -354,86 +358,26 @@ const salesreportLoad = async (req, res, next) => {
       })
       .populate("userId", "firstName");
 
-   
     salesData.forEach((order) => {
       order.purchaseDateFormatted = formatTime(order.purchaseDate);
     });
 
-
     salesData = salesData.sort((a, b) => b.purchaseDate - a.purchaseDate);
 
-    res.render("salesreport", { salesData });
+    res.render("salesreport", { salesData, errorMessage });
   } catch (err) {
     next(err);
   }
 };
-
-
-
 
 const formatTime = (date) => {
   if (!date instanceof Date || isNaN(date.getTime())) {
     return "Invalid Date";
   }
 
-  const options = { year: 'numeric', month: 'short', day: 'numeric' };
-  return date.toLocaleDateString('en-US', options);
+  const options = { year: "numeric", month: "short", day: "numeric" };
+  return date.toLocaleDateString("en-US", options);
 };
-
-//===================================== CUSTOM DATE SALES REPORT PAGE  ================================================//
-// const customDateLoad = async (req, res, next) => {
-//   console.log("entered the function");
-//   try {
-//     const { startDate, endDate } = req.body;
-
-//     const start = new Date(startDate);
-//     const end = new Date(endDate);
-
-//     if (start >= end) {
-//       return res
-//         .status(400)
-//         .json({ message: "Start date must be before end date" });
-//     }
-
-//     const salesData = await Order.aggregate([
-//       {
-//         $match: {
-//           $or: [
-//             {
-//               $and: [
-//                 { paymentMethod: "cod" },
-//                 { "products.status": "Delivered" },
-//                 { "products.status": { $nin: ["Returned", "cancelled"] } },
-//               ],
-//             },
-//             {
-//               $and: [
-//                 { paymentMethod: { $in: ["online", "wallet"] } },
-//                 {
-//                   "products.status": {
-//                     $in: ["placed", "Shipped", "Delivered"],
-//                   },
-//                 },
-//                 { "products.status": { $nin: ["Returned", "cancelled"] } },
-//               ],
-//             },
-//           ],
-//           purchaseDate: { $gte: start, $lte: end },
-//           status: "Delivered",
-//         },
-//       },
-//     ]);
-
-//     salesData.sort((a, b) => b.purchaseDate - a.purchaseDate);
-// console.log(salesData,"salesData")
-//     res.render("salesreport", { salesData });
-//   } catch (error) {
-//     console.error("Error fetching sales data within custom date range:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
-
-
 
 //=================================================================================================//
 
@@ -454,5 +398,5 @@ module.exports = {
   loadOrder,
   updateOrderStatus,
   salesreportLoad,
-  // customDateLoad,
+  formatTime,
 };

@@ -75,7 +75,7 @@ user_route.get("/editAddress", accountController.loadEditaddress);
 user_route.post("/editAddress", accountController.editAddress);
 user_route.get("/addAddress", accountController.loadAddAddress);
 user_route.post("/addAddress", accountController.addAddress);
-user_route.post("/updateDeertails", accountController.userDetails);
+user_route.post("/updateDetails", accountController.userDetails);
 
 
 

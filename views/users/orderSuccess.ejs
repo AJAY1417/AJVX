@@ -2,80 +2,87 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Success Page</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
-        integrity="sha512-r0DPLgO1f6TPhISGRqWzw7c0QI6OSZYOaM/Zs5sw+07IccIZoK4y1P2hLBCvjnnN7zUXK+k2E08t6QFmSbJcDQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Include Lottie Player library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.11/lottie.min.js"></script>
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-    <style>
-        .player-container {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Success! Your Order is Confirmed</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+    integrity="sha512-r0DPLgO1f6TPhISGRqWzw7c0QI6OSZYOaM/Zs5sw+07IccIZoK4y1P2hLBCvjnnN7zUXK+k2E08t6QFmSbJcDQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.11/lottie.min.js"></script>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <style>
+    .player-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
 
-        lottie-player {
-            width: 300px;
-            height: 300px;
-        }
+    lottie-player {
+      width: 200px;
+      height: 200px;
+    }
 
-        .success-message {
-            font-size: 1.25rem;
-            color: #2D3748;
-            font-weight: 500;
-            margin-bottom: 1rem;
-        }
+    .success-message {
+      font-size: 1.5rem;
+      color: #334155;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
 
-        .order-text {
-            color: #718096;
-            margin-bottom: 1rem;
-        }
-    </style>
+    .order-details {
+      color: #7F8C9A;
+      margin-bottom: 2rem;
+    }
+
+    .order-details p {  /* Target all p elements within .order-details */
+      text-align: center;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: 1px solid #DCE0E3;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background-color: #38A169;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background-color: #2F855A;
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100">
-    <div class="flex justify-center items-center h-screen">
-        <div class="bg-white p-8 rounded-md shadow-md max-w-md">
-            <!-- Lottie Animation -->
-            <div class="mb-6 mx-auto player-container">
-                <lottie-player src="https://lottie.host/afa054af-389e-4fe0-a5f4-85a699550ac1/AO2GPgFu0g.json"
-                    background="#FFFFFF" speed="1" loop autoplay direction="1" mode="normal"></lottie-player>
-            </div>
-            <!-- Success Message -->
-            <div class="text-center">
-                <h3 class="success-message">Order Placed Successfully!</h3>
-                <p class="order-text">Thank you for shopping with us. Your order has been successfully placed.</p>
-                <p class="order-text">Have a great day!</p>
-                <!-- Go to Orders Button -->
-                <div class="text-center">
-                    <a id="go-to-orders-button" href="#" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-md inline-block">GO TO ORDERS</a>
-                </div>
-            </div>
-        </div>
+  <div class="flex justify-center items-center h-screen">
+    <div class="bg-white p-8 rounded-md shadow-md max-w-md">
+      <div class="mb-6 mx-auto player-container">
+        <lottie-player src="https://lottie.host/afa054af-389e-4fe0-a5f4-85a699550ac1/AO2GPgFu0g.json"
+          background="#FFFFFF" speed="1" loop autoplay direction="1" mode="normal"></lottie-player>
+      </div>
+      <div class="text-center">
+        <h3 class="success-message">Success! Your Order is Confirmed</h3>
+      </div>
+      <div class="order-details">
+        <p>Thank you for your order! We've received it and are processing it for shipment.</p>
+        <p>You'll receive a confirmation email with tracking details shortly.</p>
+      </div>
+      <div class="buttons">
+        <a href="#" class="btn">Track Your Order</a>
+        <a href="#" class="btn btn-primary">Continue Shopping</a>
+      </div>
     </div>
+  </div>
 </body>
 
-<script>
-    // Wait for the DOM to be ready
-    document.addEventListener("DOMContentLoaded", function () {
-        // Find the "GO TO ORDERS" button
-        var goToOrdersButton = document.querySelector("#go-to-orders-button");
-
-        // Add click event listener to the button
-        goToOrdersButton.addEventListener("click", function (event) {
-            // Prevent default behavior of the link
-            event.preventDefault();
-
-            // Trigger click event on the "Orders" tab link
-            var ordersTabLink = document.querySelector("#tab-orders-link");
-            if (ordersTabLink) {
-                ordersTabLink.click();
-            }
-        });
-    });
-</script>
 </html>

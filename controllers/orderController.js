@@ -182,10 +182,10 @@ const placeOrder = async (req, res) => {
       deliveryDetails: { address: address },
       products: orderProducts,
       purchaseDate: new Date(),
-      totalAmount: updatedTotalAmount, // Use the updated total amount
+      totalAmount: updatedTotalAmount,
       status: status,
       paymentMethod: paymentMethod,
-      paymentStatus: "pending", // Assuming the payment starts as pending
+      paymentStatus: "pending", 
       shippingFee: "0",
     });
 
@@ -199,7 +199,6 @@ const placeOrder = async (req, res) => {
       { $set: { products: [], total: 0 } }
     );
 
-    // Handle payment based on the selected method
     if (paymentMethod === "online") {
       // Set up options for Razorpay payment
       const options = {

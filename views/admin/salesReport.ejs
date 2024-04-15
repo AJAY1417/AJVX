@@ -84,6 +84,11 @@
     .download-button:hover {
       background-color: #0056b3;
     }
+
+    .error-message {
+    color: red;
+    font-weight: bold;
+  }
   </style>
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
@@ -100,10 +105,18 @@
                     <h1 class="large-heading text-center">Sales Report</h1>
                     <!-- Download Excel Button -->
                     <button class="download-button" onclick="downloadExcel()">Download Excel</button>
+
                     <div class="btn-group" role="group">
                       <button type="button" class="btn btn-primary"
                         onclick="showCustomDateRangePicker()">Custom</button>
                     </div>
+
+
+                    <div class="error-message">
+                      <% if (errorMessage) { %>
+                        <%= errorMessage %>
+                      <% } %>
+                      
 <!-- Add modal for custom date range selection -->
 <div class="modal fade" id="customDateRangeModal" tabindex="-1" aria-labelledby="customDateRangeModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -232,7 +245,7 @@
       function downloadExcel() {
         const table = document.getElementById('salesDataTable');
         const wb = XLSX.utils.table_to_book(table, { sheet: "Sheet 1" });
-        XLSX.writeFile(wb, 'BIGBAG_salesReport.xlsx');
+        XLSX.writeFile(wb, 'AJVX_salesReport.xlsx');
       }
 
       function showCustomDateRangePicker() {
@@ -240,15 +253,14 @@
       }
 
       function filterByCustomDateRange() {
-  // Get the start and end dates from the date picker
   const startDate = document.getElementById('startDate').value;
   const endDate = document.getElementById('endDate').value;
 
-  // Perform validation if needed
   if (!startDate || !endDate) {
     console.error('Please select both start and end dates.');
     return;
   }
+
 
   // Set the form action and method to submit the data
   document.getElementById('customDateRangeForm').action = '/admin/salesreport';

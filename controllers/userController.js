@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const config = require("../config/config");
 const Offers = require("../models/productOfferModel");
 const categoryOffer = require("../models/categoryOfferModel");
+const randomString = require("randomstring");
 
 const nodemailer = require("nodemailer");
 
@@ -53,27 +54,36 @@ const loadHome = async (req, res) => {
   }
 };
 
+// ============================  REFERAL CODE GENERATOR  =======================================
+function generateReferalCode() {
+  const Rcode = randomString.generate({
+    length: 8,
+  });
+  return User.findOne({ referralCode: Rcode }).then((existingRefer) => {
+    if (existingRefer) {
+      return generateReferalCode(); // Call generateReferalCode() recursively if the code is not unique
+    }
+    return Rcode; // Return the unique code
+  });
+}
+
 // ============================  USER REGISTER  =======================================
 const insertUser = async (req, res, next) => {
   try {
-    // Check if the user already exists in the database
     const userD = await User.findOne({ email: req.body.email });
 
     if (userD) {
-      // Render the "register" view with the error message if the user already exists
       return res.render("register", {
         status: "failed",
         message: "User already exists",
       });
     }
 
-    // Hash the password
     const spassword = await securePassword(req.body.password);
     if (!spassword) {
       return res.status(500).send("Failed to hash the password");
     }
 
-    // Check if the password and confirm password match
     if (req.body.password !== req.body.confirm_password) {
       return res.render("register", {
         status: "failed",
@@ -81,29 +91,27 @@ const insertUser = async (req, res, next) => {
       });
     }
 
-    // Store user data in session
+    const myReferCode = await generateReferalCode();
+    console.log(myReferCode, "referral code generated");
+
     req.session.firstName = req.body.firstName;
     req.session.lastName = req.body.lastName;
     req.session.mobile = req.body.mobile;
     req.session.email = req.body.email;
     req.session.password = spassword;
+    req.session.referralCode = myReferCode;
+    req.session.referredCode = req.body.referralCode
 
-    // Generate and store OTP for email verification
     const otpsend = generateRandomNumericString(6);
     req.session.otpsend = {
       code: otpsend,
-      expiry: Date.now() + 45 * 1000, // 45 seconds expiry
+      expiry: Date.now() + 45 * 1000,
     };
 
-    // Send verification email
     await sendVerifyMail(req.body.firstName, req.body.email, otpsend);
 
-    // Assuming user creation was successful, clean up sensitive data from the session
-
-    // Render the "otp" view to prompt the user to enter OTP for email verification
     res.render("otp", { user: req.body.email });
   } catch (error) {
-    // Handle any errors that occur during user registration
     console.log("Error in user registration:", error.message);
     res.status(500).send("Internal Server Error");
   }
@@ -228,9 +236,7 @@ const verifyOtp = async (req, res, next) => {
     console.log("Stored OTP:", req.session.otpsend);
 
     console.log("otp in session");
-    // Check if req.session.otpsend and req.session.otpsend.code are defined
     if (req.session.otpsend && req.session.otpsend.code) {
-      // Compare the entered OTP with the stored OTP
       if (req.body.otp === req.session.otpsend.code) {
         console.log("otp correct");
 
@@ -240,10 +246,10 @@ const verifyOtp = async (req, res, next) => {
           email: req.session.email,
           mobile: req.session.mobile,
           password: req.session.password,
+          referralCode: req.session.referralCode, //refereal ivide vech
           is_verified: 1,
         });
 
-        // Save the user to the database
         const savedUser = await user.save();
         console.log("User saved:", savedUser);
 
@@ -255,7 +261,45 @@ const verifyOtp = async (req, res, next) => {
         // delete req.session.mobile;
         // delete req.session.password;
 
-        // Render the login page with a success message
+        if (req.session.referralCode) {
+          const referredUser = await User.findOne({
+            referralCode: req.session.referredCode,
+          });
+          console.log(referredUser, "referredUser");
+          if (referredUser) {
+            referredUser.wallet += 200;
+
+            const walletHistory = {
+              transactionDate: Date.now(),
+              transactionDetails: "Invitation bonus via referral code",
+              transactionType: "Credit",
+              transactionAmount: 200,
+            };
+
+            referredUser.walletHistory.push(walletHistory);
+            await referredUser.save();
+
+            //----------------
+            const referringUser = await User.findOne({
+              email: req.session.email,
+            });
+            console.log(referringUser, "referringUser");
+
+            if (referringUser) {
+              referringUser.wallet += 100;
+
+              const walletHistoryReferring = {
+                transactionDate: Date.now(),
+                transactionDetails: "Referral bonus",
+                transactionType: "Credit",
+                transactionAmount: 100,
+              };
+
+              referringUser.walletHistory.push(walletHistoryReferring);
+              await referringUser.save();
+            }
+          }
+        }
         return res.render("login", {
           status: "success",
           message: "Your Account has been created.",
@@ -317,12 +361,10 @@ const resendOtp = async (req, res, next) => {
     // Send email and handle the response
     const info = await transporter.sendMail(mailOptions);
 
-    console.log("Email has been sent:", info.response);
 
     // Redirect back to the OTP page with a success message in the query parameter
     res.redirect("/otp?success=OTP has been resent successfully");
   } catch (error) {
-    console.error("Error in resendOtp:", error);
 
     // Redirect back to the OTP page with an error message in the query parameter
     res.redirect("/otp?error=Error in resending OTP. Please try again.");
@@ -343,45 +385,44 @@ const productList = async (req, res) => {
 
 // ============================  SHOP PAGE LOADING  =======================================
 const shopLoad = async (req, res) => {
- 
-try {
-  const productsPerPage = 9; // Change this based on your desired number of products per page
-  const currentPage = parseInt(req.query.page) || 1;
+  try {
+    const productsPerPage = 9; // Change this based on your desired number of products per page
+    const currentPage = parseInt(req.query.page) || 1;
 
-  // Fetch only active (not blocked) products
-  const products = await Product.find({ is_deleted: false })
-    .populate("category")
-    .skip((currentPage - 1) * productsPerPage)
-    .limit(productsPerPage)
-    .exec();
+    // Fetch only active (not blocked) products
+    const products = await Product.find({ is_deleted: false })
+      .populate("category")
+      .skip((currentPage - 1) * productsPerPage)
+      .limit(productsPerPage)
+      .exec();
 
-  const totalProductsCount = await Product.countDocuments({
-    is_deleted: false,
-  });
-  const totalPages = Math.ceil(totalProductsCount / productsPerPage);
+    const totalProductsCount = await Product.countDocuments({
+      is_deleted: false,
+    });
+    const totalPages = Math.ceil(totalProductsCount / productsPerPage);
 
-  const categories = await categorySchema.find();
-  const discount = await Offers.find({});//ith product offer
-  const discountCategory = await categoryOffer.find({})
- const renderData = {
-   products:products,
-   categories,
-   discCat:discountCategory,
-   discPrice:discount,
- }
-  res.render("shop", {
-    products,
-    categories,
-    currentPage,
-    totalPages,
-    discount,
-    renderData
-  });
-} catch (error) {
-  console.log(error.message);
-  res.status(500).send("Internal Server Error");
-}
-}
+    const categories = await categorySchema.find();
+    const discount = await Offers.find({}); //ith product offer
+    const discountCategory = await categoryOffer.find({});
+    const renderData = {
+      products: products,
+      categories,
+      discCat: discountCategory,
+      discPrice: discount,
+    };
+    res.render("shop", {
+      products,
+      categories,
+      currentPage,
+      totalPages,
+      discount,
+      renderData,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
 
 // ============================ PRODUCT DETAIL LOAD  =======================================
 const productDetailLoad = async (req, res) => {
@@ -543,6 +584,7 @@ const deleteWishlistproduct = async (req, res) => {
 
 module.exports = {
   searchProducts,
+  generateReferalCode,
   loadRegister,
   loadHome,
   securePassword,

@@ -8,17 +8,30 @@ const razorpayInstance = new Razorpay({
   key_secret: RAZORPAY_SECRET_KEY,
 });
 
-// Load Wallet
+//================================================================================================================================================================================================//
+
+//=============================================== Load Wallet ===============================================
 const loadWallet = async (req, res) => {
   try {
-    // const name = req.session.firstName;
-    const userData = await User.findOne({ firstName: "Ajay" });
-    const userId = userData._id;
+    
+    const user = req.session.user_id;  //user details edukunu
+    
 
-    const wallet = await User.findOne({ _id: userId });
+
+    const userData = await User.findById(user);
+    
+
+    if (!userData) {
+      return res.render("wallet", {
+        user: req.session.firstName,
+        message: "User not found",
+      });
+    }
+
+    const wallet = userData.wallet;
+    console.log(wallet, "wallet");
 
     res.render("wallet", {
-      user: req.session.firstName,
       wallet: wallet,
     });
   } catch (error) {
@@ -26,6 +39,10 @@ const loadWallet = async (req, res) => {
     res.render("500");
   }
 };
+
+
+//=============================================== ADDING MONEY 
+
 
 // Add Money to Wallet
 const addMoneyWallet = async (req, res) => {
@@ -111,12 +128,13 @@ const verifyWalletpayment = async (req, res) => {
 // Load Wallet History
 const loadHistory = async (req, res) => {
   try {
-    // const firstName = req.session.user;
-    const userData = await User.findOne({ firstName: 'Ajay' });
-    const userId = userData._id;
-    const details = await User.findOne({ _id: userId });
+     const user = req.session.user_id; //user details edukunu
 
-    res.render("wallet-history", {  wallet: details });
+     const userData = await User.findById(user);
+    
+    
+
+    res.render("wallet-history", {  wallet: userData });
   } catch (error) {
     res.render("500");
   }

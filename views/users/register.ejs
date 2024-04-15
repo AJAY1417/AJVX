@@ -71,12 +71,20 @@
                   <span id="confirmPasswordError" class="error-message" style="color: red;"></span>
                 </div><!-- End .form-group -->
 
+
+                <div class="form-group">
+                  <label for="referralCode">Referral Code (Optional)</label>
+                  <input type="text" class="form-control" id="referralCode" name="referralCode">
+                </div><!-- End .form-group -->
+                
+
                 <div class="form-footer">
                   <button type="submit" class="btn btn-outline-primary-2">
                     <span>REGISTER</span>
                     <i class="icon-long-arrow-right"></i>
                   </button>
                 </div><!-- End .form-footer -->
+
 
                 <p class="mt-3 mb-0">Already have an account? <a href="/login">Log in</a></p>
               </form>
@@ -241,6 +249,7 @@
     const mobileInput = document.getElementById("mobile");
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirm_password");
+    const referralCodeInput = document.getElementById("referralCode");
 
     if (
       validateFirstName(firstNameInput) &&
