@@ -1,123 +1,136 @@
-
 <%- include('../layouts/user/header.ejs') %>
 
 
 
 
-        <main class="main">
-            <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
-                <div class="container d-flex align-items-center">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
-                        <li class="breadcrumb-item active" aria-current="page"><%= product.name %></li>
-                    </ol>
+    <main class="main">
+        <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+            <div class="container d-flex align-items-center">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <%= product.name %>
+                    </li>
+                </ol>
 
-                    <nav class="product-pager ml-auto" aria-label="Product">
-                        <a class="product-pager-link product-pager-prev" href="#" aria-label="Previous" tabindex="-1">
-                            <i class="icon-angle-left"></i>
-                            <span>Prev</span>
-                        </a>
+                <nav class="product-pager ml-auto" aria-label="Product">
+                    <a class="product-pager-link product-pager-prev" href="#" aria-label="Previous" tabindex="-1">
+                        <i class="icon-angle-left"></i>
+                        <span>Prev</span>
+                    </a>
 
-                        <a class="product-pager-link product-pager-next" href="#" aria-label="Next" tabindex="-1">
-                            <span>Next</span>
-                            <i class="icon-angle-right"></i>
-                        </a>
-                    </nav><!-- End .pager-nav -->
-                </div><!-- End .container -->
-            </nav><!-- End .breadcrumb-nav -->
+                    <a class="product-pager-link product-pager-next" href="#" aria-label="Next" tabindex="-1">
+                        <span>Next</span>
+                        <i class="icon-angle-right"></i>
+                    </a>
+                </nav><!-- End .pager-nav -->
+            </div><!-- End .container -->
+        </nav><!-- End .breadcrumb-nav -->
 
-            <div class="page-content">
-                <div class="container">
-                    <div class="product-details-top mb-2">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="product-gallery product-gallery-vertical">
-                                    <div class="row">
-                                        <figure class="product-main-image">
-                                            <img id="product-zoom" src="/public/images/products/<%= product.images[0] %>" data-zoom-image="/public/images/products/<%= product.images[0] %>" alt="product image">
-                                            <a href="#" id="btn-product-gallery" class="btn-product-gallery">
-                                                <i class="icon-arrows"></i>
+        <div class="page-content">
+            <div class="container">
+                <div class="product-details-top mb-2">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="product-gallery product-gallery-vertical">
+                                <div class="row">
+                                    <figure class="product-main-image">
+                                        <img id="product-zoom" src="/public/images/products/<%= product.images[0] %>"
+                                            data-zoom-image="/public/images/products/<%= product.images[0] %>"
+                                            alt="product image">
+                                        <a href="#" id="btn-product-gallery" class="btn-product-gallery">
+                                            <i class="icon-arrows"></i>
+                                        </a>
+                                    </figure><!-- End .product-main-image -->
+
+                                    <div id="product-zoom-gallery" class="product-image-gallery">
+                                        <% for (let i=0; i < product.images.length; i++) { %>
+                                            <a class="product-gallery-item <%= i === 0 ? 'active' : '' %>" href="#"
+                                                data-image="/public/images/products/<%= product.images[i] %>"
+                                                data-zoom-image="/public/images/products/<%= product.images[i] %>">
+                                                <img src="/public/images/products/<%= product.images[i] %>"
+                                                    alt="product side">
                                             </a>
-                                        </figure><!-- End .product-main-image -->
-                            
-                                        <div id="product-zoom-gallery" class="product-image-gallery">
-                                            <% for (let i = 0; i < product.images.length; i++) { %>
-                                                <a class="product-gallery-item <%= i === 0 ? 'active' : '' %>" href="#" data-image="/public/images/products/<%= product.images[i] %>" data-zoom-image="/public/images/products/<%= product.images[i] %>">
-                                                    <img src="/public/images/products/<%= product.images[i] %>" alt="product side">
-                                                </a>
                                             <% } %>
-                                        </div><!-- End .product-image-gallery -->
-                                    </div><!-- End .row -->
-                                </div><!-- End .product-gallery -->
-                            </div>
-                            <!-- End .col-md-6 -->
+                                    </div><!-- End .product-image-gallery -->
+                                </div><!-- End .row -->
+                            </div><!-- End .product-gallery -->
+                        </div>
+                        <!-- End .col-md-6 -->
 
-                            <div class="col-md-6">
-                                <div class="product-details product-details-centered">
-                                    <h1 class="product-title"><%= product.name %></h1><!-- End .product-title -->
+                        <div class="col-md-6">
+                            <div class="product-details product-details-centered">
+                                <h1 class="product-title">
+                                    <%= product.name %>
+                                </h1><!-- End .product-title -->
 
-                                    <div class="ratings-container">
-                                        <div class="ratings">
-                                            <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
-                                        </div><!-- End .ratings -->
-                                        <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews )</a>
-                                    </div><!-- End .rating-container -->
+                                <div class="ratings-container">
+                                    <div class="ratings">
+                                        <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
+                                    </div><!-- End .ratings -->
+                                    <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews
+                                        )</a>
+                                </div><!-- End .rating-container -->
 
-                                     <div class="product-price text-center" style="color: red; font-weight: bold;">
-                                        <% let smallestPrice=Math.min(product.price,
-                                            product.discountPricepro || Infinity, product.discountPricecat
-                                            || Infinity); %>
-                                            <div class="product-price">
-                                                <% if (smallestPrice && smallestPrice < product.price) { %>
-                                                    <strike>$<%= product.price %></strike>
-                                            </div>
-                                            <div class="product-price">
-                                                <b> $<%= smallestPrice %> </b>
-                                                <% } else { %>
-                                                    $<%= product.price %>
-                                                        <% } %>
+                                <div class="product-price text-center" style="color: red; font-weight: bold;">
+                                    <% let smallestPrice=Math.min(product.price, product.discountPricepro || Infinity,
+                                        product.discountPricecat || Infinity); %>
+                                        <div class="product-price">
+                                            <% if (smallestPrice && smallestPrice < product.price) { %>
+                                                <strike>$<%= product.price %></strike>
+                                        </div>
+                                        <div class="product-price">
+                                            <b> $<%= smallestPrice %> </b>
+                                            <% } else { %>
+                                                $<%= product.price %>
+                                                    <% } %>
 
-                                            </div>
+                                        </div>
 
-                                    </div><!-- End .product-price -->
+                                </div><!-- End .product-price -->
 
-                                    <div class="product-content">
-                                        <p></p>
-                                    </div><!-- End .product-content -->
+                                <div class="product-content">
+                                    <p></p>
+                                </div><!-- End .product-content -->
 
-                                 
 
-                                    <div class="product-details-action">
-                                        <div class="details-action-col">
-                                            <div class="product-details-quantity">
-                                                <input type="number" id="qty" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>
-                                            </div><!-- End .product-details-quantity -->
 
-                                            
-                                            <a onclick="addToCart('<%=product._id%>')" class="btn-product btn-cart">
-                                                <span>add to cart</span></a>
-                                        </div><!-- End .details-action-col -->
+                                <div class="product-details-action">
+                                    <div class="details-action-col">
+                                        <div class="product-details-quantity">
+                                            <input type="number" id="qty" class="form-control" value="1" min="1"
+                                                max="10" step="1" data-decimals="0" required>
+                                        </div><!-- End .product-details-quantity -->
 
-                                        <div class="details-action-wrapper">
-                                            <button type="button" class="btn-product btn-wishlist"
-                                                onclick="addToWishlist('<%= product._id %>')">Add to
-                                                Wishlist</button>
-<!-- End .details-action-wrapper -->
+
+                                        <a onclick="addToCart('<%=product._id%>')" class="btn-product btn-cart">
+                                            <span>add to cart</span></a>
+                                    </div><!-- End .details-action-col -->
+
+                                    <div class="details-action-wrapper">
+                                        <button type="button" class="btn-product btn-wishlist"
+                                            onclick="addToWishlist('<%= product._id %>')">Add to
+                                            Wishlist</button>
+                                        <!-- End .details-action-wrapper -->
                                     </div><!-- End .product-details-action -->
 
                                     <div class="product-details-footer">
                                         <div class="product-cat">
                                             <span>Category:<%= product.Category %></span>
-                                           
+
                                         </div><!-- End .product-cat -->
 
                                         <div class="social-icons social-icons-sm">
                                             <span class="social-label">Share:</span>
-                                            <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
-                                            <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
-                                            <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
-                                            <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
+                                            <a href="#" class="social-icon" title="Facebook" target="_blank"><i
+                                                    class="icon-facebook-f"></i></a>
+                                            <a href="#" class="social-icon" title="Twitter" target="_blank"><i
+                                                    class="icon-twitter"></i></a>
+                                            <a href="#" class="social-icon" title="Instagram" target="_blank"><i
+                                                    class="icon-instagram"></i></a>
+                                            <a href="#" class="social-icon" title="Pinterest" target="_blank"><i
+                                                    class="icon-pinterest"></i></a>
                                         </div>
                                     </div><!-- End .product-details-footer -->
                                 </div><!-- End .product-details -->
@@ -125,12 +138,12 @@
                         </div><!-- End .row -->
                     </div><!-- End .product-details-top -->
 
-                  
 
-                 
+
+
                 </div><!-- End .container -->
             </div><!-- End .page-content -->
-        </main><!-- End .main -->
+    </main><!-- End .main -->
 
     </div><!-- End .page-wrapper -->
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
@@ -144,12 +157,13 @@
 
             <form action="#" method="get" class="mobile-search">
                 <label for="mobile-search" class="sr-only">Search</label>
-                <input type="search" class="form-control" name="mobile-search" id="mobile-search" placeholder="Search in..." required>
+                <input type="search" class="form-control" name="mobile-search" id="mobile-search"
+                    placeholder="Search in..." required>
                 <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
             </form>
-            
-           
-           !-- End .social-icons -->
+
+
+            !-- End .social-icons -->
         </div><!-- End .mobile-menu-wrapper -->
     </div><!-- End .mobile-menu-container -->
 
@@ -169,86 +183,122 @@
     <script src="/public/user/assets/js/jquery.elevateZoom.min.js"></script>
     <script src="/public/user/assets/js/bootstrap-input-spinner.js"></script>
     <!-- zoom image  -->
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="path/to/jquery.elevateZoom-3.0.8.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="path/to/jquery.elevateZoom-3.0.8.min.js"></script>
 
     <!-- Main JS File -->
     <script src="assets/js/main.js"></script>
-</body>
+    </body>
 
-<script>
-	function addToCart(id) {
-console.log("addToCart function called with id: " + id);
-$.ajax({
-url: "/addTocart",
-method: "post",
-encoded: true,
-data: {
- id: id
-},
-}).done((data) => {
-if (data) {
- console.log(data);
+   <script>
+    function addToCart(id) {
+    console.log("addToCart function called with id: " + id);
+    $.ajax({
+        url: "/addTocart",
+        method: "post",
+        data: {
+            id: id
+        },
+        success: function (data) {
+            console.log("Response data:", data);
 
- Swal.fire({
-
-icon: 'success',
- title: 'Item has been added to Cart!',
-showConfirmButton: false,
-timer: 1000
-})
-}else {
- swal("Fail to add");
-}
-});
-}
-
-</script>
-
-
-<script>
-    // Function to handle adding to wishlist via AJAX
-    function addToWishlist(productId) {
-        console.log(productId,'WISHLIST KERRi');
-        $.ajax({
-            url: '/addToWishlist',
-            type: 'POST',
-            data: { id: productId },
-            success: function (data) {
-                if (data.result) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Added to Wishlist!',
-                        text: 'Product has been added to your Wishlist successfully!',
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Failed to Add to Wishlist',
-                        text: 'Product may already be in the Wishlist.',
-                    });
-                }
-            },
-            error: function () {
+            if (data.success) {
+                // Item added to cart successfully
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Item has been added to Cart!',
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            } else if (data.loginRequired) {
+                // User not logged in, show login prompt or redirect
+                // You can handle this case based on your application's logic
+                // For example, you can redirect the user to the login page
+                window.location.href = "/login";
+            } else if (data.outofstock) {
+                // Product out of stock
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error',
-                    text: 'Error adding to Wishlist. Please try again later.',
+                    title: 'Failed to Add to Cart',
+                    text: 'The product is out of stock.',
+                });
+            } else if (data.error) {
+                // Server returned an error
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed to Add to Cart',
+                    text: 'There was an error adding the item to the cart. Please try again later.',
+                });
+            } else {
+                // Unexpected response
+                console.error("Unexpected response:", data);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed to Add to Cart',
+                    text: 'An unexpected error occurred. Please try again later.',
                 });
             }
-        });
-    }
-
-
-
-
+        },
+        error: function () {
+            // Error handling for AJAX request
+            console.error("Error occurred during AJAX request.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to Add to Cart',
+                text: 'An unexpected error occurred. Please try again later.',
+            });
+        }
+    });
+}
 
 </script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    <script>
+        // Function to handle adding to wishlist via AJAX
+        function addToWishlist(productId) {
+            console.log(productId, 'WISHLIST KERRi');
+            $.ajax({
+                url: '/addToWishlist',
+                type: 'POST',
+                data: { id: productId },
+                success: function (data) {
+                    if (data.result) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Added to Wishlist!',
+                            text: 'Product has been added to your Wishlist successfully!',
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Failed to Add to Wishlist',
+                            text: 'Product may already be in the Wishlist.',
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error adding to Wishlist. Please try again later.',
+                    });
+                }
+            });
+        }
 
 
 
-<!-- molla/product-centered.html  22 Nov 2019 10:03:20 GMT -->
-</html>
 
-<%- include('../layouts/user/footer.ejs') %>
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+    <!-- molla/product-centered.html  22 Nov 2019 10:03:20 GMT -->
+
+    </html>
+
+    <%- include('../layouts/user/footer.ejs') %>

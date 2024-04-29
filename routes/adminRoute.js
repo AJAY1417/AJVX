@@ -131,6 +131,8 @@ admin_route.get("/deleteCoupon", couponController.deleteCoupon);
 
 //==============================  SALES REPORT ==================================
 admin_route.get("/salesReport", adminController.salesreportLoad);
+admin_route.get('/download-pdf', adminController.pdfDownload);
+
 
 
 

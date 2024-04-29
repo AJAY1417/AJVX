@@ -18,6 +18,81 @@ const razorpayInstance = new Razorpay({
 });
 
 //====================================== RENDER THE CHECKOUT PAGE =============================================
+// const loadCheckout = async (req, res) => {
+//   try {
+//     let accountDetails;
+//     let userName;
+//     let UserAddress;
+//     let addressId = req.query.id;
+
+//     const coupon = await Coupon.find({});
+
+//     if (req.session.user_id) {
+//       const user = await User.findOne({ _id: req.session.user_id });//user find aayi
+//       const addresses = await Address.find({ userId: req.session.user_id }); //taken from address
+
+//       if (user) {
+//         userName = user.firstName;
+//         accountDetails = user;
+//         UserAddress = addresses;
+//       }
+//     }
+
+//     const userId = req.session.user_id;
+//     const cartData = await Cart.findOne({ user: userId }).populate(
+//       "products.productId"
+//     );
+//     console.log(cartData, "Cart data is here");
+//     // Calculate totalSum outside the loop
+//     let totalSum = 0;
+//     let datatotal = [];
+//  let isQuantityAvailable = true;
+
+//  for (const product of cartData.products) {
+//       // Check if product quantity is available
+//       if (product.quantity > product.productId.quantity) {
+//         isQuantityAvailable = false;
+//         break; // Exit loop if any product's quantity is not available
+//       }
+
+//     // cartData.products.forEach((product) => {
+//       product.sum = product.quantity * product.price;
+//       totalSum += product.sum;
+//       console.log(product.sum, "this is product sum");
+//       console.log(totalSum, "total calculated sum");
+//       datatotal.push(product.price * product.quantity); // Push datatotal values
+//     });
+
+//     // // Update the total field in Cart model
+//     // const updatedCart = await Cart.findOneAndUpdate(
+//     //   { user: userId }, // Use correct field name
+//     //   { $set: { total: totalSum } },
+//     //   { new: true }
+//     // );
+//      let updatedCart;
+//     if (isQuantityAvailable) {
+//       updatedCart = await Cart.findOneAndUpdate(
+//         { user: userId }, // Use correct field name
+//         { $set: { total: totalSum } },
+//         { new: true }
+//       );
+
+//     console.log("----------------------", updatedCart);
+
+//     res.render("checkout", {
+//       userName,
+//       accountDetails,
+//       UserAddress,
+//       datatotal,
+//       totalSum,
+//       cartData,
+//       coupon,
+//       //   discAmount,
+//     });
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
 const loadCheckout = async (req, res) => {
   try {
     let accountDetails;
@@ -25,12 +100,11 @@ const loadCheckout = async (req, res) => {
     let UserAddress;
     let addressId = req.query.id;
 
-    // Commented out coupon-related code
     const coupon = await Coupon.find({});
 
     if (req.session.user_id) {
       const user = await User.findOne({ _id: req.session.user_id });
-      const addresses = await Address.find({ userId: req.session.user_id }); //taken from address
+      const addresses = await Address.find({ userId: req.session.user_id });
 
       if (user) {
         userName = user.firstName;
@@ -44,24 +118,33 @@ const loadCheckout = async (req, res) => {
       "products.productId"
     );
     console.log(cartData, "Cart data is here");
-    // Calculate totalSum outside the loop
+
     let totalSum = 0;
     let datatotal = [];
+    let isQuantityAvailable = true;
 
-    cartData.products.forEach((product) => {
+    for (const product of cartData.products) {
+      // Check if product quantity is available
+      if (product.quantity > product.productId.quantity) {
+        isQuantityAvailable = false;
+        break; // Exit loop if any product's quantity is not available
+      }
+
       product.sum = product.quantity * product.price;
       totalSum += product.sum;
       console.log(product.sum, "this is product sum");
       console.log(totalSum, "total calculated sum");
       datatotal.push(product.price * product.quantity); // Push datatotal values
-    });
+    }
 
-    // Update the total field in Cart model
-    const updatedCart = await Cart.findOneAndUpdate(
-      { user: userId }, // Use correct field name
-      { $set: { total: totalSum } },
-      { new: true }
-    );
+    let updatedCart;
+    if (isQuantityAvailable) {
+      updatedCart = await Cart.findOneAndUpdate(
+        { user: userId },
+        { $set: { total: totalSum } },
+        { new: true }
+      );
+    }
 
     console.log("----------------------", updatedCart);
 
@@ -73,7 +156,7 @@ const loadCheckout = async (req, res) => {
       totalSum,
       cartData,
       coupon,
-      //   discAmount,
+      isQuantityAvailable, // Pass isQuantityAvailable to frontend
     });
   } catch (error) {
     console.log(error.message);
@@ -229,12 +312,12 @@ const placeOrder = async (req, res) => {
       // Handle wallet payment option
       if (user.wallet >= updatedTotalAmount) {
        console.log(updatedTotalAmount);
-        // Sufficient balance in the wallet
+       
         
         user.wallet -= updatedTotalAmount;
         console.log(user.wallet,"________________________________")
         console.log(updatedTotalAmount,"???????????????????????????????");
-        // Create a wallet history entry
+        
         const walletHistory = {
           transactionDate: new Date(),
           transactionAmount: -updatedTotalAmount,
@@ -248,51 +331,57 @@ console.log(walletHistory,"RRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
         await newOrder.save();
         return res.json({ order: newOrder, success: true });
       } else {
-        // Insufficient balance in the wallet
+       
         return res.json({ error: "Insufficient balance in the wallet" });
       }
     } else {
-      // Invalid payment method
+     
       return res.status(400).json({ error: "Invalid payment method" });
     }
   } catch (error) {
-    // Handle any unexpected errors
+   
     console.log(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-// Function to calculate discounted total
+
 const calculateDiscountedTotal = (totalPrice, quantity, discount) => {
   const discountedTotal = totalPrice * quantity - discount;
   return discountedTotal;
 };
-
+//================================================================================================================
 // Verify Payment Function
 const verifyPayment = async (req, res) => {
   try {
     const user_id = req.session.user_id;
-
     const cartData = await Cart.findOne({ user: req.session.user_id });
     const details = req.body;
     const payment = req.body.payment;
-  
-    // Create HMAC using the Razorpay secret key from environment variables
+
     const hmac = crypto.createHmac("sha256", "f4QOCHAFThYVJH9z8lX8OPhN");
     hmac.update(details.order._id + "|" + details.payment.razorpay_payment_id);
     const hmacValue = hmac.digest("hex");
 
-
     console.log("razorpay signature :", req.body.razorpay_signature);
     if (hmacValue === req.body.razorpay_signature) {
-      // Compare with the retrieved Razorpay signature
+     
       await Order.findByIdAndUpdate(details.order.receipt, {
         $set: {
           paymentStatus: "placed",
           paymentId: details.payment.razorpay_payment_id,
         },
       });
+
+      for (const product of cartData.products) {
+        await product.findByIdAndUpdate(product.productId, {
+          $inc: { quantity: -product.quantity },
+        });
+      }
+
+     
       await Cart.deleteOne({ user: user_id });
+
       return res.json({ placed: true });
     }
   } catch (error) {
@@ -300,6 +389,7 @@ const verifyPayment = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 
 //===================== RENDER ORDER SUCCESS PAGE ==========================

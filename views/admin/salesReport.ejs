@@ -2,6 +2,8 @@
 
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+
+
   <style>
     .page-wrapper {
       font-family: 'Nunito Sans', sans-serif;
@@ -92,6 +94,10 @@
   </style>
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
+
+
+
+
     <%- include('../layouts/admin/sideBar.ejs') %>
 
       <div class="body-wrapper">
@@ -103,8 +109,12 @@
                 <div class="card">
                   <div class="card-body">
                     <h1 class="large-heading text-center">Sales Report</h1>
-                    <!-- Download Excel Button -->
+                    
                     <button class="download-button" onclick="downloadExcel()">Download Excel</button>
+                    <button class="download-button" onclick="window.print()">Download PDF</button>
+                    <!-- <button class="download-button" onclick="downloadPDFFromController()">Download PDF</button> -->
+
+
 
                     <div class="btn-group" role="group">
                       <button type="button" class="btn btn-primary"
@@ -117,6 +127,9 @@
                         <%= errorMessage %>
                       <% } %>
                       
+
+
+
 <!-- Add modal for custom date range selection -->
 <div class="modal fade" id="customDateRangeModal" tabindex="-1" aria-labelledby="customDateRangeModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -150,6 +163,9 @@
     </div>
   </div>
 </div>
+
+
+
 
                     <div class="table-responsive">
                       <table class="table table-hover mb-0" id="salesDataTable">
@@ -221,15 +237,23 @@
   </div>
   <%- include('../layouts/admin/footer.ejs') %>
 
-    <!-- Add necessary scripts -->
-    <script src="/public/admin/js/core/popper.min.js"></script>
-    <script src="/public/admin/js/core/bootstrap.min.js"></script>
-    <script src="/public/admin/js/plugins/perfect-scrollbar.min.js"></script>
-    <script src="/public/admin/js/plugins/smooth-scrollbar.min.js"></script>
-    <script src="/public/admin/js/plugins/chartjs.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+
+
+
+
+  <script src="/public/admin/js/core/popper.min.js"></script>
+  <script src="/public/admin/js/core/bootstrap.min.js"></script>
+  <script src="/public/admin/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="/public/admin/js/plugins/smooth-scrollbar.min.js"></script>
+  <script src="/public/admin/js/plugins/chartjs.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfkit/0.12.4/pdfkit.min.js"></script>
+
     
+
+
+
     <script>
       $(document).ready(function () {
         $('#salesDataTable').DataTable({
@@ -278,9 +302,24 @@
 }
 
 
+
+
     </script>
     <style>
       #salesDataTable td {
         word-break: break-word;
       }
     </style>
+
+
+
+
+
+    <!-- _________________________ PDF DOWNLOAD ________________________________ -->
+    <script>
+    function downloadPDFFromController() {
+      // Redirect the browser to the endpoint where the PDF download function is defined
+      window.location.href = '/admin/download-pdf';
+    }
+    
+</script>

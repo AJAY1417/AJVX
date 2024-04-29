@@ -19,6 +19,7 @@
         <div class="page-content">
             <div class="checkout">
                 <div class="container">
+                   
                     <!-- Add address -->
                     <a href="/addAddress">
                         <button type="submit" class="btn btn-outline-primary-2 float-right">
@@ -26,7 +27,11 @@
                             <i class="icon-long-arrow-right"></i>
                         </button>
                     </a>
-
+                    <% if (!isQuantityAvailable) { %>
+                        <div class="alert alert-danger" role="alert">
+                          Some products in your cart have insufficient quantity. Please adjust your cart and try again.
+                        </div>
+                      <% } %>
                     <!-- Add coupons -->
                     <div class="checkout-discount">
                         <form action="/applyCoupon" id="applyCouponForm" method="post">
@@ -222,7 +227,7 @@
                                             </div><!-- End .card -->
                                         </div><!-- End .accordion -->
 
-                                        <% if (cartData) { %>
+                                        <% if (cartData && isQuantityAvailable) { %>
                                             <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
                                                 <span class="btn-text">Place Order</span>
                                                 <span class="btn-hover-text">Order Now</span>

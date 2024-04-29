@@ -5,7 +5,11 @@ const Order = require("../models/orderModel");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const path = require("path");
-const excel = require("exceljs"); //  line to import the 'bcrypt' module
+const excel = require("exceljs"); 
+const PDFDocument = require("pdfkit");
+const ejs = require("ejs");
+
+
 
 //=================================  ADMIN LOGIN PAGE    ============================================//
 
@@ -379,7 +383,44 @@ const formatTime = (date) => {
   return date.toLocaleDateString("en-US", options);
 };
 
-//=================================================================================================//
+//========================================== PDF DOWNLOAD ===============================================//
+const pdfDownload = async (req, res, next) => {
+  try {
+    const orderDat = await Order.find().populate("products.product");
+
+    ejs.renderFile(
+      path.join(__dirname, "..", "views", "admin", "ReportPdf.ejs"),
+      { orderDat },
+      async (err, html) => {
+        if (err) {
+          return next(err);
+        }
+
+        const doc = new PDFDocument();
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          'attachment; filename="sales_report.pdf"'
+        );
+
+        // Pipe HTML content to PDF document stream
+        doc.pipe(res);
+
+        // You might need to set appropriate options here
+        // Check PDFKit documentation for available options
+        doc.html(html);
+        // doc.text(html);
+
+
+        // End the PDF document
+        doc.end();
+      }
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 
 //===================================== EXPORTING  ================================================//
 module.exports = {
@@ -399,4 +440,5 @@ module.exports = {
   updateOrderStatus,
   salesreportLoad,
   formatTime,
+  pdfDownload,
 };

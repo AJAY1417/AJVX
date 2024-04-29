@@ -3,10 +3,10 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport" content="=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Sales Report</title>
   <!-- Add Bootstrap CSS link here -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="httpwidths://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <style>
     /* Add your custom styles here */
     body {
@@ -48,14 +48,14 @@
                             <%= order.purchaseDate.toLocaleString('en-US') %>
                           </td>
                           <td>
-                            <%= product.productId.productname %>
+                            <%= product.product.name %>
                           </td>
                           <td>
                             <%= product.count %>
                           </td>
-                          <td>₹<%= product.productId.price.toFixed(2) %>
+                          <td>₹<%= product.product.price.toFixed(2) %>
                           </td>
-                          <td>₹<%= (product.count * product.productId.price).toFixed(2) %>
+                          <td>₹<%= (product.count * product.product.price).toFixed(2) %>
                           </td>
                         </tr>
                         <% }); %>
@@ -79,6 +79,6 @@
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-</body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfkit/0.12.4/pdfkit.min.js"></script>
 
 </html>

@@ -116,15 +116,13 @@
                     <a href="/wishlist" class="wishlist-link">
                         <i class="icon-heart-o"></i>
                     </a>
-
                     <div class="dropdown cart-dropdown">
-                        <a href="/cart" class="dropdown-toggle"  data-display="static">
+                        <a href="/cart" class="dropdown-toggle" data-display="static">
                             <i class="icon-shopping-cart"></i>
-                            <span class="cart-count">2</span>
+                           
                         </a>
-
-                        
                     </div>
+                    
                     <div class="header-profile">
                         <% if (typeof user !== 'undefined' && user) { %>
                             <!-- User is logged in, show dropdown menu -->
@@ -149,6 +147,28 @@
             </div><!-- End .container-fluid -->
         </div><!-- End .header-middle -->
     </header><!-- End .header -->
-
-
-    
+    <script>
+        // Function to update the cart count badge
+        function updateCartCount(count) {
+          const cartCountElement = document.querySelector('.cart-count');
+          if (cartCountElement) {
+              cartCountElement.textContent = count;
+          }
+        }
+      
+        // Fetch the cart count from the server
+        async function fetchCartCount() {
+          try {
+            const response = await fetch('/cart/count');
+            const data = await response.json();
+            const cartCount = data.totalItems;
+            updateCartCount(cartCount); // Update cart count badge
+          } catch (error) {
+            console.error('Error fetching cart count:', error);
+          }
+        }
+      
+        // Call fetchCartCount when the page loads
+        window.addEventListener('load', fetchCartCount);
+      </script>
+      

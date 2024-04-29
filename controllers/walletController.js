@@ -13,13 +13,9 @@ const razorpayInstance = new Razorpay({
 //=============================================== Load Wallet ===============================================
 const loadWallet = async (req, res) => {
   try {
-    
-    const user = req.session.user_id;  //user details edukunu
-    
-
+    const user = req.session.user_id; //user details edukunu
 
     const userData = await User.findById(user);
-    
 
     if (!userData) {
       return res.render("wallet", {
@@ -29,37 +25,32 @@ const loadWallet = async (req, res) => {
     }
 
     const wallet = userData.wallet;
-    console.log(wallet, "wallet");
 
-    res.render("wallet", {
-      wallet: wallet,
-    });
+    res.render("wallet", { wallet: wallet });
   } catch (error) {
     console.log(error);
     res.render("500");
   }
 };
 
+//=============================================== ADDING MONEY
 
-//=============================================== ADDING MONEY 
-
-
-// Add Money to Wallet
+// Add Money to Wallet// Add Money to Wallet
 const addMoneyWallet = async (req, res) => {
   try {
-     
     const amountInRupees = req.body.amount;
-    const amountInPaise = parseInt(amountInRupees) ;
-   
-    console.log("kjhjhjkh", amountInPaise);
+    const amountInPaise = parseInt(amountInRupees * 100); // Convert rupees to paise
+
+    console.log("Amount in paise:", amountInPaise);
+
     const id = await crypto.randomBytes(8).toString("hex");
-    console.log('idddddd',id);
+
     const options = {
-      amount: amountInPaise*100,
+      amount: amountInPaise,
       currency: "INR",
       receipt: "" + id,
     };
-    // console.log('pjhjkhjkh',options);
+
     razorpayInstance.orders.create(options, (err, order) => {
       if (err) {
         res.json({ status: false });
@@ -68,34 +59,36 @@ const addMoneyWallet = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error(error);
     res.render("500");
   }
 };
 
+
 // Verify Wallet Payment
 const verifyWalletpayment = async (req, res) => {
   try {
-  console.log('kjkeljkljkljlkjkljkl');
-    
-    const userData = await User.findOne({ firstName: 'Ajay' });
-    console.log('aaaaaa',userData);
-    const userId =userData._id
+    console.log("kjkeljkljkljlkjkljkl");
+
+    const userData = await User.findOne({ firstName: "Ajay" });
+    console.log("aaaaaa", userData);
+    const userId = userData._id;
 
     const details = req.body;
-    console.log('kkkkkkkkkkkkkkkk',details);
+    console.log("kkkkkkkkkkkkkkkk", details);
 
-    const amount = details.order.amount
-    console.log('amount',amount);
-    
+    const amount = details.order.amount;
+    console.log("amount", amount);
+
     let hmac = crypto.createHmac("sha256", "f4QOCHAFThYVJH9z8lX8OPhN");
-     console.log('hmaccccccccccccccc',hmac);
+    console.log("hmaccccccccccccccc", hmac);
     hmac.update(
       details.payment.razorpay_order_id +
-      "|" +
-      details.payment.razorpay_payment_id
+        "|" +
+        details.payment.razorpay_payment_id
     );
     hmac = hmac.digest("hex");
-    console.log('hhhhhhhhhhhhhhhhhhhhhh',hmac);
+    console.log("hhhhhhhhhhhhhhhhhhhhhh", hmac);
     if (hmac == details.payment.razorpay_signature) {
       const walletHistory = {
         transactionDate: new Date(),
@@ -105,7 +98,7 @@ const verifyWalletpayment = async (req, res) => {
         currentBalance: !isNaN(userId.wallet) ? userId.wallet + amount : amount,
       };
       await User.findOneAndUpdate(
-        { firstName: 'Ajay' },
+        { firstName: "Ajay" },
         {
           $inc: {
             wallet: amount,
@@ -128,13 +121,11 @@ const verifyWalletpayment = async (req, res) => {
 // Load Wallet History
 const loadHistory = async (req, res) => {
   try {
-     const user = req.session.user_id; //user details edukunu
+    const user = req.session.user_id; //user details edukunu
 
-     const userData = await User.findById(user);
-    
-    
+    const userData = await User.findById(user);
 
-    res.render("wallet-history", {  wallet: userData });
+    res.render("wallet-history", { wallet: userData });
   } catch (error) {
     res.render("500");
   }

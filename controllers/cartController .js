@@ -58,7 +58,9 @@ const loadCart = async (req, res) => {
     console.error("Error in loadCart:", error);
     res.status(500).send("Internal Server Error");
   }
-};const addToCart = async (req, res) => {
+};
+
+const addToCart = async (req, res) => {
   try {
     const { id: productId } = req.body;
     const userId = req.session.user_id;
@@ -256,7 +258,26 @@ const removeCartProduct = async (req, res) => {
     });
   }
 };
+//________________________________ CART ICON COUNT ___________________________________________________
+const cartCount = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const cart = await Cart.findOne({ userId });
 
+    if (cart && cart.items) {
+      const totalItems = cart.items.reduce(
+        (acc, item) => acc + item.quantity,
+        0
+      );
+      res.json({ totalItems });
+    } else {
+      res.json({ totalItems: 0 });
+    }
+  } catch (error) {
+    console.error("Error fetching cart count:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 //____________________________________________________________________________________________________________________________________________________________________
 
@@ -266,4 +287,5 @@ module.exports = {
   addToCart,
   updateCartQuantity,
   removeCartProduct,
+  cartCount,
 };

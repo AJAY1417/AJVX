@@ -153,6 +153,64 @@
 
 <!-- Remove Product Script -->
 <script>
+  function updateCartCount(count) {
+    const cartCountElement = document.querySelector('.cart-count');
+    if (cartCountElement) {
+        cartCountElement.textContent = count;
+    }
+}
+
+async function handleUserAction(event) {
+  event.preventDefault();
+
+  const productId = event.currentTarget.getAttribute("data-product-id");
+
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to remove this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, remove it!",
+  });
+
+  if (result.isConfirmed) {
+    try {
+      const response = await fetch(`/removeCartProduct?id=${productId}`, {
+        method: "GET",
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Fetch updated cart count
+        const cartCountResponse = await fetch("/cart/count");
+        const cartCountData = await cartCountResponse.json();
+        const cartCount = cartCountData.totalItems;
+
+        // Update cart count badge
+        updateCartCount(cartCount);
+
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your product has been removed from the cart.",
+          icon: "success",
+        });
+        window.location.href = "/cart";
+      } else {
+        showErrorAlert("Error", "Unable to remove the product from the cart.");
+      }
+    } catch (error) {
+      console.error("Remove Product error:", error);
+      showErrorAlert("Error", "An unexpected error occurred.");
+    }
+  }
+}
+</script>
+
+<script>
+
   async function handleUserAction(event) {
     event.preventDefault();
 

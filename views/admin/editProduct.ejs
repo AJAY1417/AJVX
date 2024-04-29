@@ -195,7 +195,7 @@
     const quantityError = document.getElementById("quantityError");
     quantityError.textContent = "";
     const quantityValue = parseInt(quantityInput.value.trim());
-    if (isNaN(quantityValue) || quantityValue <= 0) {
+    if (isNaN(quantityValue) || quantityValue < 0) {
       quantityError.textContent = "Quantity must be a positive integer.";
     }
   }
