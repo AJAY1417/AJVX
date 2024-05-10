@@ -19,7 +19,7 @@
         <div class="page-content">
             <div class="checkout">
                 <div class="container">
-                   
+
                     <!-- Add address -->
                     <a href="/addAddress">
                         <button type="submit" class="btn btn-outline-primary-2 float-right">
@@ -29,214 +29,236 @@
                     </a>
                     <% if (!isQuantityAvailable) { %>
                         <div class="alert alert-danger" role="alert">
-                          Some products in your cart have insufficient quantity. Please adjust your cart and try again.
+                            Some products in your cart have insufficient quantity. Please adjust your cart and try
+                            again.
                         </div>
-                      <% } %>
-                    <!-- Add coupons -->
-                    <div class="checkout-discount">
-                        <form action="/applyCoupon" id="applyCouponForm" method="post">
-                            <div class="d-flex align-items-center">
-                                <input type="text" class="form-control" required id="checkout-discount-input"
-                                    name="couponCode">
-                                <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click
-                                        here to enter your code</span></label>
-                            </div>
-                            <br><br>
-                            <!-- Button trigger modal -->
-                            <div class="mt-2">
-                                <button type="button" class="btn btn-primary copy-button" data-toggle="modal"
-                                    data-target="#exampleModal">
-                                    Coupons available
-                                </button>
-                            </div>
-                            <button type="submit" class="btn btn-primary mt-2">Apply Coupon</button>
-                        </form>
-                    </div><!-- End .checkout-discount -->
+                        <% } %>
+                            <!-- Add coupons -->
+                            <div class="checkout-discount">
+                                <form action="/applyCoupon" id="applyCouponForm" method="post">
+                                    <div class="d-flex align-items-center">
+                                        <input type="text" class="form-control" required id="checkout-discount-input"
+                                            name="couponCode">
+                                        <label for="checkout-discount-input" class="text-truncate">Have a coupon?
+                                            <span>Click
+                                                here to enter your code</span></label>
+                                    </div>
+                                    <br><br>
+                                    <!-- Button trigger modal -->
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-primary copy-button" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                            Coupons available
+                                        </button>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary mt-2">Apply Coupon</button>
+                                </form>
+                            </div><!-- End .checkout-discount -->
 
 
-                    <form action="/removeCoupon" method="post" id="removeCouponForm" style="display: none;">
-                        <button type="submit" class="btn btn-danger mt-2">Remove Coupon</button>
-                    </form>
+                            <form action="/removeCoupon" method="post" id="removeCouponForm" style="display: none;">
+                                <button type="submit" class="btn btn-danger mt-2">Remove Coupon</button>
+                            </form>
 
-                    <!-- Modal -->
-                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
-                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">COUPONS AVAILABLE</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <% for (let i=0; i < coupon.length; i++) { %>
-                                        <div class="card mb-3 bg-red">
-                                            <div class="card-body">
-                                                <h5 class="card-title">
-                                                    <%= coupon[i].couponname %>
-                                                </h5>
-                                                <p class="card-text">Code: <span class="copy-text">
-                                                        <%= coupon[i].couponcode %>
-                                                    </span><button class="btn btn-primary copy-button">Copy
-                                                        Code</button></p>
-                                                <p class="card-text">Discount: ₹<%= coupon[i].discountamount %>
-                                                </p>
-                                                <p class="card-text">
-                                                    <%= coupon[i].description %>
-                                                </p>
-                                                <p class="card-text">Minimum Purchase: <%= coupon[i].criteriaamount %>
-                                                </p>
-                                            </div>
+                            <!-- Coupon Modal -->
+                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Available Coupons</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
                                         </div>
-                                        <% } %>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Order place -->
-                    <form action="/orderPlace" method="post" id="myform">
-                        <div class="row">
-                            <div class="col-lg-9">
-                                <p>The following addresses will be used on the checkout page by default.</p>
-                                <!-- Billing address -->
-                                <div class="row">
-                                    <% if (UserAddress && UserAddress.length> 0) { %>
-                                        <% for (let i=0; i < UserAddress.length; i++) { %>
-                                            <div class="col-lg-6">
-                                                <div class="card card-dashboard">
+                                        <div class="modal-body">
+                                            <% for (let i=0; i < coupon.length; i++) { %>
+                                                <div class="card mb-3">
                                                     <div class="card-body">
-                                                        <input type="radio" name="selectedAddress"
-                                                            value="<%= UserAddress[i]._id %>" id="address<%= i %>"
-                                                            class="address-checkbox">
-                                                        <label for="address<%= i %>" class="address-label">Billing
-                                                            Address</label>
-                                                        <% if (UserAddress[i].address && UserAddress[i].address.length>
-                                                            0) { %>
-                                                            <% for (let j=0; j < UserAddress[i].address.length; j++) {
-                                                                %>
-                                                                <p>
-                                                                    <%= UserAddress[i].address[j].fullname %><br>
-                                                                        <%= UserAddress[i].address[j].mobile %><br>
-                                                                            <%= UserAddress[i].address[j].email %><br>
-                                                                                <%= UserAddress[i].address[j].houseNo %>
-                                                                                    <br>
-                                                                                    <%= UserAddress[i].address[j].city
-                                                                                        %><br>
-                                                                                        <%= UserAddress[i].address[j].state
-                                                                                            %><br>
-                                                                                            <%= UserAddress[i].address[j].zipcode
-                                                                                                %><br>
-                                                                                                <%= UserAddress[i].address[j].additionalDetails
-                                                                                                    %><br>
-                                                                </p>
-                                                                <a href="/editAddress?id=<%= UserAddress[i]._id %>">Edit
-                                                                    <i class="icon-edit"></i></a>
-                                                                <% } %>
-                                                                    <% } else { %>
-                                                                        <p>No billing address found.</p>
-                                                                        <% } %>
+                                                        <h5 class="card-title">
+                                                            <%= coupon[i].couponname %>
+                                                        </h5>
+                                                        <p class="card-text">
+                                                            Code: <span class="copy-text">
+                                                                <%= coupon[i].couponcode %>
+                                                            </span>
+                                                            <button class="btn btn-primary float-right copy-button">Copy
+                                                                Code</button>
+                                                        </p>
+                                                        <p class="card-text">Discount: ₹<%= coupon[i].discountamount %>
+                                                        </p>
+                                                        <p class="card-text">
+                                                            <%= coupon[i].description %>
+                                                        </p>
+                                                        <p class="card-text">Minimum Purchase: ₹<%=
+                                                                coupon[i].criteriaamount %>
+                                                        </p>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <% } %>
-                                                <% } else { %>
-                                                    <p>No user addresses found.</p>
-                                                    <% } %>
+                                                <% } %>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div><!-- End .col-lg-9 -->
+                            </div>
 
-                            <aside class="col-lg-3">
-                                <div class="summary">
-                                    <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
 
-                                    <!-- Order summary -->
-                                    <table class="table table-summary">
-                                        <thead>
-                                            <tr>
-                                                <th>Product</th>
-                                                <th>Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% let product=cartData?.products || [] %>
-                                                <% for (let i=0; i < product.length; i++) { %>
-                                                    <% const value=product[i].productId; %>
-                                                        <tr>
-                                                            <td><a href="#">
-                                                                    <%= value.name %>
-                                                                </a></td>
-                                                            <td>$<%= datatotal[i] %>
-                                                            </td>
-                                                        </tr>
-                                                        <% } %>
-                                                            <tr class="summary-subtotal">
-                                                                <td>Subtotal:</td>
-                                                                <td>$<%= totalSum %>
-                                                                </td>
-                                                            </tr><!-- End .summary-subtotal -->
-                                                            <tr>
-                                                                <td id="couponDiscount">Coupon Discount</td>
-                                                                <td id="couponDiscountAmount">-₹<%=
-                                                                        coupon.discountamount %>
-                                                                </td>
-                                                            </tr>
-                                                            <tr class="summary-total">
-                                                                <td>Total:</td>
-                                                                <td id="total">$<%= totalSum %>
-                                                                </td>
-                                                            </tr><!-- End .summary-total -->
-                                        </tbody>
-                                    </table><!-- End .table table-summary -->
 
-                                    <div class="accordion-summary" id="accordion-payment">
-                                        <!-- Your payment options here -->
-                                        <div class="payment-options">
-                                            <h3 class="summary-title">Select Payment Method</h3>
-                                            <!-- End .summary-title -->
-                                            <!-- Payment methods -->
-                                            <div class="card">
-                                                <div class="custom-control custom-radio">
-                                                    <input type="radio" id="payment-cod" name="payment-method"
-                                                        class="custom-control-input" value="cod">
-                                                    <label class="custom-control-label" for="payment-cod">Cash on
-                                                        Delivery</label>
-                                                </div>
-                                            </div><!-- End .card -->
 
-                                            <div class="card">
-                                                <div class="custom-control custom-radio">
-                                                    <input type="radio" id="payment-online" name="payment-method"
-                                                        class="custom-control-input" value="online">
-                                                    <label class="custom-control-label" for="payment-online">Online
-                                                        Payment (Razorpay)</label>
-                                                </div>
-                                            </div><!-- End .card -->
+                            <!-- Order place -->
+                            <form action="/orderPlace" method="post" id="myform">
+                                <div class="row">
+                                    <div class="col-lg-9">
+                                        <p>The following addresses will be used on the checkout page by default.</p>
+                                        <!-- Billing address -->
+                                        <div class="row">
+                                            <% if (UserAddress && UserAddress.length> 0) { %>
+                                                <% for (let i=0; i < UserAddress.length; i++) { %>
+                                                    <div class="col-lg-6">
+                                                        <div class="card card-dashboard">
+                                                            <div class="card-body">
+                                                                <input type="radio" name="selectedAddress"
+                                                                    value="<%= UserAddress[i]._id %>"
+                                                                    id="address<%= i %>" class="address-checkbox">
+                                                                <label for="address<%= i %>"
+                                                                    class="address-label">Billing
+                                                                    Address</label>
+                                                                <% if (UserAddress[i].address &&
+                                                                    UserAddress[i].address.length>
+                                                                    0) { %>
+                                                                    <% for (let j=0; j < UserAddress[i].address.length;
+                                                                        j++) { %>
+                                                                        <p>
+                                                                            <%= UserAddress[i].address[j].fullname %>
+                                                                                <br>
+                                                                                <%= UserAddress[i].address[j].mobile %>
+                                                                                    <br>
+                                                                                    <%= UserAddress[i].address[j].email
+                                                                                        %><br>
+                                                                                        <%= UserAddress[i].address[j].houseNo
+                                                                                            %>
+                                                                                            <br>
+                                                                                            <%= UserAddress[i].address[j].city
+                                                                                                %><br>
+                                                                                                <%= UserAddress[i].address[j].state
+                                                                                                    %><br>
+                                                                                                    <%= UserAddress[i].address[j].zipcode
+                                                                                                        %><br>
+                                                                                                        <%= UserAddress[i].address[j].additionalDetails
+                                                                                                            %><br>
+                                                                        </p>
+                                                                        <a
+                                                                            href="/editAddress?id=<%= UserAddress[i]._id %>">Edit
+                                                                            <i class="icon-edit"></i></a>
+                                                                        <% } %>
+                                                                            <% } else { %>
+                                                                                <p>No billing address found.</p>
+                                                                                <% } %>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <% } %>
+                                                        <% } else { %>
+                                                            <p>No user addresses found.</p>
+                                                            <% } %>
+                                        </div>
+                                    </div><!-- End .col-lg-9 -->
 
-                                            <div class="card">
-                                                <div class="custom-control custom-radio">
-                                                    <input type="radio" id="payment-Wallet" name="payment-method"
-                                                        class="custom-control-input" value="wallet">
-                                                    <label class="custom-control-label"
-                                                        for="payment-Wallet">Wallet</label>
-                                                </div>
-                                            </div><!-- End .card -->
-                                        </div><!-- End .accordion -->
+                                    <aside class="col-lg-3">
+                                        <div class="summary">
+                                            <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
 
-                                        <% if (cartData && isQuantityAvailable) { %>
-                                            <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
-                                                <span class="btn-text">Place Order</span>
-                                                <span class="btn-hover-text">Order Now</span>
-                                            </button>
-                                            <% } %>
-                                    </div><!-- End .summary -->
-                            </aside><!-- End .col-lg-3 -->
-                        </div><!-- End .row -->
-                    </form>
+                                            <!-- Order summary -->
+                                            <table class="table table-summary">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Product</th>
+                                                        <th>Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% let product=cartData?.products || [] %>
+                                                        <% for (let i=0; i < product.length; i++) { %>
+                                                            <% const value=product[i].productId; %>
+                                                                <tr>
+                                                                    <td><a href="#">
+                                                                            <%= value.name %>
+                                                                        </a></td>
+                                                                    <td>$<%= datatotal[i] %>
+                                                                    </td>
+                                                                </tr>
+                                                                <% } %>
+                                                                    <tr class="summary-subtotal">
+                                                                        <td>Subtotal:</td>
+                                                                        <td>$<%= totalSum %>
+                                                                        </td>
+                                                                    </tr><!-- End .summary-subtotal -->
+                                                                    <tr>
+                                                                        <td id="couponDiscount">Coupon Discount</td>
+                                                                        <td id="couponDiscountAmount">-₹<%=
+                                                                                coupon.discountamount %>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr class="summary-total">
+                                                                        <td>Total:</td>
+                                                                        <td id="total">$<%= totalSum %>
+                                                                        </td>
+                                                                    </tr><!-- End .summary-total -->
+                                                </tbody>
+                                            </table><!-- End .table table-summary -->
+
+                                            <div class="accordion-summary" id="accordion-payment">
+                                                <!-- Your payment options here -->
+                                                <div class="payment-options">
+                                                    <h3 class="summary-title">Select Payment Method</h3>
+                                                    <!-- End .summary-title -->
+                                                    <!-- Payment methods -->
+                                                    <div class="card">
+                                                        <div class="custom-control custom-radio">
+                                                            <input type="radio" id="payment-cod" name="payment-method"
+                                                                class="custom-control-input" value="cod">
+                                                            <label class="custom-control-label" for="payment-cod">Cash
+                                                                on
+                                                                Delivery</label>
+                                                        </div>
+                                                    </div><!-- End .card -->
+
+                                                    <div class="card">
+                                                        <div class="custom-control custom-radio">
+                                                            <input type="radio" id="payment-online"
+                                                                name="payment-method" class="custom-control-input"
+                                                                value="online">
+                                                            <label class="custom-control-label"
+                                                                for="payment-online">Online
+                                                                Payment (Razorpay)</label>
+                                                        </div>
+                                                    </div><!-- End .card -->
+
+                                                    <div class="card">
+                                                        <div class="custom-control custom-radio">
+                                                            <input type="radio" id="payment-Wallet"
+                                                                name="payment-method" class="custom-control-input"
+                                                                value="wallet">
+                                                            <label class="custom-control-label"
+                                                                for="payment-Wallet">Wallet</label>
+                                                        </div>
+                                                    </div><!-- End .card -->
+                                                </div><!-- End .accordion -->
+
+                                                <% if (cartData && isQuantityAvailable) { %>
+                                                    <button type="submit"
+                                                        class="btn btn-outline-primary-2 btn-order btn-block">
+                                                        <span class="btn-text">Place Order</span>
+                                                        <span class="btn-hover-text">Order Now</span>
+                                                    </button>
+                                                    <% } %>
+                                            </div><!-- End .summary -->
+                                    </aside><!-- End .col-lg-3 -->
+                                </div><!-- End .row -->
+                            </form>
                 </div><!-- End .container -->
             </div><!-- End .checkout -->
         </div><!-- End .page-content -->
@@ -310,6 +332,7 @@
             });
         });
 
+
         $('#myform').submit(function (event) {
             event.preventDefault();
 
@@ -354,8 +377,25 @@
                             // Handle online payment
                             razorpayPayment(response.order);
                         } else if (response.cod === true || response.success === true) {
-                            // Handle cash-on-delivery or wallet payment success
-                            window.location.href = '/orderSuccess';
+                            // Check if COD limit is exceeded
+                            if (response.cod === true || response.success === true) {
+                                if (selectedPaymentMethod === 'cod' && parseFloat(response.order.totalAmount) >= 1000) {
+                                    // Show a SweetAlert for COD limit exceeded
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'COD Limit Exceeded!',
+                                        text: 'Cash on delivery is only available for orders under 1000.',
+                                        onClose: () => {
+                                            // Re-enable submit button after the alert is closed
+                                            $('#myform button[type="submit"]').prop('disabled', false);
+                                        }
+                                    });
+                                } else {
+                                    // Handle cash-on-delivery or wallet payment success
+                                    window.location.href = '/orderSuccess';
+                                }
+                            }
+
                         } else if (response.error === 'Insufficient balance in the wallet') {
                             // Display SweetAlert for insufficient funds
                             Swal.fire({

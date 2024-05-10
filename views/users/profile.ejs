@@ -52,6 +52,14 @@
                                         aria-selected="true">Address</a>
                                 </li>
 
+                                <!-- Reset Password Tab -->
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-reset-password-link" data-toggle="tab"
+                                        href="#tab-reset-password" role="tab" aria-controls="tab-reset-password"
+                                        aria-selected="false">Reset Password</a>
+                                </li>
+
+
                                 <!-- Sign Out Tab -->
                                 <li class="nav-item">
                                     <a class="nav-link" href="/logout">Sign Out</a>
@@ -95,87 +103,89 @@
                                                 value="<%= User.mobile %>" disabled>
                                         </div>
 
-                                        
-                        
+
+
                                         <button type="submit" class="btn btn-primary">Submit Changes</button>
                                     </form>
 
                                     <div class="form-group text-center">
                                         <h4>Your Referral Code</h4>
-                                        <p style="font-size: 24px;"><%= User.referralCode %></p>
+                                        <p style="font-size: 24px;">
+                                            <%= User.referralCode %>
+                                        </p>
                                     </div>
-                                    
+
                                 </div><!-- .End .tab-pane -->
                                 <!----------------------------------------------------------- DASHBOARD ENDS ----------------------------------------------------------->
-<!----------------------------------------------------------- ORDERS STARTS ----------------------------------------------------------->
-<!-- Orders Tab Pane -->
-<div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
-    <!-- Orders Table -->
-    <table class="table table-cart table-mobile">
-        <thead>
-            <tr>
-                <th style="width: 40%;">Product</th>
-                <th style="width: 15%;">Price</th>
-                <th style="width: 20%;">Order Status</th>
-                <th style="width: 20%;"></th>
-                <th style="width: 20%;"></th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Loop through order data -->
-            <% for (let j=0; j < orderData.length; j++) { %>
-                <% let product=orderData[j].products %>
-                    <% for (let i=0; i < product.length; i++) { %>
-                        <% const value=product[i].product; %>
-                            <!-- Individual Order Row -->
-                            <tr>
-                                <!-- Product Column -->
-                                <td class="product-col">
-                                    <div class="product">
-                                        <figure class="product-media">
-                                            <a href="#">
-                                                <img src="/public/images/products/<%= value.images[0] %>" alt="Product image">
-                                            </a>
-                                        </figure>
-                                        <h3 class="product-title">
-                                            <a href="#">
-                                                <%= value.name %>
-                                            </a>
-                                        </h3>
-                                    </div>
-                                </td>
-
-                                <!-- Price Column -->
-                                <td class="price-col">₹<%= product[i].total %></td>
-
-                                <!-- Order Status Column -->
-                                <td class="status-col">
-                                    <%= orderData[j].status %>
-                                </td>
-
-                                <!-- Return Column -->
-                                <td class="return-col">
-                                    <% if (orderData[j].status === 'Delivered') { %>
-                                        <!-- Return Order Button -->
-                                        <a href="#" class="btn btn-outline-primary-2 return-button" data-order-id="<%= orderData[j]._id %>">RETURN<i class="icon-long-arrow-right"></i></a>
-                                    <% } %>
-                                </td>
-
-                                <!-- Remove Column -->
-                                <td class="remove-col">
-                                    <% if (orderData[j].status !== 'Delivered') { %>
-                                        <!-- Cancel Order Button -->
-                                        <a href="#" data-type="order" data-id="<%= orderData[j]._id %>" class="btn btn-outline-primary-2 cancel-button">CANCEL<i class="icon-long-arrow-right"></i></a>
-                                    <% } %>
-                                </td>
-                            </tr>
-                    <% } %>
-            <% } %>
-        </tbody>
-    </table>
-</div><!-- .End .tab-pane -->
-
-
+                                <!----------------------------------------------------------- ORDERS STARTS ----------------------------------------------------------->
+                                <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+                                    <!-- Orders Table -->
+                                    <table class="table table-cart table-mobile">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 40%;">Product</th>
+                                                <th style="width: 15%;">Price</th>
+                                                <th style="width: 20%;">Order Status</th>
+                                                <th style="width: 25%;">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Loop through order data -->
+                                            <% for (let j = 0; j < orderData.length; j++) { %>
+                                                <% let product = orderData[j].products %>
+                                                <% for (let i = 0; i < product.length; i++) { %>
+                                                    <% const value = product[i].product; %>
+                                                    <!-- Individual Order Row -->
+                                                    <tr>
+                                                        <!-- Product Column -->
+                                                        <td class="product-col">
+                                                            <div class="product">
+                                                                <figure class="product-media">
+                                                                    <a href="#">
+                                                                        <img src="/public/images/products/<%= value.images[0] %>" alt="Product image">
+                                                                    </a>
+                                                                </figure>
+                                                                <h3 class="product-title">
+                                                                    <a href="#"><%= value.name %></a>
+                                                                </h3>
+                                                            </div>
+                                                        </td>
+                                
+                                                        <!-- Price Column -->
+                                                        <td class="price-col">₹<%= product[i].total %></td>
+                                
+                                                        <!-- Order Status Column -->
+                                                        <td class="status-col"><%= orderData[j].status %></td>
+                                
+                                                        <!-- Actions Column -->
+                                                        <td class="actions-col">
+                                                            <div class="d-flex justify-content-start">
+                                                                <% if (orderData[j].status === 'Delivered') { %>
+                                                                    <!-- Return Order Button -->
+                                                                    <a href="#" class="btn btn-outline-primary-2 btn-sm return-button" data-order-id="<%= orderData[j]._id %>">
+                                                                        RETURN
+                                                                    </a>
+                                                                <% } else { %>
+                                                                    <!-- Cancel Order Button -->
+                                                                    <a href="#" data-type="order" data-id="<%= orderData[j]._id %>" class="btn btn-outline-primary-2 btn-sm cancel-button">CANCEL</a>
+                                                                <% } %>
+                                                                <!-- Generate Invoice Button -->
+                                                                <a href="/generateInvoice/<%= orderData[j]._id %>" class="btn btn-outline-primary-2 btn-sm invoice-button mr-1">
+                                                                    <i class="fas fa-file-invoice"></i>
+                                                                </a>
+                                                                <!-- View Order Details Button -->
+                                                                <a href="/orderDetails/<%= orderData[j]._id %>" class="btn btn-outline-primary-2 btn-sm order-details-button mr-1">
+                                                                    <i class="fas fa-info-circle"></i>
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <% } %>
+                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div><!-- .End .tab-pane -->
+                                
                                 <!----------------------------------------------------------- WALLET STARTS ----------------------------------------------------------->
 
                                 <div class="tab-pane fade" id="tab-wallet" role="tabpanel"
@@ -285,6 +295,40 @@
                                     </div>
                                 </div><!-- .End .tab-pane -->
                                 <!----------------------------------------------------------- ADDRESS ENDS ----------------------------------------------------------->
+                                <!------------------------------------- Reset Password Section ------------------------------------->
+                                <div class="tab-pane fade" id="tab-reset-password" role="tabpanel"
+                                    aria-labelledby="tab-reset-password-link">
+                                    <div class="container">
+                                        <h2 class="section-title">Reset Password</h2>
+                                        <form method="post" action="/resetPassword">
+                                            <!-- Current Password Input -->
+                                            <div class="form-group">
+                                                <label for="currentPassword">Current Password:</label>
+                                                <input type="password" class="form-control" id="currentPassword"
+                                                    name="currentPassword" required>
+                                                <span id="currentPasswordValidationMsg" style="color: red;"></span>
+                                            </div>
+                                            <!-- New Password Input -->
+                                            <div class="form-group">
+                                                <label for="newPassword">New Password:</label>
+                                                <input type="password" class="form-control" id="newPassword"
+                                                    name="newPassword" required maxlength="12">
+                                                <span id="passwordValidationMsg" style="color: red;"></span>
+                                            </div>
+                                            <!-- Confirm Password Input -->
+                                            <div class="form-group">
+                                                <label for="confirmPassword">Confirm Password:</label>
+                                                <input type="password" class="form-control" id="confirmPassword"
+                                                    name="confirmPassword" required maxlength="12">
+                                                <span id="confirmPasswordValidationMsg" style="color: red;"></span>
+                                            </div>
+                                            <!-- Submit Button -->
+                                            <button type="submit" class="btn btn-primary">Reset Password</button>
+                                        </form>
+                                    </div>
+                                </div>
+
+
                             </div><!-- End .col-lg-9 -->
                         </div><!-- End .row -->
                     </div><!-- End .container -->
@@ -334,60 +378,61 @@
 
 
         // Add a click event listener to the "Return Order" button
-$('.return-button').click(function(event) {
-    event.preventDefault(); // Prevent the default link behavior
-    
-    var orderId = $(this).data('order-id'); // Get the order ID from the button's data attribute
-    
-    // Send an AJAX POST request to the backend
-    $.ajax({
-        url: '/returnOrder',
-        type: 'POST',
-        dataType: 'json',
-        data: {
-            type: 'order',
-            id: orderId
-        },
-        success: function(response) {
-            // Handle success response
-            if (response.success) {
-                // Display a success message using Swal
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Order Returned Successfully!',
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(function() {
-                    // Optionally, you can reload the page or perform other actions
-                    location.reload(); // Reload the page
-                });
-            } else {
-                // Display an error message using Swal
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Failed to Return Order',
-                    text: 'Please try again later',
-                });
-            }
-        },
-        error: function(xhr, status, error) {
-            // Handle error response
-            console.error('Error:', error);
-            // Display an error message using Swal
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'An error occurred while processing your request',
+        $('.return-button').click(function (event) {
+            event.preventDefault(); // Prevent the default link behavior
+
+            var orderId = $(this).data('order-id'); // Get the order ID from the button's data attribute
+
+            // Send an AJAX POST request to the backend
+            $.ajax({
+                url: '/returnOrder',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    type: 'order',
+                    id: orderId
+                },
+                success: function (response) {
+                    // Handle success response
+                    if (response.success) {
+                        // Display a success message using Swal
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Order Returned Successfully!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(function () {
+                            // Optionally, you can reload the page or perform other actions
+                            location.reload(); // Reload the page
+                        });
+                    } else {
+                        // Display an error message using Swal
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Failed to Return Order',
+                            text: 'Please try again later',
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle error response
+                    console.error('Error:', error);
+                    // Display an error message using Swal
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while processing your request',
+                    });
+                }
             });
-        }
-    });
-});
-$(document).ready(function () {
+        });
+
+        $(document).ready(function () {
     console.log('Cancel button clicked');
     // Handle the cancel button click event
     $('.cancel-button').click(async function () {
         const $button = $(this);
-        
+
         const type = $button.data('type');
         const id = $button.data('id');
 
@@ -427,16 +472,8 @@ $(document).ready(function () {
 
                 if (response.success) {
                     // Update the status column without reloading the page
-                    const statusColumn = $button.parent().find('.status-col');
+                    const statusColumn = $button.parent().prev('.status-col');
                     statusColumn.text(type === 'order' ? 'Order Status: cancelled' : 'Product Status: cancelled');
-
-                    // Optionally, you can dynamically add a new row for canceled order
-                    // Assuming you have a function to add a new row:
-                    // addCanceledOrderRow(response.canceledOrder);
-
-                    // Optionally, you can reload the order data or update the table
-                    // For example, if you have a function to reload order data:
-                    // reloadOrderData();
 
                     // Show a success message
                     Swal.fire({
@@ -448,14 +485,6 @@ $(document).ready(function () {
 
                     // Hide the cancel button
                     $button.hide();
-                    
-                    // Store cancellation status in local storage
-                    localStorage.setItem(`cancelled_${id}`, true);
-
-                    // Optionally, you can reload the page after a short delay
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
                 } else {
                     Swal.fire('Error!', `Failed to cancel ${type}.`, 'error');
                 }
@@ -602,6 +631,154 @@ $(document).ready(function () {
                 // Handle the error scenario
             }
         }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Function to validate password
+            function validatePassword(password) {
+                // Password length should be at least 8 characters and not more than 12 characters
+                if (password.length === 0) {
+                    return "Password cannot be empty.";
+                }
+                if (password.length < 8 || password.length > 12) {
+                    return "Password must be between 8 and 12 characters long.";
+                }
+                // Check for spaces in password
+                if (/\s/.test(password)) {
+                    return "Password cannot contain spaces.";
+                }
+                // Check for special characters
+                if (/[\s\/\.]/.test(password)) {
+                    return "Password cannot contain special characters like '.', '/', or space.";
+                }
+
+                return ""; // Return empty string if password is valid
+            }
+
+            // Function to validate confirm password
+            function validateConfirmPassword(confirmPassword, password) {
+                if (confirmPassword !== password) {
+                    return "Passwords do not match.";
+                }
+                return ""; // Return empty string if confirm password matches password
+            }
+
+            // Event listener for password input
+            var passwordInput = document.getElementById('newPassword');
+            var passwordValidationMsg = document.getElementById('passwordValidationMsg');
+
+            passwordInput.addEventListener('input', function () {
+                var password = this.value;
+                var validationMessage = validatePassword(password);
+                passwordValidationMsg.textContent = validationMessage;
+                if (validationMessage === "") {
+                    passwordInput.classList.remove("invalid");
+                    passwordInput.classList.add("valid");
+                } else {
+                    passwordInput.classList.remove("valid");
+                    passwordInput.classList.add("invalid");
+                }
+            });
+
+            // Event listener for confirm password input
+            var confirmPasswordInput = document.getElementById('confirmPassword');
+            var confirmPasswordValidationMsg = document.getElementById('confirmPasswordValidationMsg');
+
+            confirmPasswordInput.addEventListener('input', function () {
+                var confirmPassword = this.value;
+                var password = document.getElementById('newPassword').value;
+                var validationMessage = validateConfirmPassword(confirmPassword, password);
+                confirmPasswordValidationMsg.textContent = validationMessage;
+                if (validationMessage === "") {
+                    confirmPasswordInput.classList.remove("invalid");
+                    confirmPasswordInput.classList.add("valid");
+                } else {
+                    confirmPasswordInput.classList.remove("valid");
+                    confirmPasswordInput.classList.add("invalid");
+                }
+            });
+
+            // Event listener for current password input
+            var currentPasswordInput = document.getElementById('currentPassword');
+            var currentPasswordValidationMsg = document.getElementById('currentPasswordValidationMsg');
+
+            currentPasswordInput.addEventListener('input', function () {
+                var currentPassword = this.value;
+
+                // Send an AJAX request to the server to validate the current password
+                fetch('/validateCurrentPassword', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ currentPassword: currentPassword })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.valid) {
+                            currentPasswordValidationMsg.textContent = ""; // Password is valid, clear validation message
+                        } else {
+                            currentPasswordValidationMsg.textContent = "Current password is incorrect."; // Password is invalid, display validation message
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        currentPasswordValidationMsg.textContent = "An error occurred. Please try again.";
+                    });
+            });
+
+            const resetPassword = async () => {
+                try {
+                    const newPassword = document.getElementById('newPassword').value;
+
+                    const response = await fetch('/resetPassword', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ newPassword })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        // Password reset was successful, show success Swal alert
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Password Reset Successful',
+                            text: data.message
+                        }).then(() => {
+                            // Redirect to the login page
+                            window.location.href = '/login';
+                        });
+                    } else {
+                        // Password reset failed, show error Swal alert
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Password Reset Failed',
+                            text: data.message || 'Password reset failed. Please try again.'
+                        });
+                    }
+                } catch (error) {
+                    // An error occurred, show error Swal alert
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while resetting the password. Please try again later.'
+                    });
+                }
+            };
+
+
+        });
+
+
+
     </script>
 
 

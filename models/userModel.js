@@ -62,11 +62,18 @@ const UserSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
+    addresses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Address",
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
+
 // Create the User model based on the schema
 const User = mongoose.model("User", UserSchema);
 

@@ -9,7 +9,6 @@ const loadCoupon = async (req, res) => {
     const coupon = await Coupon.find({});
     console.log(coupon, "coupon vannu");
     res.render("coupon", { coupon });
-
   } catch (error) {
     console.log(error.message);
   }
@@ -23,10 +22,21 @@ const loadAddCoupon = async (req, res) => {
     console.log(error.message);
   }
 };
-
-// add coupon to database
+//=============================== ADD COUPON ==================================
 const addCoupon = async (req, res) => {
   try {
+    const existingCouponName = await Coupon.findOne({
+      couponname: req.body.couponname,
+    });
+    const existingCouponCode = await Coupon.findOne({
+      couponcode: req.body.couponcode,
+    });
+
+    if (existingCouponName || existingCouponCode) {
+      return res.render("addCoupon", { error: "Coupon already exists" });
+    }
+
+    // If neither coupon name nor coupon code exists, add the coupon
     const data = new Coupon({
       couponname: req.body.couponname,
       couponcode: req.body.couponcode,
@@ -43,26 +53,31 @@ const addCoupon = async (req, res) => {
     res.redirect("coupon");
   } catch (error) {
     console.log(error.message);
+    res.status(500).send("Internal Server Error");
   }
 };
 
-//load edit coupon
-const loadEditCoupon = async (req, res) => {
-  console.log(loadEditCoupon, "editcoupon");
-  try {
-    const coupon = await Coupon.findOne({ _id: req.query.id });
 
-    res.render("editCoupon", { coupon });
-  } catch (error) {
-    console.log(error.message);
-    res.render("500");
-  }
-};
-
-//edit coupon to DB
+//=================================   EDIT COUPON  =========================================
 const editCoupon = async (req, res) => {
   try {
     const id = req.query.id;
+
+    const existingCoupon = await Coupon.findOne({
+      couponname: req.body.couponname,
+      _id: { $ne: id },
+    });
+    if (existingCoupon) {
+      return res.status(400).send("Coupon name already exists");
+    }
+
+    const existingCouponCode = await Coupon.findOne({
+      couponcode: req.body.couponcode,
+      _id: { $ne: id },
+    });
+    if (existingCouponCode) {
+      return res.status(400).send("Coupon code already exists");
+    }
 
     await Coupon.updateOne(
       { _id: id },
@@ -82,6 +97,7 @@ const editCoupon = async (req, res) => {
     res.redirect("coupon");
   } catch (error) {
     console.log(error.message);
+    res.status(500).send("Internal Server Error");
   }
 };
 
@@ -98,10 +114,9 @@ const deleteCoupon = async (req, res) => {
 
 //calculate discount on coupon
 const calculateDiscountedTotal = (totalPrice, discountAmount) => {
-  const discountedPrice =totalPrice - discountAmount;
+  const discountedPrice = totalPrice - discountAmount;
   return discountedPrice;
 };
-
 
 const applyCoupon = async (req, res) => {
   try {
@@ -228,9 +243,9 @@ module.exports = {
   loadCoupon,
   loadAddCoupon,
   addCoupon,
-  loadEditCoupon,
+  loadCoupon,
   editCoupon,
   deleteCoupon,
   applyCoupon,
-  removeCoupon
+  removeCoupon,
 };

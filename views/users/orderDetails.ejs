@@ -1,0 +1,74 @@
+<%- include('../layouts/user/header.ejs') %>
+
+<div class="container mt-5">
+    <div class="row justify-content-center m-t-100">
+        <div class="col-md-12">
+            <div class="card border-0 shadow" style="background-color: rgb(220 225 224)">
+                <div class="card-body text-center">
+                    <i class="bi bi-check2-circle-fill order-icon"></i>
+                    <h1 class="order-title mt-4">Order Details</h1>
+                    <p class="order-id">Tracking ID: <strong><%= order._id %></strong></p>
+                    <p class="order-status">Status: <strong><%= order.status %></strong></p> <!-- Add this line -->
+
+                </div>
+            </div>
+            <div class="mb-5 card mt-4 border-0 shadow">
+                <div class="card-body border-0 shadow" style="background-color: rgb(220 225 224);">
+                    <h2 class="mb-4">Products</h2>
+                    <% if (order && order.products && order.products.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped text-center">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Image</th>
+                                        <th scope="col">Product Name</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Quantity</th>
+                                        <th scope="col">Total Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% order.products.forEach(product => { %>
+                                        <tr>
+                                            <td><img src="/public/images/products/<%= product.product.images[0] %>" alt="Product Image"></td>
+                                            <td class="align-middle"><%= product.product.name %></td>
+                                            <td class="align-middle">₹ <%= product.product.price %></td>
+                                            <td class="align-middle"><%= product.count %></td>
+                                            <td class="align-middle">₹ <%= product.product.price * product.count %></td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <p>No products found</p>
+                    <% } %>
+                </div>
+                <div class="mb-4 border-0 shadow" style="background-color: rgb(220 225 224)">
+                    <div class="card-body">
+                        <h2 class="mb-4 d-flex justify-content-center">Shipping Address</h2>
+                        <% if (shippingAddress) { %>
+                            <p>Name: <%= shippingAddress.firstName %> <%= shippingAddress.lastName %></p>
+                            <p>Mobile: <%= shippingAddress.mobile %></p>
+                            <p>Email: <%= shippingAddress.email %></p>
+                            <p>Address: <%= shippingAddress.houseNo %>, <%= shippingAddress.city %>, <%= shippingAddress.state %>, <%= shippingAddress.zipcode %></p>
+                            <p>Additional Details: <%= shippingAddress.additionalDetails %></p>
+                        <% } else { %>
+                            <p>No shipping address available</p>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="/shop" class="btn btn-primary continue-btn mb-4"><i class="bi bi-house-door"></i> Continue Shopping</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Add your custom styles here */
+</style>
+
+<%- include('../layouts/user/footer.ejs') %>

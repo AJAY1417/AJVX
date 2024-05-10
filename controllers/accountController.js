@@ -4,32 +4,29 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const product = require("../models/productModel");
 const Order = require("../models/orderModel");
+const Cart = require("../models/cartModel")
+const Swal = require("sweetalert2");
+const { v4: uuidv4 } = require('uuid');
 
-// load myAccount dasboard
-// load myAccount dashboard
+
 const loadMyAccount = async (req, res) => {
   try {
     console.log("entered the function");
 
-    // Find the user by ID
     const user = await User.findOne({ _id: req.session.user_id });
 
-    // Check if the user is found
     if (!user) {
       console.log("User not found");
-      // You can redirect to a different page or handle it in a way that makes sense for your application
       return res.status(404).send("User not found");
     }
 
     console.log("User found:", user);
 
-    // Retrieve addresses, order data, and wallet details
     const addresses = await Address.find({ userId: req.session.user_id });
     const orderData = await Order.find({ userId: req.session.user_id })
       .populate("products.product")
       .sort({ purchaseDate: -1 });
 
-    // Assuming wallet details are present in the user object
     const walletBalance = user.wallet;
     const walletHistory = user.walletHistory;
 
@@ -37,7 +34,7 @@ const loadMyAccount = async (req, res) => {
       UserAddress: addresses,
       userName: user.firstName,
       orderData: orderData,
-      User: user,//userdb = user
+      User: user, //userdb = user
       walletBalance: walletBalance,
       walletHistory: walletHistory,
     });
@@ -47,12 +44,10 @@ const loadMyAccount = async (req, res) => {
   }
 };
 
-
-//load edit Address
+//================================================= EDIT ADDRESS ==========================================================================================
 const loadEditaddress = async (req, res) => {
   try {
     let userName;
-    // Initialize userAdd as an empty array
     let userAdd = [];
     const addressid = req.query.id;
     console.log(addressid);
@@ -63,7 +58,7 @@ const loadEditaddress = async (req, res) => {
       if (user) {
         userName = user.name;
         if (UserAddress) {
-          userAdd = UserAddress.address; // Set userAdd to the address data if available
+          userAdd = UserAddress.address;
         }
       }
     }
@@ -75,7 +70,6 @@ const loadEditaddress = async (req, res) => {
   }
 };
 
-// load add Address
 const loadAddAddress = async (req, res) => {
   try {
     let userName;
@@ -95,7 +89,7 @@ const loadAddAddress = async (req, res) => {
   }
 };
 
-//add address to db
+//================================================= ADD ADDRESS ==========================================================================================
 
 const addAddress = async (req, res) => {
   try {
@@ -129,14 +123,12 @@ const addAddress = async (req, res) => {
   }
 };
 
-
 //=================================== Edit Address in Database ========================================================
 
 const editAddress = async (req, res) => {
   try {
     const id = req.query.id;
 
-    // Create an object with the fields to update
     const updateFields = {
       "address.$.firstName": req.body.firstName,
       "address.$.lastName": req.body.lastName,
@@ -149,11 +141,10 @@ const editAddress = async (req, res) => {
       "address.$.additionalDetails": req.body.additionalDetails,
     };
 
-    // Use updateOne to update the specified subdocument in the array
     const updatedAddress = await Address.updateOne(
       { "address._id": id, address: { $elemMatch: { _id: id } } },
       { $set: updateFields },
-      { upsert: true } // Allow the address to be created if it doesn't exist
+      { upsert: true }
     );
 
     console.log(updateFields);
@@ -202,6 +193,139 @@ const userDetails = async (req, res) => {
   }
 };
 
+//================================================= PASSWORD RESET ==========================================================================================
+
+const showResetForm = (req, res) => {
+  res.render("resetPassword");
+};
+
+const validateCurrentPassword = async (req, res) => {
+  try {
+    console.log("Entered the validate current password function");
+    console.log("Session:", req.session);
+
+    const userId = req.session.user_id;
+    console.log("User ID from session:", userId);
+
+    if (!userId) {
+      return res.status(401).json({ message: "User not authenticated." });
+    }
+
+    const user = await User.findById(userId);
+    console.log("User found in database:", user);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const { currentPassword } = req.body;
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+    if (isMatch) {
+      return res.status(200).json({ valid: true, userId: userId }); // Include userId in the response
+    } else {
+      return res
+        .status(400)
+        .json({ valid: false, message: "Current password is incorrect." });
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+const resetPassword = async (req, res) => {
+  try {
+    console.log("entered the reset");
+    const userId = req.session.user_id;
+    console.log("User ID from session:", userId);
+    const { newPassword } = req.body;
+    console.log(req.body);
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required." });
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Password reset successful." });
+  } catch (error) {
+    console.error("Error:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+// const showOrderDetails = async (req, res, next) => {
+//   try {
+//     const userId = req.session.user_id;
+//     const orderId = req.params.id;
+//     const trackId = `${Date.now()}-${uuidv4()}`;
+
+//     let order;
+
+//     if (orderId) {
+//       order = await Order.findOne({ _id: orderId })
+//         .populate({ path: "products.product", model: "Product" })
+//         .sort({ purchaseDate: -1 });
+//     } else {
+//       order = await Order.findOne({ userId: userId })
+//         .populate({ path: "products.product", model: "Product" })
+//         .sort({ purchaseDate: -1 });
+//     }
+
+//     const products = await Cart.findOne({ user: userId }).populate({
+//       path: "products.product",
+//       model: "Product",
+//     });
+
+//     if (!order) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "No orders found",
+//       });
+//     }
+
+//     res.render("orderDetails", {
+//       order,
+//       trackId,
+//       products,
+//       user: req.session.user,
+//     }); // Pass the trackId to the view
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+const showOrderDetails = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    console.log("Searching for order with ID:", orderId);
+
+    const order = await Order.findById(orderId).populate("products.product");
+
+    if (!order) {
+      console.log("Order not found for ID:", orderId);
+      return res.status(404).send("Order not found");
+    }
+
+    console.log("Order found:", order);
+    const address = await Address.findOne({ userId: order.userId });
+    res.render("orderDetails", { order, shippingAddress: address });
+  } catch (error) {
+    console.error("Error retrieving order:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
 
 
 
@@ -212,5 +336,8 @@ module.exports = {
   addAddress,
   editAddress,
   userDetails,
-  
+  showResetForm,
+  validateCurrentPassword,
+  resetPassword,
+  showOrderDetails,
 };

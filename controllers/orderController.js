@@ -207,36 +207,25 @@ const removeCartProduct = async (req, res) => {
 
 
 //_____________________________________________________________
-
-
-// Place Order Function
 const placeOrder = async (req, res) => {
   try {
-    // Retrieve necessary data from the request
     const userId = req.session.user_id;
     const addressId = req.body.selectedAddress;
     const paymentMethod = req.body["payment-method"];
     const status = paymentMethod === "cod" ? "placed" : "pending";
 
-    // Fetch user and address details from the database
-    const user = await User.findOne({ _id: userId });
-    const address = await Address.findOne({ _id: addressId });
+    const [user, address, cartData] = await Promise.all([
+      User.findOne({ _id: userId }),
+      Address.findOne({ _id: addressId }),
+      Cart.findOne({ user: userId }),
+    ]);
 
-    // Check if user or address not found
-    if (!user || !address) {
-      return res.status(400).json({ error: "User or address not found" });
+    if (!user || !address || !cartData) {
+      return res
+        .status(400)
+        .json({ error: "User, address, or cart data not found" });
     }
 
-    // Fetch cart data for the user
-    const cartData = await Cart.findOne({ user: userId });
-    const totalAmount = cartData.total;
-
-    // Check if cart data not found
-    if (!cartData) {
-      return res.status(400).json({ error: "Cart data not found" });
-    }
-
-    // Calculate discounted total for each product
     const orderProducts = cartData.products.map((cartProduct) => {
       const discount = req.body.discountAmt || 0;
       const discountedTotal = calculateDiscountedTotal(
@@ -249,17 +238,15 @@ const placeOrder = async (req, res) => {
         count: cartProduct.quantity,
         total: discountedTotal,
         productPrice: cartProduct.price,
-        status: "pending", // Set the status for each product
+        status: "pending",
       };
     });
 
-    // Calculate total amount after applying the coupon
     const updatedTotalAmount = orderProducts.reduce(
       (total, product) => total + product.total,
       0
     );
 
-    // Create a new order document
     const newOrder = new Order({
       userId: userId,
       deliveryDetails: { address: address },
@@ -268,32 +255,30 @@ const placeOrder = async (req, res) => {
       totalAmount: updatedTotalAmount,
       status: status,
       paymentMethod: paymentMethod,
-      paymentStatus: "pending", 
+      paymentStatus: "pending",
       shippingFee: "0",
     });
 
-    // Save the order to the database
     const savedOrder = await newOrder.save();
-    let orderid = savedOrder._id.toString();
+    const orderId = savedOrder._id.toString();
 
-    // Clear the user's cart
     await Cart.updateOne(
       { user: userId },
       { $set: { products: [], total: 0 } }
     );
 
     if (paymentMethod === "online") {
-      // Set up options for Razorpay payment
       const options = {
-        amount: updatedTotalAmount * 100, // Use the updated total amount
+        amount: updatedTotalAmount * 100,
         currency: "INR",
-        receipt: "" + orderid,
+        receipt: orderId,
       };
 
       // Create Razorpay order asynchronously
-      const orderPromise = new Promise((resolve, reject) => {
+      const razorpayOrder = await new Promise((resolve, reject) => {
         razorpayInstance.orders.create(options, (err, order) => {
           if (err) {
+            console.error("Payment failed:", err);
             reject(err);
           } else {
             resolve(order);
@@ -301,46 +286,39 @@ const placeOrder = async (req, res) => {
         });
       });
 
-      // Get the Razorpay order and send it in the response
-      const razorpayOrder = await orderPromise;
       return res.json({ online: true, order: newOrder, razorpayOrder });
     } else if (paymentMethod === "cod") {
-      // Handle cash-on-delivery order
-      return res.json({ cod: true });
+      if (updatedTotalAmount >= 1000) {
+        return res.json({
+          error: "COD Limit Exceeded",
+          totalAmount: updatedTotalAmount,
+        });
+      } else {
+        return res.json({ cod: true });
+      }
     } else if (paymentMethod === "wallet") {
-      console.log(paymentMethod , "guguwswdwdwwdwdd_______________")
-      // Handle wallet payment option
       if (user.wallet >= updatedTotalAmount) {
-       console.log(updatedTotalAmount);
-       
-        
         user.wallet -= updatedTotalAmount;
-        console.log(user.wallet,"________________________________")
-        console.log(updatedTotalAmount,"???????????????????????????????");
-        
         const walletHistory = {
           transactionDate: new Date(),
           transactionAmount: -updatedTotalAmount,
           transactionDetails: "Order placed",
           transactionType: "debit",
         };
-console.log(walletHistory,"RRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
         user.walletHistory.push(walletHistory);
-        await user.save();
-        newOrder.paymentStatus = "completed";
-        await newOrder.save();
+        await Promise.all([
+          user.save(),
+          newOrder.updateOne({ paymentStatus: "completed" }),
+        ]);
         return res.json({ order: newOrder, success: true });
       } else {
-       
         return res.json({ error: "Insufficient balance in the wallet" });
       }
     } else {
-     
       return res.status(400).json({ error: "Invalid payment method" });
     }
   } catch (error) {
-   
-    console.log(error);
+    console.error("Error:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -430,16 +408,32 @@ const cancelOrder = async (req, res) => {
 
       if (order) {
         order.status = "cancelled";
-        order.notes = "REASON FOR CANCEL :" + req.body.reason;
+        order.notes = "REASON FOR CANCEL: " + req.body.reason;
         await order.save();
 
         for (const orderProduct of order.products) {
-          const proDB = await product.findOne({ _id: orderProduct.product });
-          
+          const proDB = await Product.findOne({ _id: orderProduct.product });
+
           if (proDB) {
             proDB.quantity += orderProduct.count;
             await proDB.save();
           }
+        }
+
+        // Find the user associated with the cancelled order
+        const user = await User.findOne({ _id: order.userId });
+        if (user) {
+          // Add wallet history
+          const walletHistory = {
+            transactionDate: new Date(),
+            transactionAmount: order.totalAmount,
+            transactionDetails: `Refund for cancelled order (${order._id})`,
+            transactionType: "credit",
+          };
+          user.walletHistory.push(walletHistory);
+          await user.save();
+        } else {
+          console.error("User not found while cancelling order");
         }
 
         res.json({ success: true });
@@ -451,6 +445,7 @@ const cancelOrder = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -518,6 +513,41 @@ const orderReturnPOST = async (req, res) => {
   }
 };
 
+//========================= REPAY PAYMENT FAILED ==========================
+
+const repayOrder = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+
+    // Fetch the order by ID
+    const order = await Order.findById(orderId);
+
+    // Check if the order exists and has a status of "Payment Failed"
+    if (!order || order.status !== "Payment Failed") {
+      return res
+        .status(404)
+        .json({ error: "Order not found or cannot be repaid" });
+    }
+
+    // Implement logic to process the repayment here (e.g., retry payment)
+
+    // Once repayment is successful, update the order status and payment status
+    order.status = "pending ";
+    order.paymentStatus = "pending"; // Assuming payment needs to be attempted again
+    await order.save();
+
+    return res
+      .status(200)
+      .json({ message: "Repayment initiated successfully", order });
+  } catch (error) {
+    console.error("Error repaying order:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+
+
 
 module.exports = {
   loadCheckout,
@@ -529,4 +559,5 @@ module.exports = {
   verifyPayment,
   returnOrder,
   orderReturnPOST,
+  repayOrder
 };

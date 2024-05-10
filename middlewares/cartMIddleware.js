@@ -2,12 +2,13 @@ const fetchCartCountMiddleware = (req, res, next) => {
   fetch("/cart/count")
     .then((response) => response.json())
     .then((data) => {
-      res.locals.cartCount = data.totalItems; // Set cartCount in res.locals
+      res.locals.totalItems = data.totalItems; // Set totalItems in res.locals
       next();
     })
     .catch((error) => {
       console.error("Error fetching cart count:", error);
-      next(error);
+      res.locals.totalItems = 0; // Set totalItems to 0 if there's an error
+      next();
     });
 };
 

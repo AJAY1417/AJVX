@@ -34,6 +34,7 @@ const orderDetails = new mongoose.Schema({
           "cancelled",
           "Returned",
           "placed",
+          "Payment Failed",
         ],
         required: true,
       },
