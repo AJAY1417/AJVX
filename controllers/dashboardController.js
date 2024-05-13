@@ -11,6 +11,7 @@ const loadDashboard = async (req, res, next) => {
     const totalUsers = await User.countDocuments();
     const totalOrders = await Order.countDocuments();
     // ---------------------------- //
+    
     const totalRevenueResult = await Order.aggregate([
       {
         $group: {
@@ -20,8 +21,8 @@ const loadDashboard = async (req, res, next) => {
       },
     ]);
     // ---------------------------- //
-
-    const totalRevenue =
+    let totalRevenue=0
+     totalRevenue =
       totalRevenueResult.length > 0 ? totalRevenueResult[0].totalRevenue : 0;
 
     const averageOrderValue =
@@ -458,7 +459,7 @@ console.log(monthlyRevenueData, "monthlyRevenueData");
     // ____________________________________________________________________________________________________________________________
 
     res.render("dashboard", {
-      totalUsers,
+      totalUsers:0,
       totalRevenue,
       totalOrders,
       averageOrderValue,

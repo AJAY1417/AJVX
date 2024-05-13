@@ -165,7 +165,7 @@
                                                                     <a href="#" class="btn btn-outline-primary-2 btn-sm return-button" data-order-id="<%= orderData[j]._id %>">
                                                                         RETURN
                                                                     </a>
-                                                                <% } else { %>
+                                                                    <% } else if (orderData[j].status !== 'cancelled') { %>
                                                                     <!-- Cancel Order Button -->
                                                                     <a href="#" data-type="order" data-id="<%= orderData[j]._id %>" class="btn btn-outline-primary-2 btn-sm cancel-button">CANCEL</a>
                                                                 <% } %>

@@ -412,7 +412,7 @@ const cancelOrder = async (req, res) => {
         await order.save();
 
         for (const orderProduct of order.products) {
-          const proDB = await Product.findOne({ _id: orderProduct.product });
+          const proDB = await product.findOne({ _id: orderProduct.product });
 
           if (proDB) {
             proDB.quantity += orderProduct.count;
@@ -431,6 +431,7 @@ const cancelOrder = async (req, res) => {
             transactionType: "credit",
           };
           user.walletHistory.push(walletHistory);
+          user.wallet += order.totalAmount
           await user.save();
         } else {
           console.error("User not found while cancelling order");

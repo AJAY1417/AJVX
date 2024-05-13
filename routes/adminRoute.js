@@ -122,9 +122,10 @@ admin_route.post("/updateOrderStatus", adminController.updateOrderStatus);
 admin_route.get("/coupon", couponController.loadCoupon);
 admin_route.get("/loadAddCoupon", couponController.loadAddCoupon);
 admin_route.post("/addCouponDB",  couponController.addCoupon);
-admin_route.get("/loadEditCoupon",couponController.loadCoupon);
+admin_route.get("/loadEditCoupon",couponController.loadEditCoupon);
 admin_route.post("/editCouponDB",  couponController.editCoupon);
 admin_route.get("/deleteCoupon", couponController.deleteCoupon);
+
 
 
 

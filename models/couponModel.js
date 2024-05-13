@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-//this is a mongoose schema defintion for a coupon model 
+//this is a mongoose schema defintion for a coupon model
 const coupondata = new mongoose.Schema({
   couponname: {
     type: String,
@@ -17,6 +17,11 @@ const coupondata = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  userslimit: {
+    type: Number,
+    required: true,
+  },
+
   expirydate: {
     type: Date,
     required: true,

@@ -1,3 +1,4 @@
+
 <%- include('../layouts/admin/header.ejs') %>
 
 <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
@@ -5,97 +6,181 @@
   <%- include('../layouts/admin/sideBar.ejs') %>
   <div class="body-wrapper">
     <%- include('../layouts/admin/headerBar.ejs') %>
-            <div class="container-fluid mt-3">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">Edit Coupons</h4>
-                                <form action="/admin/editCouponDB?id=<%= coupon._id %>" method="post">
-                                    <div class="form-group">
-                                        <input type="hidden" name="coupon_id" value="<%= coupon._id %>">
-                                        <label for="couponname">Name Of Coupon</label>
-                                        <input type="text" class="form-control" id="couponname" placeholder="Name"
-                                            name="couponname" value="<%= coupon.couponname %> %>">
-                                        <span class="error-message text-danger" id="signin-error"></span>
-                                    </div><!-- End .form-group -->
+    <div class="container-fluid mt-3">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">Edit Coupons</h4>
 
-                                    <div class="form-group">
-                                        <input type="hidden" name="coupon_id" value="<%= coupon._id %>">
-
-                                        <label for="couponcode">Coupon Code</label>
-                                        <input type="text" class="form-control" id="couponcode"
-                                            placeholder="Coupon Code" name="couponcode"
-                                            value="<%= coupon.couponcode %>">
-                                        <span class="error-message text-danger" id="signin-error"></span>
-                                    </div><!-- End .form-group -->
-
-                                    <div class="form-group">
-                                        <label for="discountamount">Discount Amount</label>
-                                        <div class="input-group" id="discountamount">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">₹</span>
-                                            </div>
-                                            <input type="text" class="form-control"
-                                                aria-label="Amount (to the nearest dollar)" name="discountamount"
-                                                value="<%= coupon.discountamount %>">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="criteriaamount">Criteria Amount</label>
-                                        <div class="input-group" id="criteriaamount">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">₹</span>
-                                            </div>
-                                            <input type="text" class="form-control"
-                                                aria-label="Amount (to the nearest dollar)" name="criteriaamount"
-                                                value="<%= coupon.criteriaamount %>">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="userslimit">Users Limit</label>
-                                        <input type="text" class="form-control" id="userslimit"
-                                            placeholder="Users Limit" name="userslimit"
-                                            value="<%= coupon.userslimit %>">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="description">Description</label>
-                                        <input type="text" class="form-control" id="description"
-                                            placeholder="Description" name="description"
-                                            value="<%= coupon.description %>">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="activationdate">Activation Date</label>
-                                        <input type="date" class="form-control" id="activationdate"
-                                            name="activationdate" value="<%= coupon.activationdate %>">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="expirydate">Expiry Date</label>
-                                        <input type="date" class="form-control" id="expirydate" name="expirydate"
-                                            value="<%= coupon.expirydate %>">
-                                    </div>
-
-
-
-
-                                    <div class="form-footer">
-                                        <button type="submit" class="btn btn-outline-primary-2 bg-primary">
-                                            <span>Submit</span>
-                                            <i class="icon-long-arrow-right"></i>
-                                        </button>
-                                        <button class="btn btn-dark">Cancel</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+              <% if (typeof error !== 'undefined') { %>
+                <div class="alert alert-danger" role="alert">
+                  <%= error %>
                 </div>
+              <% } %>
+              <form action="/admin/editCouponDB" method="post" id="couponForm">
+                <div class="form-group">
+                  <input type="hidden" name="coupon_id" value="<%= coupon._id %>">
+                  <label for="couponname">Name Of Coupon</label>
+                  <input type="text" class="form-control" id="couponname" placeholder="Name" name="couponname"
+                    value="<%= coupon && coupon.couponname ? coupon.couponname : '' %>">
+                  <span class="error-message text-danger" id="couponnameError"></span>
+                </div><!-- End .form-group -->
+
+                <div class="form-group">
+                  <label for="couponcode">Coupon Code</label>
+                  <input type="text" class="form-control" id="couponcode" placeholder="Coupon Code"
+                    name="couponcode" value="<%= coupon && coupon.couponcode ? coupon.couponcode : '' %>">
+                  <span class="error-message text-danger" id="couponcodeError"></span>
+                </div><!-- End .form-group -->
+
+                <div class="form-group">
+                  <label for="discountamount">Discount Amount</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">₹</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)"
+                      name="discountamount" value="<%= coupon && coupon.discountamount ? coupon.discountamount : '' %>">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="criteriaamount">Criteria Amount</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">₹</span>
+                    </div>
+                    <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)"
+                      name="criteriaamount" value="<%= coupon && coupon.criteriaamount ? coupon.criteriaamount : '' %>">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="userslimit">Users Limit</label>
+                  <input type="text" class="form-control" id="userslimit" placeholder="Users Limit"
+                    name="userslimit" value="<%= coupon && coupon.userslimit ? coupon.userslimit : '' %>">
+                </div>
+
+                <div class="form-group">
+                  <label for="description">Description</label>
+                  <input type="text" class="form-control" id="description" placeholder="Description"
+                    name="description" value="<%= coupon && coupon.description ? coupon.description : '' %>">
+                </div>
+
+                <div class="form-group">
+                  <label for="activationdate">Activation Date</label>
+                  <input type="date" class="form-control" id="activationdate" name="activationdate"
+                    value="<%= coupon && coupon.activationdate ? (coupon.activationdate.toISOString().substring(0, 10)) : '' %>">
+                </div>
+
+                <div class="form-group">
+                  <label for="expirydate">Expiry Date</label>
+                  <input type="date" class="form-control" id="expirydate" name="expirydate"
+                    value="<%= coupon && coupon.expirydate ? (coupon.expirydate.toISOString().substring(0, 10)) : '' %>">
+                </div>
+
+
+                <div class="form-footer">
+                  <button type="submit" class="btn btn-outline-primary-2 bg-primary">
+                    <span>Submit</span>
+                    <i class="icon-long-arrow-right"></i>
+                  </button>
+                  <button class="btn btn-dark">Cancel</button>
+                </div>
+              </form>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <%- include('../layouts/admin/footer') %>
 
-            <%- include('../layouts/admin/footer') %>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('#couponForm').submit(function (event) {
+        var isValid = true;
+
+        // Validate Name of Coupon
+        var couponname = $("#couponname").val().trim();
+        if (couponname.length < 1 || couponname.length > 15) {
+          showError("couponname", "Name must be between 1 and 15 characters.");
+          isValid = false;
+        } else {
+          clearError("couponname");
+        }
+
+        // Validate Coupon Code
+        var couponcode = $("#couponcode").val().trim();
+        if (couponcode.length < 1 || couponcode.length > 10 || !/^[a-zA-Z0-9]+$/.test(couponcode)) {
+          showError("couponcode", "Coupon Code must be between 1 and 10 alphanumeric characters.");
+          isValid = false;
+        } else {
+          clearError("couponcode");
+        }
+
+        var discountamount = parseFloat($("[name='discountamount']").val());
+        var criteriaamount = parseFloat($("[name='criteriaamount']").val());
+
+        if (isNaN(discountamount) || isNaN(criteriaamount) || discountamount < 0 || discountamount > criteriaamount) {
+          showError("discountamount", "Discount Amount must be smaller than Criteria Amount and cannot be negative.");
+          isValid = false;
+        } else {
+          clearError("discountamount");
+        }
+
+        // Validate Criteria Amount
+        if (criteriaamount <= 0) {
+          showError("criteriaamount", "Criteria Amount must be greater than zero.");
+          isValid = false;
+        } else {
+          clearError("criteriaamount");
+        }
+
+        // Validate Users Limit
+        var userslimit = parseInt($("#userslimit").val());
+        if (isNaN(userslimit) || userslimit <= 0) {
+          showError("userslimit", "Users Limit must be a positive integer.");
+          isValid = false;
+        } else {
+          clearError("userslimit");
+        }
+
+        // Validate Description
+        var description = $("#description").val().trim();
+        if (description.length <= 25) {
+          showError("description", "Description must be at most 15 characters.");
+          isValid = false;
+        } else {
+          clearError("description");
+        }
+
+        // Validate Activation Date and Expiry Date
+        var activationdate = new Date($("#activationdate").val());
+        var expirydate = new Date($("#expirydate").val());
+
+        var currentDate = new Date();
+        if (isNaN(activationdate.getTime()) || isNaN(expirydate.getTime()) ||
+          activationdate <= currentDate || expirydate <= activationdate) {
+          showError("activationdate", "Please select valid Activation and Expiry Dates.");
+          isValid = false;
+        }
+
+        // Prevent form submission if there are validation errors
+        if (!isValid) {
+          event.preventDefault();
+        }
+      });
+
+      function showError(inputId, errorMessage) {
+        $("#" + inputId + "Error").text(errorMessage).css("color", "red");
+      }
+
+      function clearError(inputId) {
+        $("#" + inputId + "Error").text("");
+      }
+    });
+  </script>
