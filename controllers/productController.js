@@ -5,13 +5,6 @@ const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
 
-
-
-
-
-
-
-
 //=================== LOAD PRODUCT PAGE =========================================================================//
 
 // Load all products and render the 'product' view with the product list
@@ -25,12 +18,6 @@ const productLoad = async (req, res) => {
   }
 };
 
- 
-
-
-
-
-
 //===================  ADD PRODUCT PAGE LOAD ==============================================
 const addProductLoad = async (req, res) => {
   try {
@@ -43,16 +30,11 @@ const addProductLoad = async (req, res) => {
   }
 };
 
-
-
-
-
-
 //=================== TO ADD PRODUCT ==============================================
 const addProduct = async (req, res) => {
   try {
     const { productName, description, category, price, quantity } = req.body;
-    // this condition is to check validation of product name and quantity 
+    // this condition is to check validation of product name and quantity
     if (!productName || !quantity || isNaN(quantity) || quantity <= 0) {
       return res
         .status(400)
@@ -82,49 +64,31 @@ const addProduct = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
 //===================  BLOCKS THE PRODUCT ==============================================
 const blockProduct = async (req, res) => {
   try {
     const productId = req.query.id;
 
-    // Check if the product ID is valid
     if (!productId) {
       return res.status(400).send("Invalid product ID");
     }
 
-    // Find the product in the database by ID
     const product = await productSchema.findById(productId); // <-- Corrected here
 
-    // Check if the product exists
     if (!product) {
       return res.status(404).send("Product not found");
     }
 
-    // Toggle the block status
-    product.is_deleted = !product.is_deleted; // <-- Updated property name
+    product.is_deleted = !product.is_deleted;
 
-    // Save the updated product
     await product.save();
 
-    // Redirect or respond as needed
-    res.redirect("/admin/products"); // Adjust the redirect path as needed
+    res.redirect("/admin/products");
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error");
   }
 };
-
-
-
-
-
-
 
 //===================  EDITS THE PRODUCT  ==============================================
 
@@ -138,19 +102,12 @@ const editProduct = async (req, res) => {
       return res.status(404).render("error", { message: "Product not found" });
     }
 
-    // Render the 'editProduct' view with the existing product data and category list
     res.render("editProduct", { product: productData, category: categoryList });
   } catch (error) {
     console.log(error.message);
     res.status(500).send("Internal Server Error");
   }
 };
-
-
-
-
-
-
 
 
 //=================== UPDATE THE PRODUCT ==============================================
@@ -187,11 +144,26 @@ const updateProduct = async (req, res) => {
   }
 };
 
+//===================================== SEARCH IN SHOP PAGE  ==============================================
 
+const search = async (req, res) => {
+  try {
+    const searchQuery = req.query.q;
+    if (!searchQuery) {
+      return res.status(400).json({ error: 'Query parameter "q" is required' });
+    }
 
+    const products = await productSchema.find({
+      name: { $regex: searchQuery, $options: "i" },
+    }).populate("category");
+    console.log(products,"products")
 
-
-
+    res.json({ results: products });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
+  }
+};
 
 //===================  TO UPLOAD THE IMAGES FOR PRODUCTS ==============================================
 
@@ -205,11 +177,10 @@ const uploadProductImages = async (req, res) => {
     }
 
     // Add the image filenames (or other relevant information) to the product's images array
-    req.files.forEach(file => {
+    req.files.forEach((file) => {
       product.images.push(file.filename);
     });
 
-   
     await product.save();
 
     // Redirect or respond as needed
@@ -219,12 +190,6 @@ const uploadProductImages = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
-
-
-
-
-
 
 //=================== DELETE THE IMAGES SEPA=ERATELY ==============================================
 
@@ -265,14 +230,10 @@ const deleteProductImage = async (req, res) => {
     // Respond with success status (200) to the client
     res.status(200).send("Image deleted successfully");
   } catch (error) {
-    console.error('Error deleting product image:', error);
-    res.status(500).send('Internal server error');
+    console.error("Error deleting product image:", error);
+    res.status(500).send("Internal server error");
   }
 };
-
-
-
-
 
 //===================  TO LOAD THE EDIT PRODUCT PAGE ==============================================
 const editProductLoad = async (req, res) => {
@@ -298,10 +259,6 @@ const editProductLoad = async (req, res) => {
   }
 };
 
-
-
-
-
 //===================  EXPORTED ARE HERE  ==============================================
 
 module.exports = {
@@ -313,5 +270,6 @@ module.exports = {
   editProduct,
   updateProduct,
   uploadProductImages,
-  deleteProductImage
+  deleteProductImage,
+  search,
 };

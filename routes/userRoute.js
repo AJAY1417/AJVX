@@ -10,6 +10,7 @@ const orderController = require("../controllers/orderController");
 const walletController = require("../controllers/walletController");
 const couponController = require("../controllers/couponController");
 const invoiceController = require("../controllers/InvoiceController");
+const productController = require("../controllers/productController");
 
 user_route.set("view engine", "ejs");
 user_route.set("views", "./views/users");
@@ -51,7 +52,7 @@ user_route.post("/resendOtp", userController.resendOtp);
 // ============================ PRODUCT =======================================
 user_route.get("/shop", userController.shopLoad);
 user_route.get("/productDetail", userController.productDetailLoad);
-user_route.get("/search", userController.searchProducts);
+user_route.get("/search", productController.search);
 
 // ============================ WISHLIST =======================================
 user_route.get("/wishlist", userController.loadWishlist);
@@ -76,10 +77,12 @@ user_route.get("/addAddress", accountController.loadAddAddress);
 user_route.post("/addAddress", accountController.addAddress);
 user_route.post("/updateDetails", accountController.userDetails);
 user_route.get("/resetPasswordLoad", accountController.showResetForm);
-user_route.post("/validateCurrentPassword",accountController.validateCurrentPassword);
+user_route.post(
+  "/validateCurrentPassword",
+  accountController.validateCurrentPassword
+);
 user_route.post("/resetPassword", accountController.resetPassword);
 user_route.get("/orderDetails/:id", accountController.showOrderDetails);
-
 
 // ============================ WALLET  =======================================
 user_route.get("/view-wallet", walletController.loadWallet);
@@ -98,8 +101,7 @@ user_route.post("/returnOrder", orderController.orderReturnPOST);
 
 // ============================ PAYMENT =======================================
 user_route.post("/verifyPayment", orderController.verifyPayment);
-user_route.post("/repayOrder/:orderId",orderController.repayOrder);
-
+user_route.post("/repayOrder/:orderId", orderController.repayOrder);
 
 // ============================ COUPONS =======================================
 user_route.post("/applyCoupon", couponController.applyCoupon);

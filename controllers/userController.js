@@ -10,21 +10,6 @@ const randomString = require("randomstring");
 
 const nodemailer = require("nodemailer");
 
-const searchProducts = async (req, res) => {
-  const { q } = req.query;
-  console.log("Search query:", q);
-  try {
-    const results = await Product.find({
-      name: { $regex: new RegExp(q, "i") },
-    });
-
-    res.json({ results });
-  } catch (error) {
-    console.error("Error searching products:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
 // ============================  OTP GENERATION  =======================================
 const generateRandomNumericString = (length) => {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -100,7 +85,7 @@ const insertUser = async (req, res, next) => {
     req.session.email = req.body.email;
     req.session.password = spassword;
     req.session.referralCode = myReferCode;
-    req.session.referredCode = req.body.referralCode
+    req.session.referredCode = req.body.referralCode;
 
     const otpsend = generateRandomNumericString(6);
     req.session.otpsend = {
@@ -361,11 +346,9 @@ const resendOtp = async (req, res, next) => {
     // Send email and handle the response
     const info = await transporter.sendMail(mailOptions);
 
-
     // Redirect back to the OTP page with a success message in the query parameter
     res.redirect("/otp?success=OTP has been resent successfully");
   } catch (error) {
-
     // Redirect back to the OTP page with an error message in the query parameter
     res.redirect("/otp?error=Error in resending OTP. Please try again.");
   }
@@ -386,10 +369,11 @@ const productList = async (req, res) => {
 // ============================  SHOP PAGE LOADING  =======================================
 const shopLoad = async (req, res) => {
   try {
-    const productsPerPage = 9; // Change this based on your desired number of products per page
+    const productsPerPage = 6; // Adjusted to display 6 products per page
     const currentPage = parseInt(req.query.page) || 1;
+    const searchQuery = req.query.q || ""; // Get search query or empty string if not provided
 
-    // Fetch only active (not blocked) products
+    // Fetch only active (not deleted) products
     const products = await Product.find({ is_deleted: false })
       .populate("category")
       .skip((currentPage - 1) * productsPerPage)
@@ -402,14 +386,17 @@ const shopLoad = async (req, res) => {
     const totalPages = Math.ceil(totalProductsCount / productsPerPage);
 
     const categories = await categorySchema.find();
-    const discount = await Offers.find({}); //ith product offer
+    const discount = await Offers.find({}); // ith product offer
     const discountCategory = await categoryOffer.find({});
+
     const renderData = {
       products: products,
       categories,
       discCat: discountCategory,
       discPrice: discount,
+      searchQuery: searchQuery, // Pass search query to frontend
     };
+
     res.render("shop", {
       products,
       categories,
@@ -423,6 +410,9 @@ const shopLoad = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+
+
 
 // ============================ PRODUCT DETAIL LOAD  =======================================
 const productDetailLoad = async (req, res) => {
@@ -583,7 +573,7 @@ const deleteWishlistproduct = async (req, res) => {
 // =====================================================================================================================================
 
 module.exports = {
-  searchProducts,
+  
   generateReferalCode,
   loadRegister,
   loadHome,
