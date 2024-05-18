@@ -165,6 +165,56 @@ const search = async (req, res) => {
   }
 };
 
+
+//===================================== SORT PRICE IN SHOP PAGE  ==============================================
+// Backend code to filter products based on selected categories and support pagination
+const filterProducts = async (req, res) => {
+  try {
+    const { categories, page = 1, limit = 10 } = req.body; // Assuming the frontend sends an array of selected categories, page number, and limit
+
+    // Build the query to filter products based on selected categories
+    let query = {};
+    if (categories && categories.length > 0) {
+      query["category"] = { $in: categories };
+    }
+
+    // Calculate the skip value for pagination
+    const skip = (page - 1) * limit;
+
+    // Query the database to retrieve filtered products with pagination
+    const filteredProducts = await productSchema.find(query)
+      .skip(skip)
+      .limit(limit)
+      .populate("category");
+
+    // Get the total count of filtered products
+    const totalFilteredProducts = await productSchema.countDocuments(query);
+
+    res.json({
+      success: true,
+      products: filteredProducts,
+      totalProducts: totalFilteredProducts,
+      currentPage: page,
+      totalPages: Math.ceil(totalFilteredProducts / limit)
+    });
+  } catch (error) {
+    console.error("Error filtering products:", error);
+    res.status(500).json({ success: false, error: "Server Error" });
+  }
+};
+
+
+//===================================== All Products   ==============================================
+
+
+const getAllProducts = async (req, res) => {
+  try {
+   res.render()
+  } catch (error) {
+    console.error("Error fetching all products:", error);
+    res.status(500).json({ success: false, error: "Server Error" });
+  }
+};
 //===================  TO UPLOAD THE IMAGES FOR PRODUCTS ==============================================
 
 const uploadProductImages = async (req, res) => {
@@ -272,4 +322,6 @@ module.exports = {
   uploadProductImages,
   deleteProductImage,
   search,
+  filterProducts,
+  getAllProducts,
 };

@@ -1,300 +1,405 @@
 <%- include('../layouts/user/header.ejs') %>
-<style>
-  .no-products-found {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 40px;
-    font-size: 1208px; /* Increase font size */
-    font-weight: bold;
-    color: #ff0000;
-    text-align: center; /* Center align text */
-    width: auto; /* Allow width to adjust based on content */
-    opacity: 0; /* Start with opacity 0 for animation */
-    animation: fadeIn 1s ease-in-out forwards, shake 0.5s ease-in-out 1s infinite alternate; /* Apply animations */
-  }
-
-  .no-products-found p {
-    margin: 0;
-    font-size: 36px;
-    line-height: 1.2; /* Set line height to ensure proper spacing */
-  }
-
-  @keyframes fadeIn {
-    0% {
+  <style>
+    .no-products-found {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 40px;
+      font-size: 1208px;
+      /* Increase font size */
+      font-weight: bold;
+      color: #ff0000;
+      text-align: center;
+      /* Center align text */
+      width: auto;
+      /* Allow width to adjust based on content */
       opacity: 0;
-      transform: scale(0.9);
+      /* Start with opacity 0 for animation */
+      animation: fadeIn 1s ease-in-out forwards, shake 0.5s ease-in-out 1s infinite alternate;
+      /* Apply animations */
     }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
 
-  @keyframes shake {
-    0% {
-      transform: translateX(-5px); /* Move left */
+    .no-products-found p {
+      margin: 0;
+      font-size: 36px;
+      line-height: 1.2;
+      /* Set line height to ensure proper spacing */
     }
-    100% {
-      transform: translateX(5px); /* Move right */
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
-  }
-</style>
+
+    @keyframes shake {
+      0% {
+        transform: translateX(-5px);
+        /* Move left */
+      }
+
+      100% {
+        transform: translateX(5px);
+        /* Move right */
+      }
+    }
+  </style>
 
 
-<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
-  <div class="container">
-    <h1 class="page-title">Product List</h1>
+  <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+    <div class="container">
+      <h1 class="page-title">Product List</h1>
+    </div>
+    <!-- End .container -->
   </div>
-  <!-- End .container -->
-</div>
-<!-- End .page-header -->
+  <!-- End .page-header -->
 
-<nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
-  <div class="container">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/">Home</a></li>
-      <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
-      <li class="breadcrumb-item active" aria-current="page">Grid 3 Columns</li>
-    </ol>
-  </div>
-  <!-- End .container -->
-</nav>
-<!-- End .breadcrumb-nav -->
+  <nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
+    <div class="container">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Grid 3 Columns</li>
+      </ol>
+    </div>
+    <!-- End .container -->
+  </nav>
+  <!-- End .breadcrumb-nav -->
 
-<div class="page-content">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-9">
-        <div class="toolbox">
-          <div class="toolbox-left">
-            <div class="toolbox-info">
-              Showing <span id="productCount"><%= products.length %> of <%= products.length %> Products</span>
+  <div class="page-content">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-9">
+          <div class="toolbox">
+            <div class="toolbox-left">
+              <div class="toolbox-info">
+                Showing <span id="productCount">
+                  <%= products.length %> of <%= products.length %> Products
+                </span>
+              </div>
             </div>
-          </div>
-          <!-- End .toolbox-left -->
-          <div class="toolbox-right">
+            <!-- End .toolbox-left -->
+            <div class="toolbox-right">
+              <!-- End .toolbox-right -->
+            </div>
             <!-- End .toolbox-right -->
           </div>
-          <!-- End .toolbox-right -->
-        </div>
-        <!-- End .toolbox -->
+          <!-- End .toolbox -->
 
-        <div class="products mb-3">
-          <div class="row justify-content-start" id="productList">
-            <% for (let i=0; i < products.length; i++) { %>
-            <div class="col-6 col-md-4 col-lg-4 mb-4">
-              <div class="product product-7 text-center" data-category="<%= products[i].category %>">
-                <figure class="product-media">
-                  <!-- product discount from here  -->
-                  <% const productDiscount=renderData.discPrice.find(x=> x.product.toString() === products[i]._id.toString()); %>
-                  <% let smallestPrice=Math.min(products[i].price, products[i].discountPricepro || Infinity, products[i].discountPricecat || Infinity); %>
-                  <% if (productDiscount) { %>
-                  <span class="product-label label-new"><%= productDiscount.percentage %>% off</span>
-                  <% } %>
-                  <span class="product-label label-new">New</span>
-                  <a href="/productDetail?id=<%= products[i]._id %>">
-                    <img src="/public/images/products/<%= products[i].images[0] %>" alt="Product image" class="product-image" />
-                  </a>
-                  <div class="product-action-vertical">
-                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                    <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-                    <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
-                  </div>
-                  <!-- End .product-action-vertical -->
-                  <div class="product-action">
-                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                  </div>
-                  <!-- End .product-action -->
-                </figure>
-                <!-- End .product-media -->
-                <div class="product-body">
-                  <div class="product-cat">
-                    <a href="#"><%= products[i].category ? products[i].category.name : 'Uncategorized' %></a>
-                  </div>
-                  <!-- End .product-cat -->
-                  <h3 class="product-title" style="font-size: 18px; font-weight: bold; color: #333">
-                    <a href="product.html"><%= products[i].name %></a>
-                  </h3>
-                  <!-- End .product-title -->
-                  <div class="product-price text-center" style="color: rgba(255, 0, 0, 0.744); font-weight: bold; font-size: 20px;">
-                    <% if (smallestPrice && smallestPrice < products[i].price) { %>
-                    <strike>₹<%= products[i].price %></strike>
-                    <% } %>
-                    ₹<%= smallestPrice %>
-                  </div>
-                  <!-- End .product-price -->
-                </div>
-                <!-- End .product-body -->
-              </div>
-              <!-- End .product -->
-            </div>
-            <!-- End .col-6 col-md-4 col-lg-4 -->
-            <% } %>
-          </div>
-        </div>
-        <!-- End .products -->
-      </div>
-      <!-- End .col-lg-9 -->
-
-      <aside class="col-lg-3 order-lg-first">
-        <div class="sidebar sidebar-shop">
-          <input type="text" id="searchInput" class="form-control" placeholder="Search...">
-          <button type="button" onclick="searchProducts()" class="btn btn-primary">Search</button>
-
-          <div class="widget widget-clean">
-            <label>Sort:</label>
-            <a href="#" class="sidebar-filter-clear">Clean All</a>
-          </div>
-
-                 <!------------------------------ CATEGORY FILTER SECTION ------------------------------------>
-
-          <!-- End .widget widget-clean -->
-          <div class="widget widget-collapsible">
-            <h3 class="widget-title">
-              <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1">Category</a>
-            </h3>
-            <!-- End .widget-title -->
-            <div class="collapse show" id="widget-1">
-              <div class="widget-body">
-                <div class="filter-items filter-items-count">
-                  <% categories.forEach((category, index)=> { %>
-                  <div class="filter-item" style="color: yellow;">
-                    <div class="custom-control custom-checkbox">
-                      <input type="checkbox" class="custom-control-input" id="cat-<%= index + 1 %>" onchange="filterProducts()"/>
-                      <label class="custom-control-label" for="cat-<%= index + 1 %>"><%= category.name %></label>
+          <div class="products mb-3">
+            <div class="row justify-content-start" id="productList">
+              <% for (let i=0; i < products.length; i++) { %>
+                <div class="col-6 col-md-4 col-lg-4 mb-4">
+                  <div class="product product-7 text-center" data-category="<%= products[i].category %>">
+                    <figure class="product-media">
+                      <!-- product discount from here  -->
+                      <% const productDiscount=renderData.discPrice.find(x=> x.product.toString() ===
+                        products[i]._id.toString()); %>
+                        <% let smallestPrice=Math.min(products[i].price, products[i].discountPricepro || Infinity,
+                          products[i].discountPricecat || Infinity); %>
+                          <% if (productDiscount) { %>
+                            <span class="product-label label-new">
+                              <%= productDiscount.percentage %>% off
+                            </span>
+                            <% } %>
+                              <span class="product-label label-new">New</span>
+                              <a href="/productDetail?id=<%= products[i]._id %>">
+                                <img src="/public/images/products/<%= products[i].images[0] %>" alt="Product image"
+                                  class="product-image" />
+                              </a>
+                              <div class="product-action-vertical">
+                                <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to
+                                    wishlist</span></a>
+                                <a href="popup/quickView.html" class="btn-product-icon btn-quickview"
+                                  title="Quick view"><span>Quick view</span></a>
+                                <a href="#" class="btn-product-icon btn-compare"
+                                  title="Compare"><span>Compare</span></a>
+                              </div>
+                              <!-- End .product-action-vertical -->
+                              <div class="product-action">
+                                <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                              </div>
+                              <!-- End .product-action -->
+                    </figure>
+                    <!-- End .product-media -->
+                    <div class="product-body">
+                      <div class="product-cat">
+                        <a href="#">
+                          <%= products[i].category ? products[i].category.name : 'Uncategorized' %>
+                        </a>
+                      </div>
+                      <!-- End .product-cat -->
+                      <h3 class="product-title" style="font-size: 18px; font-weight: bold; color: #333">
+                        <a href="product.html">
+                          <%= products[i].name %>
+                        </a>
+                      </h3>
+                      <!-- End .product-title -->
+                      <div class="product-price text-center"
+                        style="color: rgba(255, 0, 0, 0.744); font-weight: bold; font-size: 20px;">
+                        <% if (smallestPrice && smallestPrice < products[i].price) { %>
+                          <strike>₹<%= products[i].price %></strike>
+                          <% } %>
+                            ₹<%= smallestPrice %>
+                      </div>
+                      <!-- End .product-price -->
                     </div>
-                    <!-- End .custom-checkbox -->
-                    <span class="item-count">3</span>
+                    <!-- End .product-body -->
                   </div>
-                  <!-- End .filter-item -->
-                  <% }); %>
+                  <!-- End .product -->
+                </div>
+                <!-- End .col-6 col-md-4 col-lg-4 -->
+                <% } %>
+            </div>
+          </div>
+          <!-- End .products -->
+        </div>
+        <!-- End .col-lg-9 -->
+
+        <aside class="col-lg-3 order-lg-first">
+          <div class="sidebar sidebar-shop">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+            <button type="button" onclick="searchProducts()" class="btn btn-primary">Search</button>
+
+            <div class="widget widget-clean">
+              <label>Sort:</label>
+              <a href="#" class="sidebar-filter-clear" onclick="reloadPage()">Clean All</a>
+            </div>
+
+            <!------------------------------ CATEGORY FILTER SECTION ------------------------------------>
+
+            <!-- End .widget widget-clean -->
+            <div class="widget widget-collapsible">
+              <h3 class="widget-title">
+                <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true"
+                  aria-controls="widget-1">Category</a>
+              </h3>
+              <!-- End .widget-title -->
+              <div class="collapse show" id="widget-1">
+                <div class="widget-body">
+                  <div class="filter-items filter-items-count">
+                    <% categories.forEach((category, index)=> { %>
+                      <div class="filter-item" style="color: yellow;">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="cat-<%= index + 1 %>"
+                            onchange="filterProducts()" />
+                          <label class="custom-control-label" for="cat-<%= index + 1 %>">
+                            <%= category.name %>
+                          </label>
+                        </div>
+                        <!-- End .custom-checkbox -->
+                        <span class="item-count">3</span>
+                      </div>
+                      <!-- End .filter-item -->
+                      <% }); %>
+                  </div>
                 </div>
               </div>
             </div>
+
+            <!-- Price Filter Section -->
+            <!-- Price Filter Section -->
+            <div class="widget widget-clean">
+              <label>Filter by Price:</label>
+              <select name="priceFilter" id="priceFilter" class="form-control" onchange="filterByPrice()">
+                <option value="">Select Price Range</option>
+                <option value="0-500">$0 - $500</option>
+                <option value="500-1000">$500 - $1000</option>
+                <option value="1000-5000">$1000 - $5000</option>
+                <!-- Add more options as needed -->
+              </select>
+            </div>
+            <!-- End Price Filter Section -->
+
+            <!-- End Price Filter Section -->
           </div>
+        </aside>
 
-          <!-- Price Filter Section -->
-          <div class="widget widget-clean">
-            <label>Filter by Price:</label>
-            <select name="priceFilter" id="priceFilter" class="form-control" onchange="filterByPrice()">
-              <option value="0-500">$0 - $500</option>
-              <option value="500-1000">$500 - $1000</option>
-              <option value="1000-5000">$1000 - $5000</option>
-              <!-- Add more options as needed -->
-            </select>
-          </div>
-          <!-- End Price Filter Section -->
-        </div>
-      </aside>
-
-    </div>
-  </div>
-  <!-- End .container -->
-</div>
-<!-- End .page-content -->
-
-<!-- Pagination Section -->
-<nav aria-label="Page navigation example">
-  <ul class="pagination justify-content-center">
-    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-      <a class="page-link" href="<%= currentPage === 1 ? '#' : '/shop?page=' + (currentPage - 1) %>" tabindex="-1">Previous</a>
-    </li>
-    <% for (let i=1; i <=totalPages; i++) { %>
-    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-      <a class="page-link" href="/shop?page=<%= i %>"><%= i %></a>
-    </li>
-    <% } %>
-    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-      <a class="page-link" href="<%= currentPage === totalPages ? '#' : '/shop?page=' + (currentPage + 1) %>">Next</a>
-    </li>
-  </ul>
-</nav>
-<!-- End Pagination Section -->
-<!-- Script -->
-<script>
-  let allProducts = <%- JSON.stringify(products) %>; // Store all products for filtering
-
-  function filterProducts() {
-    const selectedCategories = Array.from(document.querySelectorAll('.custom-control-input:checked'))
-      .map(checkbox => checkbox.nextElementSibling.innerText);
-
-    const filteredProducts = allProducts.filter(product => 
-      selectedCategories.includes(product.category ? product.category.name : 'Uncategorized')
-    );
-
-    updateProductList(filteredProducts);
-  }
-
-  function searchProducts() {
-    const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-    const selectedCategories = Array.from(document.querySelectorAll('.custom-control-input:checked'))
-      .map(checkbox => checkbox.nextElementSibling.innerText);
-
-    const filteredProducts = allProducts.filter(product => {
-      const matchesSearchQuery = product.name.toLowerCase().includes(searchQuery);
-      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category ? product.category.name : 'Uncategorized');
-      return matchesSearchQuery && matchesCategory;
-    });
-
-    updateProductList(filteredProducts);
-  }
-
-  function updateProductList(results) {
-    const productsContainer = document.getElementById('productList');
-    const productCount = document.getElementById('productCount');
-    productsContainer.innerHTML = '';
-
-    if (results.length === 0) {
-      productsContainer.innerHTML = `
-        <div class="col-12 text-center no-products-found">
-          <p>No products found</p>
-        </div>`;
-      productCount.innerText = 'Showing 0 of 0 Products';
-      return;
-    }
-
-    results.forEach(product => {
-      const smallestPrice = Math.min(product.price, product.discountPricepro || Infinity, product.discountPricecat || Infinity);
-
-      const productHTML = `
-      <div class="col-6 col-md-4 col-lg-4 mb-4">
-        <div class="product product-7 text-center" data-category="${product.category ? product.category.name : 'Uncategorized'}">
-          <figure class="product-media">
-            ${product.discount ? `<span class="product-label label-new">${product.discount}% off</span>` : ''}
-            <span class="product-label label-new">New</span>
-            <a href="/productDetail?id=${product._id}">
-              <img src="/public/images/products/${product.images[0]}" alt="Product image" class="product-image" />
-            </a>
-            <div class="product-action-vertical">
-              <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-              <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
-              <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
-            </div>
-            <div class="product-action">
-              <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-            </div>
-          </figure>
-          <div class="product-body">
-            <div class="product-cat">
-              <a href="#">${product.category ? product.category.name : 'Uncategorized'}</a>
-            </div>
-            <h3 class="product-title" style="font-size: 18px; font-weight: bold; color: #333">
-              <a href="product.html">${product.name}</a>
-            </h3>
-            <div class="product-price text-center" style="color: rgba(255, 0, 0, 0.744); font-weight: bold; font-size: 20px;">
-              ${smallestPrice < product.price ? `<strike>₹${product.price}</strike>` : ''} ₹${smallestPrice}
-            </div>
-          </div>
-        </div>
       </div>
-      `;
-      productsContainer.insertAdjacentHTML('beforeend', productHTML);
+    </div>
+    <!-- End .container -->
+  </div>
+  <!-- End .page-content -->
+
+  <!-- Pagination Section -->
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+        <a class="page-link" href="<%= currentPage === 1 ? '#' : '/shop?page=' + (currentPage - 1) %>"
+          tabindex="-1">Previous</a>
+      </li>
+      <% for (let i=1; i <=totalPages; i++) { %>
+        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+          <a class="page-link" href="/shop?page=<%= i %>">
+            <%= i %>
+          </a>
+        </li>
+        <% } %>
+          <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+            <a class="page-link"
+              href="<%= currentPage === totalPages ? '#' : '/shop?page=' + (currentPage + 1) %>">Next</a>
+          </li>
+    </ul>
+  </nav>
+  <!-- End Pagination Section -->
+  <!-- Script -->
+  <script>
+    let allProducts = <%- JSON.stringify(products) %>; // Store all products for filtering
+  
+    function reloadPage() {
+      window.location.reload();
+    }
+  
+    function fetchAllProducts() {
+      // Implement fetching all products logic if needed
+    }
+  
+    // Attach click event listener to "Clean All" link
+    const cleanAllLink = document.querySelector('.sidebar-filter-clear');
+    cleanAllLink.addEventListener('click', function(event) {
+      event.preventDefault(); // Prevent default link behavior
+  
+      // Fetch all products when "Clean All" link is clicked
+      fetchAllProducts();
     });
+  
+    function filterProducts() {
+      const selectedCategories = Array.from(document.querySelectorAll('.custom-control-input:checked'))
+        .map(checkbox => checkbox.nextElementSibling.innerText);
+      
+      const priceFilterValue = document.getElementById('priceFilter').value;
+      let minPrice = 0;
+      let maxPrice = Infinity;
+  
+      if (priceFilterValue) {
+        [minPrice, maxPrice] = priceFilterValue.split('-').map(Number);
+      }
+  
+      const filteredProducts = allProducts.filter(product => {
+        const smallestPrice = Math.min(product.price, product.discountPricepro || Infinity, product.discountPricecat || Infinity);
+        const isInPriceRange = smallestPrice >= minPrice && smallestPrice <= maxPrice;
+        const isInCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category ? product.category.name : 'Uncategorized');
+        return isInPriceRange && isInCategory;
+      });
+  
+      updateProductList(filteredProducts);
+    }
+  
+    function searchProducts() {
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+      const selectedCategories = Array.from(document.querySelectorAll('.custom-control-input:checked'))
+        .map(checkbox => checkbox.nextElementSibling.innerText);
+  
+      // Send AJAX request to backend for searching all products
+      fetch(`/search?q=${searchQuery}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.results) {
+          // Filter the retrieved products based on selected categories and price range
+          const priceFilterValue = document.getElementById('priceFilter').value;
+          let minPrice = 0;
+          let maxPrice = Infinity;
+          
+          if (priceFilterValue) {
+            [minPrice, maxPrice] = priceFilterValue.split('-').map(Number);
+          }
+  
+          const filteredProducts = data.results.filter(product => {
+            const smallestPrice = Math.min(product.price, product.discountPricepro || Infinity, product.discountPricecat || Infinity);
+            const isInPriceRange = smallestPrice >= minPrice && smallestPrice <= maxPrice;
+            const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category ? product.category.name : 'Uncategorized');
+            return isInPriceRange && matchesCategory;
+          });
+  
+          // Update product list with filtered products
+          updateProductList(filteredProducts);
+        } else {
+          console.error('Error searching products:', data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error searching products:', error);
+      });
+    }
+  
+    function filterByPrice() {
+      filterProducts(); // Reuse the combined filter function
+    }
+  
+    function updateProductList(results) {
+      const productsContainer = document.getElementById('productList');
+      const productCount = document.getElementById('productCount');
+      productsContainer.innerHTML = '';
+  
+      if (results.length === 0) {
+        productsContainer.innerHTML = `
+          <div class="col-12 text-center no-products-found">
+            <p>No products found</p>
+          </div>`;
+        productCount.innerText = 'Showing 0 of 0 Products';
+        return;
+      }
+  
+      results.forEach(product => {
+        const smallestPrice = Math.min(product.price, product.discountPricepro || Infinity, product.discountPricecat || Infinity);
+  
+        const productHTML = `
+        <div class="col-6 col-md-4 col-lg-4 mb-4">
+          <div class="product product-7 text-center" data-category="${product.category ? product.category.name : 'Uncategorized'}">
+            <figure class="product-media">
+              ${product.discount ? `<span class="product-label label-new">${product.discount}% off</span>` : ''}
+              <span class="product-label label-new">New</span>
+              <a href="/productDetail?id=${product._id}">
+                <img src="/public/images/products/${product.images[0]}" alt="Product image" class="product-image" />
+              </a>
+              <div class="product-action-vertical">
+                <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
+                <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+              </div>
+              <div class="product-action">
+                <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+              </div>
+            </figure>
+            <div class="product-body">
+              <div class="product-cat">
+                <a href="#">${product.category ? product.category.name : 'Uncategorized'}</a>
+              </div>
+              <h3 class="product-title" style="font-size: 18px; font-weight: bold; color: #333">
+                <a href="product.html">${product.name}</a>
+              </h3>
+              <div class="product-price text-center" style="color: rgba(255, 0, 0, 0.744); font-weight: bold; font-size: 20px;">
+                ${smallestPrice < product.price ? `<strike>₹${product.price}</strike>` : ''} ₹${smallestPrice}
+              </div>
+            </div>
+          </div>
+        </div>
+        `;
+        productsContainer.insertAdjacentHTML('beforeend', productHTML);
+      });
+  
+      productCount.innerText = `Showing ${results.length} of ${results.length} Products`;
+    }
+  
+    // Event listener for price filter change
+    document.getElementById('priceFilter').addEventListener('change', filterByPrice);
+    // Event listener for category filter change
+    document.querySelectorAll('.custom-control-input').forEach(checkbox => {
+      checkbox.addEventListener('change', filterProducts);
+    });
+  </script>
+  
 
-    productCount.innerText = `Showing ${results.length} of ${results.length} Products`;
-  }
-</script>
-
-<%- include('../layouts/user/footer.ejs') %>
+  <%- include('../layouts/user/footer.ejs') %>

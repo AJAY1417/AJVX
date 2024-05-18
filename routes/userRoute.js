@@ -53,6 +53,9 @@ user_route.post("/resendOtp", userController.resendOtp);
 user_route.get("/shop", userController.shopLoad);
 user_route.get("/productDetail", userController.productDetailLoad);
 user_route.get("/search", productController.search);
+user_route.post("/filterProducts", productController.filterProducts);
+user_route.get("/allProducts", productController.getAllProducts);
+
 
 // ============================ WISHLIST =======================================
 user_route.get("/wishlist", userController.loadWishlist);
