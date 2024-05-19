@@ -3,8 +3,8 @@ const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const mongoose = require("mongoose");
 const Wishlist = require("../models/wishlistModel");
-const offers = require("../models/productOfferModel")
-const category = require("../models/categoryOfferModel")
+const offers = require("../models/productOfferModel");
+const category = require("../models/categoryOfferModel");
 //=========================================================================
 
 //============================ LOAD THE CART ==============================
@@ -48,7 +48,6 @@ const loadCart = async (req, res) => {
         totalSum,
         datatotal,
         totalQuantity,
-        
       });
     } else {
       console.log("Rendering Cart Page with Empty Cart");
@@ -144,6 +143,7 @@ const addToCart = async (req, res) => {
     );
 
     res.json({ success: true });
+    
   } catch (error) {
     console.error("Error in addToCart:", error.message);
     res.status(500).json({ error: "An error occurred" });
@@ -215,9 +215,6 @@ const updateCartQuantity = async (req, res) => {
   }
 };
 
-
-
-
 //________________________________ REMOVE THE CART PRODUCTS HERE ___________________________________________________
 const removeCartProduct = async (req, res) => {
   try {
@@ -258,34 +255,12 @@ const removeCartProduct = async (req, res) => {
     });
   }
 };
-//________________________________ CART ICON COUNT ___________________________________________________
-const cartCount = async (req, res) => {
-  try {
-    const userId = req.session.userId;
-    const cart = await Cart.findOne({ userId });
-
-    if (cart && cart.items) {
-      const totalItems = cart.items.reduce(
-        (acc, item) => acc + item.quantity,
-        0
-      );
-      res.json({ totalItems });
-    } else {
-      res.json({ totalItems: 0 });
-    }
-  } catch (error) {
-    console.error("Error fetching cart count:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
 
 //____________________________________________________________________________________________________________________________________________________________________
-
 
 module.exports = {
   loadCart,
   addToCart,
   updateCartQuantity,
   removeCartProduct,
-  cartCount,
 };

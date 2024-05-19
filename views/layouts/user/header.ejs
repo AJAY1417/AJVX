@@ -3,6 +3,7 @@
 
 
 <!-- molla/index-5.html  22 Nov 2019 09:55:58 GMT -->
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -18,7 +19,7 @@
     <link rel="manifest" href="/public/user/assets/images/icons/site.html">
     <link rel="mask-icon" href="/public/user/assets/images/icons/safari-pinned-tab.svg" color="#666666">
     <link rel="shortcut icon" href="/public/user/assets/images/icons/favicon.ico">
-   <link rel="stylesheet" href=" https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href=" https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <meta name="apple-mobile-web-app-title" content="Molla">
     <meta name="application-name" content="Molla">
     <meta name="msapplication-TileColor" content="#cc9966">
@@ -38,6 +39,23 @@
 
 </head>
 
+<style>
+    .small {
+        font-size: 15px;
+        position: relative;
+        /* Allows you to use top, right, bottom, left to move the element */
+        bottom: -5px;
+        left: -7px;
+        /* Moves the element down */
+    }
+
+    .icon-shopping-cart {
+        position: relative;
+        /* Allows you to use top, right, bottom, left to move the element */
+        left: -7px;
+        /* Moves the element to the left */
+    }
+</style>
 
 <body>
     <div class="page-wrapper">
@@ -45,153 +63,119 @@
             <div class="header-top">
                 <div class="container">
                     <div class="header-left">
-              
 
-                        
+
+
                     </div><!-- End .header-left -->
 
                     <div class="header-right">
-                        
+
                     </div><!-- End .header-right -->
                 </div><!-- End .container -->
             </div><!-- End .header-top -->
-   
-        <div class="header-middle sticky-header">
-            <div class="container-fluid">
-                <div class="header-left">
-                    <button class="mobile-menu-toggler">
-                        <span class="sr-only">Toggle mobile menu</span>
-                        <i class="icon-bars"></i>
-                    </button>
 
-                    <a href="/login" class="logo">
-                        <img src="/public/user/assets/images/demos/demo-5/logo.png" alt="Molla Logo" width="125" height="45">
-                    </a>
+            <div class="header-middle sticky-header">
+                <div class="container-fluid">
+                    <div class="header-left">
+                        <button class="mobile-menu-toggler">
+                            <span class="sr-only">Toggle mobile menu</span>
+                            <i class="icon-bars"></i>
+                        </button>
 
-                    <nav class="main-nav">
-                        <ul class="menu sf-arrows">
-                            <li class="megamenu-container active">
-                                <a href="/" class="sf-with-ul">Home</a>
-
-                                    
-                            </li>    
-                            <li>
-                                <a href="/shop" class="sf-with-ul">Shop</a>
-
-                                
-                            </li>
-                            <li>
-                                <a href="product.html" class="sf-with-ul">Wallet</a>
-
-                               
-                            </li>
-                            <li>
-                                <a href="#" class="sf-with-ul">About</a>
-                                <ul>
-                                    <li>
-                                        <a href="about.html" class="sf-with-ul">Contact us</a>
-                                    </li>
-                            <li>
-                   
-                                <ul>
-                                  
-                            </li>
-                            
-                        </ul><!-- End .menu -->
-                    </nav><!-- End .main-nav -->
-                </div><!-- End .header-left -->
-
-                <div class="header-right">
-                    <div class="header-search header-search-extended header-search-visible">
-                        <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                        <form action="#" method="get">
-                         
-                        </form>
-                    </div>
-                    
-                    <a href="/wishlist" class="wishlist-link">
-                        <i class="icon-heart-o"></i>
-                    </a>
-                    <div class="dropdown cart-dropdown">
-                        <a href="/cart" class="dropdown-toggle" data-display="static">
-                            <i class="icon-shopping-cart"></i>
-                            <!-- <span class="cart-count">
-                     
-                            </span> -->
-                             <!-- Cart count badge -->
+                        <a href="/login" class="logo">
+                            <img src="/public/user/assets/images/demos/demo-5/logo.png" alt="Molla Logo" width="125"
+                                height="45">
                         </a>
-                    </div>
-                    
-                    
-                    <div class="header-profile">
-                        <% if (typeof user !== 'undefined' && user) { %>
-                            <!-- User is logged in, show dropdown menu -->
-                            <a class="profile-link" href="#" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="icon-user" style="color: #000; font-size: 24px; font-weight: bold;"></i>
+
+                        <nav class="main-nav">
+                            <ul class="menu sf-arrows">
+                                <li class="megamenu-container active">
+                                    <a href="/" class="sf-with-ul">Home</a>
+
+
+                                </li>
+                                <li>
+                                    <a href="/shop" class="sf-with-ul">Shop</a>
+
+
+                                </li>
+                                <li>
+                                    <a href="product.html" class="sf-with-ul">Wallet</a>
+
+
+                                </li>
+                                <li>
+                                    <a href="#" class="sf-with-ul">About</a>
+                                    <ul>
+                                        <li>
+                                            <a href="about.html" class="sf-with-ul">Contact us</a>
+                                        </li>
+                                        <li>
+
+                                            <ul>
+
+                                        </li>
+
+                                    </ul><!-- End .menu -->
+                        </nav><!-- End .main-nav -->
+                    </div><!-- End .header-left -->
+
+                    <div class="header-right">
+                        <div class="header-search header-search-extended header-search-visible">
+                            <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
+                            <form action="#" method="get">
+
+                            </form>
+                        </div>
+
+                        <a href="/wishlist" class="wishlist-link">
+                            <i class="icon-heart-o"></i>
+                        </a>
+                        <div class="dropdown cart-dropdown">
+                            <a href="/cart" class="dropdown-toggle" data-display="static">
+                                <i class="icon-shopping-cart"></i>
+                                <span id="cartCount" class="cart-item-count small">
+                                    <%= count %>
+                                </span>
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="profileDropdown">
-                                <a class="dropdown-item" href="/profile" style="font-size: 18px;">Profile</a>
-                                <a class="dropdown-item" href="/logout" style="font-size: 18px;">Logout</a>
-                            </div>
-                        <% } else { %>
-                            <!-- User is not logged in, show login link -->
-                            <a href="/login" class="profile-link">
-                                <i class="icon-user" style="color: #000; font-size: 24px; font-weight: bold;"></i>
-                            </a>
-                        <% } %>
-                    </div>
-                    
-                    
-                      
-                </div><!-- End .header-right -->
-            </div><!-- End .container-fluid -->
-        </div><!-- End .header-middle -->
-    </header><!-- End .header -->
-    <script>
-        // Function to update the cart count badge
-        function updateCartCount(count) {
-            const cartCountElement = document.querySelector('.cart-count');
-            if (cartCountElement) {
-                cartCountElement.textContent = count;
-            }
-        }
+                        </div>
 
-        // Fetch the cart count from the server
-        async function fetchCartCount() {
-            try {
-                const response = await fetch('/cart/count');
-                const data = await response.json();
-                const cartCount = data.totalItems;
-                updateCartCount(cartCount); // Update cart count badge
-            } catch (error) {
-                console.error('Error fetching cart count:', error);
-            }
-        }
 
-        // Call fetchCartCount when the page loads
-        window.addEventListener('load', fetchCartCount);
 
-        // Function to add a product to the cart
-        async function addToCart(productId) {
-            try {
-                const response = await fetch('/cart/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ id: productId })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    fetchCartCount(); // Fetch updated cart count after adding the product
-                } else {
-                    console.error('Failed to add product to cart:', data.error);
-                }
-            } catch (error) {
-                console.error('Error adding product to cart:', error);
-            }
-        }
-    </script>
-</body>
-</html>
+
+
+
+
+
+
+
+
+
+                        <div class="header-profile">
+                            <% if (typeof user !=='undefined' && user) { %>
+                                <!-- User is logged in, show dropdown menu -->
+                                <a class="profile-link" href="#" id="profileDropdown" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    <i class="icon-user" style="color: #000; font-size: 24px; font-weight: bold;"></i>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                                    <a class="dropdown-item" href="/profile" style="font-size: 18px;">Profile</a>
+                                    <a class="dropdown-item" href="/logout" style="font-size: 18px;">Logout</a>
+                                </div>
+                                <% } else { %>
+                                    <!-- User is not logged in, show login link -->
+                                    <a href="/login" class="profile-link">
+                                        <i class="icon-user"
+                                            style="color: #000; font-size: 24px; font-weight: bold;"></i>
+                                    </a>
+                                    <% } %>
+                        </div>
+
+
+
+                    </div><!-- End .header-right -->
+                </div><!-- End .container-fluid -->
+            </div><!-- End .header-middle -->
+        </header><!-- End .header -->
+
       

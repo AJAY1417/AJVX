@@ -24,6 +24,10 @@ user_route.use(
   })
 );
 
+
+const cartCount = require("../middlewares/cartCount");
+user_route.use(cartCount)
+
 // Custom middleware to add user session to every response
 const addUserToResponse = (req, res, next) => {
   res.locals.user = req.session.user_id;
@@ -67,7 +71,6 @@ user_route.get("/cart", cartController.loadCart);
 user_route.post("/addTocart", cartController.addToCart);
 user_route.post("/updateCartQuantity", cartController.updateCartQuantity);
 user_route.get("/removeCartProduct", cartController.removeCartProduct);
-user_route.get("/cart/count", cartController.cartCount);
 
 // ============================ LOGOUT =======================================
 user_route.get("/logout", userController.logout);
