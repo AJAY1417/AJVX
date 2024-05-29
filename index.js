@@ -3,8 +3,6 @@ const dotenv = require("dotenv").config();
 mongoose.connect(
   "mongodb+srv://testajay65:U0iIVbuqA2ps57Ye@cluster0.bpcezno.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 );
-const morgan = require("morgan");
-
 const express = require("express");
 const session = require("express-session");
 const nocache = require("nocache");
@@ -55,7 +53,7 @@ app.use("/admin", adminRoute);
 
 app.use("/public", express.static(path.join(__dirname, "public")));
 
-const PORT = 3002;
+const PORT = 3001;
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

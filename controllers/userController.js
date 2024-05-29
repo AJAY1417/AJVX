@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+require("dotenv").config();
 const Product = require("../models/productModel");
 const categorySchema = require("../models/categoryModel");
 const Wishlist = require("../models/wishlistModel");
@@ -55,8 +56,9 @@ function generateReferalCode() {
 // ============================  USER REGISTER  =======================================
 const insertUser = async (req, res, next) => {
   try {
-    const userD = await User.findOne({ email: req.body.email });
+    console.log("Received registration request:", req.body);
 
+    const userD = await User.findOne({ email: req.body.email });
     if (userD) {
       return res.render("register", {
         status: "failed",
@@ -66,10 +68,12 @@ const insertUser = async (req, res, next) => {
 
     const spassword = await securePassword(req.body.password);
     if (!spassword) {
+      console.log("Failed to hash the password");
       return res.status(500).send("Failed to hash the password");
     }
 
     if (req.body.password !== req.body.confirm_password) {
+      console.log("Password and Confirm Password do not match");
       return res.render("register", {
         status: "failed",
         message: "Password and Confirm Password do not match",
@@ -77,7 +81,7 @@ const insertUser = async (req, res, next) => {
     }
 
     const myReferCode = await generateReferalCode();
-    console.log(myReferCode, "referral code generated");
+    console.log("Referral code generated:", myReferCode);
 
     req.session.firstName = req.body.firstName;
     req.session.lastName = req.body.lastName;
@@ -93,7 +97,10 @@ const insertUser = async (req, res, next) => {
       expiry: Date.now() + 45 * 1000,
     };
 
+    console.log("OTP generated and stored in session:", otpsend);
+
     await sendVerifyMail(req.body.firstName, req.body.email, otpsend);
+    console.log("Verification email sent");
 
     res.render("otp", { user: req.body.email });
   } catch (error) {
@@ -105,19 +112,20 @@ const insertUser = async (req, res, next) => {
 // ============================  MAIL VERIFICATION  =======================================
 const sendVerifyMail = async (name, email, otpsend) => {
   try {
+    // Use the correct email and password or app-specific password
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
       secure: false,
       requireTLS: true,
       auth: {
-        user: config.emailUser,
-        pass: config.emailPassword,
+        user: process.env.EMAIL_USER, // Load from environment variables
+        pass: process.env.EMAIL_PASSWORD, // Load from environment variables
       },
     });
 
     const mailOptions = {
-      from: config.emailUser,
+      from: process.env.EMAIL_USER, // Load from environment variables
       to: email,
       subject: "Sign up Verification",
       html: `<p>Hi ${name},</p><p>Your OTP is: <strong>${otpsend}</strong><br><br><br>regards,<br><b>STYLO<b></p>`,
@@ -127,9 +135,10 @@ const sendVerifyMail = async (name, email, otpsend) => {
     console.log("Email has been sent:", info.response);
   } catch (error) {
     console.error("Error sending email:", error.message);
-    throw error; // Propagate the error
+    throw error;
   }
 };
+
 
 // ============================  REGISTER PAGE  RENDER  =======================================
 const loadRegister = async (req, res) => {
