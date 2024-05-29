@@ -17,7 +17,7 @@ admin_route.set("views", "views/admin");
 
 //============================== ADMIN LOGIN ===============================
 admin_route.get("/adminLogin", adminController.adminLoadLogin);
-admin_route.post("/adminLogin", adminController.adminVerifyLogin);
+admin_route.post("/adminVerifyLogin", adminController.adminVerifyLogin);
 
 //==============================  ADMIN LOGOUT ===============================
 admin_route.get("/logout", adminController.logout);

@@ -1,16 +1,17 @@
-const sessionSecret = "mysitesessionsecret";
+require("dotenv").config();
 
-const emailUser = "ajayvishnu2304@gmail.com";
-const emailPassword = "gtjl ufog owxr lukl";
+const sessionSecret = process.env.SESSION_SECRET;
+const emailUser = process.env.EMAIL_USER;
+const emailPassword = process.env.EMAIL_PASSWORD;
+const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
+const razorpaySecretKey = process.env.RAZORPAY_SECRET_KEY;
+const mongodbUri = process.env.MONGODB_URI;
 
 module.exports = {
   sessionSecret,
   emailUser,
   emailPassword,
+  razorpayKeyId,
+  razorpaySecretKey,
+  mongodbUri,
 };
-
-
-//Razorpay
-RAZORPAY_KEY_ID = "rzp_test_Rr5LK4XJjm8rxm";
-RAZORPAY_SECRET_KEY = "f4QOCHAFThYVJH9z8lX8OPhN";
-

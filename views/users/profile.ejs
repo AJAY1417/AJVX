@@ -117,8 +117,10 @@
 
                                 </div><!-- .End .tab-pane -->
                                 <!----------------------------------------------------------- DASHBOARD ENDS ----------------------------------------------------------->
+
                                 <!----------------------------------------------------------- ORDERS STARTS ----------------------------------------------------------->
-                                <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+                                <div class="tab-pane fade" id="tab-orders" role="tabpanel"
+                                    aria-labelledby="tab-orders-link">
                                     <!-- Orders Table -->
                                     <table class="table table-cart table-mobile">
                                         <thead>
@@ -131,61 +133,98 @@
                                         </thead>
                                         <tbody>
                                             <!-- Loop through order data -->
-                                            <% for (let j = 0; j < orderData.length; j++) { %>
-                                                <% let product = orderData[j].products %>
-                                                <% for (let i = 0; i < product.length; i++) { %>
-                                                    <% const value = product[i].product; %>
-                                                    <!-- Individual Order Row -->
-                                                    <tr>
-                                                        <!-- Product Column -->
-                                                        <td class="product-col">
-                                                            <div class="product">
-                                                                <figure class="product-media">
-                                                                    <a href="#">
-                                                                        <img src="/public/images/products/<%= value.images[0] %>" alt="Product image">
-                                                                    </a>
-                                                                </figure>
-                                                                <h3 class="product-title">
-                                                                    <a href="#"><%= value.name %></a>
-                                                                </h3>
-                                                            </div>
-                                                        </td>
-                                
-                                                        <!-- Price Column -->
-                                                        <td class="price-col">₹<%= product[i].total %></td>
-                                
-                                                        <!-- Order Status Column -->
-                                                        <td class="status-col"><%= orderData[j].status %></td>
-                                
-                                                        <!-- Actions Column -->
-                                                        <td class="actions-col">
-                                                            <div class="d-flex justify-content-start">
-                                                                <% if (orderData[j].status === 'Delivered') { %>
-                                                                    <!-- Return Order Button -->
-                                                                    <a href="#" class="btn btn-outline-primary-2 btn-sm return-button" data-order-id="<%= orderData[j]._id %>">
-                                                                        RETURN
-                                                                    </a>
-                                                                    <% } else if (orderData[j].status !== 'cancelled') { %>
-                                                                    <!-- Cancel Order Button -->
-                                                                    <a href="#" data-type="order" data-id="<%= orderData[j]._id %>" class="btn btn-outline-primary-2 btn-sm cancel-button">CANCEL</a>
+                                            <% for (let j=0; j < orderData.length; j++) { %>
+                                                <% let product=orderData[j].products %>
+                                                    <% for (let i=0; i < product.length; i++) { %>
+                                                        <% const value=product[i].product; %>
+                                                            <!-- Individual Order Row -->
+                                                            <tr>
+                                                                <!-- Product Column -->
+                                                                <td class="product-col">
+                                                                    <div class="product">
+                                                                        <figure class="product-media">
+                                                                            <a href="#">
+                                                                                <img src="/public/images/products/<%= value.images[0] %>"
+                                                                                    alt="Product image">
+                                                                            </a>
+                                                                        </figure>
+                                                                        <h3 class="product-title">
+                                                                            <a href="#">
+                                                                                <%= value.name %>
+                                                                            </a>
+                                                                        </h3>
+                                                                    </div>
+                                                                </td>
+
+                                                                <!-- Price Column -->
+                                                                <td class="price-col">₹<%= product[i].total %>
+                                                                </td>
+
+                                                                <!-- Order Status Column -->
+                                                                <td class="status-col">
+                                                                    <%= orderData[j].status %>
+                                                                </td>
+
+                                                                <!-- Actions Column -->
+                                                                <style>
+                                                                    .btn {
+                                                                        margin-right: 3px;
+                                                                    }
+                                                                </style>
+
+                                                                <td class="actions-col">
+                                                                    <div class="d-flex justify-content-start">
+                                                                        <% if (orderData[j].status==='Delivered' ) { %>
+                                                                            <!-- Return Order Button -->
+                                                                            <a href="#"
+                                                                                class="btn btn-outline-primary-2 btn-sm return-button"
+                                                                                data-order-id="<%= orderData[j]._id %>">
+                                                                                RETURN
+                                                                            </a>
+                                                                            <% } else if
+                                                                                (orderData[j].status==='Payment Failed'
+                                                                                ) { %>
+                                                                                <form action="/placeOrder"
+                                                                                    method="POST">
+                                                                                    <input type="hidden" name="orderId"
+                                                                                        value="<%= orderData[j]._id %>">
+                                                                                    <input type="hidden"
+                                                                                        name="payment-method"
+                                                                                        value="online">
+                                                                                    <button type="submit"
+                                                                                        class="btn btn-outline-primary-2 btn-sm repay-button">
+                                                                                        REPAY
+                                                                                    </button>
+                                                                                </form>
+                                                                                <% } else if (orderData[j].status
+                                                                                    !=='cancelled' ) { %>
+                                                                                    <!-- Cancel Order Button -->
+                                                                                    <a href="#" data-type="order"
+                                                                                        data-id="<%= orderData[j]._id %>"
+                                                                                        class="btn btn-outline-primary-2 btn-sm cancel-button">CANCEL</a>
+                                                                                    <% } %>
+                                                                                        <!-- Generate Invoice Button -->
+                                                                                        <a href="/generateInvoice/<%= orderData[j]._id %>"
+                                                                                            class="btn btn-outline-primary-2 btn-sm invoice-button mr-1">
+                                                                                            <i
+                                                                                                class="fas fa-file-invoice"></i>
+                                                                                        </a>
+                                                                                        <!-- View Order Details Button -->
+                                                                                        <a href="/orderDetails/<%= orderData[j]._id %>"
+                                                                                            class="btn btn-outline-primary-2 btn-sm order-details-button mr-1">
+                                                                                            <i
+                                                                                                 class="fas fa-info-circle"></i>
+                                                                                        </a>
+                                                                    </div>
+                                                                </td>
+
+                                                            </tr>
+                                                            <% } %>
                                                                 <% } %>
-                                                                <!-- Generate Invoice Button -->
-                                                                <a href="/generateInvoice/<%= orderData[j]._id %>" class="btn btn-outline-primary-2 btn-sm invoice-button mr-1">
-                                                                    <i class="fas fa-file-invoice"></i>
-                                                                </a>
-                                                                <!-- View Order Details Button -->
-                                                                <a href="/orderDetails/<%= orderData[j]._id %>" class="btn btn-outline-primary-2 btn-sm order-details-button mr-1">
-                                                                    <i class="fas fa-info-circle"></i>
-                                                                </a>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                <% } %>
-                                            <% } %>
                                         </tbody>
                                     </table>
                                 </div><!-- .End .tab-pane -->
-                                
+
                                 <!----------------------------------------------------------- WALLET STARTS ----------------------------------------------------------->
 
                                 <div class="tab-pane fade" id="tab-wallet" role="tabpanel"
@@ -428,85 +467,85 @@
         });
 
         $(document).ready(function () {
-    console.log('Cancel button clicked');
-    // Handle the cancel button click event
-    $('.cancel-button').click(async function () {
-        const $button = $(this);
+            console.log('Cancel button clicked');
+            // Handle the cancel button click event
+            $('.cancel-button').click(async function () {
+                const $button = $(this);
 
-        const type = $button.data('type');
-        const id = $button.data('id');
+                const type = $button.data('type');
+                const id = $button.data('id');
 
-        // Display SweetAlert confirmation dialog
-        const result = await Swal.fire({
-            title: 'Cancel Order',
-            html:
-                '<div>Select a reason for cancellation:<br>' +
-                '<input type="radio" id="reason1" name="cancelReason" value="OverPriced"> <label for="reason1">OverPriced</label><br>' +
-                '<input type="radio" id="reason2" name="cancelReason" value="Not Satisfied"> <label for="reason2">Not Satisfied</label><br>' +
-                '<input type="radio" id="reason3" name="cancelReason" value="Looking for a Different Product"> <label for="reason3">Looking for a Different Product</label></div>',
-            showCancelButton: true,
-            confirmButtonText: 'Proceed',
-            cancelButtonText: 'Cancel',
-            showLoaderOnConfirm: true,
-            preConfirm: async () => {
-                // Get the selected cancel reason
-                const cancelReason = $("input[name='cancelReason']:checked").val();
+                // Display SweetAlert confirmation dialog
+                const result = await Swal.fire({
+                    title: 'Cancel Order',
+                    html:
+                        '<div>Select a reason for cancellation:<br>' +
+                        '<input type="radio" id="reason1" name="cancelReason" value="OverPriced"> <label for="reason1">OverPriced</label><br>' +
+                        '<input type="radio" id="reason2" name="cancelReason" value="Not Satisfied"> <label for="reason2">Not Satisfied</label><br>' +
+                        '<input type="radio" id="reason3" name="cancelReason" value="Looking for a Different Product"> <label for="reason3">Looking for a Different Product</label></div>',
+                    showCancelButton: true,
+                    confirmButtonText: 'Proceed',
+                    cancelButtonText: 'Cancel',
+                    showLoaderOnConfirm: true,
+                    preConfirm: async () => {
+                        // Get the selected cancel reason
+                        const cancelReason = $("input[name='cancelReason']:checked").val();
 
-                // Return an object with the cancel reason
-                return { cancelReason };
-            }
-        });
-
-        if (result.isConfirmed) {
-            try {
-                // Perform the cancel action with the selected reason
-                const response = await $.ajax({
-                    type: 'POST',
-                    url: '/cancelOrder',
-                    data: {
-                        type: type,
-                        id: id,
-                        reason: result.value.cancelReason
+                        // Return an object with the cancel reason
+                        return { cancelReason };
                     }
                 });
 
-                if (response.success) {
-                    // Update the status column without reloading the page
-                    const statusColumn = $button.parent().prev('.status-col');
-                    statusColumn.text(type === 'order' ? 'Order Status: cancelled' : 'Product Status: cancelled');
+                if (result.isConfirmed) {
+                    try {
+                        // Perform the cancel action with the selected reason
+                        const response = await $.ajax({
+                            type: 'POST',
+                            url: '/cancelOrder',
+                            data: {
+                                type: type,
+                                id: id,
+                                reason: result.value.cancelReason
+                            }
+                        });
 
-                    // Show a success message
-                    Swal.fire({
-                        icon: 'success',
-                        title: `${type} cancelled successfully!`,
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
+                        if (response.success) {
+                            // Update the status column without reloading the page
+                            const statusColumn = $button.parent().prev('.status-col');
+                            statusColumn.text(type === 'order' ? 'Order Status: cancelled' : 'Product Status: cancelled');
 
-                    // Hide the cancel button
-                    $button.hide();
-                } else {
-                    Swal.fire('Error!', `Failed to cancel ${type}.`, 'error');
+                            // Show a success message
+                            Swal.fire({
+                                icon: 'success',
+                                title: `${type} cancelled successfully!`,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+
+                            // Hide the cancel button
+                            $button.hide();
+                        } else {
+                            Swal.fire('Error!', `Failed to cancel ${type}.`, 'error');
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        Swal.fire('Error!', 'An error occurred.', 'error');
+                    }
                 }
-            } catch (error) {
-                console.error(error);
-                Swal.fire('Error!', 'An error occurred.', 'error');
-            }
-        }
-    });
+            });
 
-    // Check cancellation status on page load
-    $('.cancel-button').each(function () {
-        const $button = $(this);
-        const id = $button.data('id');
+            // Check cancellation status on page load
+            $('.cancel-button').each(function () {
+                const $button = $(this);
+                const id = $button.data('id');
 
-        // Check if cancellation has been performed for this order
-        const isCancelled = localStorage.getItem(`cancelled_${id}`);
-        if (isCancelled) {
-            $button.hide(); // Hide the cancel button if the order is cancelled
-        }
-    });
-});
+                // Check if cancellation has been performed for this order
+                const isCancelled = localStorage.getItem(`cancelled_${id}`);
+                if (isCancelled) {
+                    $button.hide(); // Hide the cancel button if the order is cancelled
+                }
+            });
+        });
 
 
 

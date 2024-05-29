@@ -17,82 +17,6 @@ const razorpayInstance = new Razorpay({
   key_secret: "f4QOCHAFThYVJH9z8lX8OPhN",
 });
 
-//====================================== RENDER THE CHECKOUT PAGE =============================================
-// const loadCheckout = async (req, res) => {
-//   try {
-//     let accountDetails;
-//     let userName;
-//     let UserAddress;
-//     let addressId = req.query.id;
-
-//     const coupon = await Coupon.find({});
-
-//     if (req.session.user_id) {
-//       const user = await User.findOne({ _id: req.session.user_id });//user find aayi
-//       const addresses = await Address.find({ userId: req.session.user_id }); //taken from address
-
-//       if (user) {
-//         userName = user.firstName;
-//         accountDetails = user;
-//         UserAddress = addresses;
-//       }
-//     }
-
-//     const userId = req.session.user_id;
-//     const cartData = await Cart.findOne({ user: userId }).populate(
-//       "products.productId"
-//     );
-//     console.log(cartData, "Cart data is here");
-//     // Calculate totalSum outside the loop
-//     let totalSum = 0;
-//     let datatotal = [];
-//  let isQuantityAvailable = true;
-
-//  for (const product of cartData.products) {
-//       // Check if product quantity is available
-//       if (product.quantity > product.productId.quantity) {
-//         isQuantityAvailable = false;
-//         break; // Exit loop if any product's quantity is not available
-//       }
-
-//     // cartData.products.forEach((product) => {
-//       product.sum = product.quantity * product.price;
-//       totalSum += product.sum;
-//       console.log(product.sum, "this is product sum");
-//       console.log(totalSum, "total calculated sum");
-//       datatotal.push(product.price * product.quantity); // Push datatotal values
-//     });
-
-//     // // Update the total field in Cart model
-//     // const updatedCart = await Cart.findOneAndUpdate(
-//     //   { user: userId }, // Use correct field name
-//     //   { $set: { total: totalSum } },
-//     //   { new: true }
-//     // );
-//      let updatedCart;
-//     if (isQuantityAvailable) {
-//       updatedCart = await Cart.findOneAndUpdate(
-//         { user: userId }, // Use correct field name
-//         { $set: { total: totalSum } },
-//         { new: true }
-//       );
-
-//     console.log("----------------------", updatedCart);
-
-//     res.render("checkout", {
-//       userName,
-//       accountDetails,
-//       UserAddress,
-//       datatotal,
-//       totalSum,
-//       cartData,
-//       coupon,
-//       //   discAmount,
-//     });
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
 const loadCheckout = async (req, res) => {
   try {
     let accountDetails;
@@ -127,7 +51,7 @@ const loadCheckout = async (req, res) => {
       // Check if product quantity is available
       if (product.quantity > product.productId.quantity) {
         isQuantityAvailable = false;
-        break; // Exit loop if any product's quantity is not available
+        break; 
       }
 
       product.sum = product.quantity * product.price;
@@ -212,7 +136,22 @@ const placeOrder = async (req, res) => {
     const userId = req.session.user_id;
     const addressId = req.body.selectedAddress;
     const paymentMethod = req.body["payment-method"];
-    const status = paymentMethod === "cod" ? "placed" : "pending";
+    const orderId = req.body.orderId;
+
+    // Check if this is a retry payment
+    let order;
+    if (orderId) {
+      order = await Order.findOne({
+        _id: orderId,
+        userId: userId,
+        status: "Payment Failed",
+      });
+      if (!order) {
+        return res
+          .status(400)
+          .json({ error: "Invalid order or order cannot be retried" });
+      }
+    }
 
     const [user, address, cartData] = await Promise.all([
       User.findOne({ _id: userId }),
@@ -226,91 +165,106 @@ const placeOrder = async (req, res) => {
         .json({ error: "User, address, or cart data not found" });
     }
 
-    const orderProducts = cartData.products.map((cartProduct) => {
-      const discount = req.body.discountAmt || 0;
-      const discountedTotal = calculateDiscountedTotal(
-        cartProduct.price,
-        cartProduct.quantity,
-        discount
+    // Create new order if not a retry
+    if (!order) {
+      const orderProducts = cartData.products.map((cartProduct) => {
+        const discount = req.body.discountAmt || 0;
+        const discountedTotal = calculateDiscountedTotal(
+          cartProduct.price,
+          cartProduct.quantity,
+          discount
+        );
+        return {
+          product: cartProduct.productId,
+          count: cartProduct.quantity,
+          total: discountedTotal,
+          productPrice: cartProduct.price,
+          status: "pending",
+        };
+      });
+
+      const updatedTotalAmount = orderProducts.reduce(
+        (total, product) => total + product.total,
+        0
       );
-      return {
-        product: cartProduct.productId,
-        count: cartProduct.quantity,
-        total: discountedTotal,
-        productPrice: cartProduct.price,
-        status: "pending",
-      };
-    });
 
-    const updatedTotalAmount = orderProducts.reduce(
-      (total, product) => total + product.total,
-      0
-    );
+      order = new Order({
+        userId: userId,
+        deliveryDetails: { address: address },
+        products: orderProducts,
+        purchaseDate: new Date(),
+        totalAmount: updatedTotalAmount,
+        status: paymentMethod === "cod" ? "placed" : "pending",
+        paymentMethod: paymentMethod,
+        paymentStatus: "pending",
+        shippingFee: "0",
+      });
 
-    const newOrder = new Order({
-      userId: userId,
-      deliveryDetails: { address: address },
-      products: orderProducts,
-      purchaseDate: new Date(),
-      totalAmount: updatedTotalAmount,
-      status: status,
-      paymentMethod: paymentMethod,
-      paymentStatus: "pending",
-      shippingFee: "0",
-    });
-
-    const savedOrder = await newOrder.save();
-    const orderId = savedOrder._id.toString();
-
-    await Cart.updateOne(
-      { user: userId },
-      { $set: { products: [], total: 0 } }
-    );
+      await order.save();
+      await Cart.updateOne(
+        { user: userId },
+        { $set: { products: [], total: 0 } }
+      );
+    }
 
     if (paymentMethod === "online") {
       const options = {
-        amount: updatedTotalAmount * 100,
+        amount: order.totalAmount * 100,
         currency: "INR",
-        receipt: orderId,
+        receipt: order._id.toString(),
       };
 
-      // Create Razorpay order asynchronously
-      const razorpayOrder = await new Promise((resolve, reject) => {
-        razorpayInstance.orders.create(options, (err, order) => {
-          if (err) {
-            console.error("Payment failed:", err);
-            reject(err);
-          } else {
-            resolve(order);
-          }
+      try {
+        const razorpayOrder = await new Promise((resolve, reject) => {
+          razorpayInstance.orders.create(options, (err, order) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(order);
+            }
+          });
         });
-      });
 
-      return res.json({ online: true, order: newOrder, razorpayOrder });
+        return res.json({ online: true, order, razorpayOrder });
+      } catch (paymentError) {
+        console.error("Payment failed:", paymentError);
+
+        // Update order status to Payment Failed
+        await order.updateOne({ status: "Payment Failed" });
+
+        // Provide repay link with 24-hour expiry
+        const repayLink = `/repay/${order._id}`;
+
+        return res.json({
+          error: "Payment Failed",
+          repayLink,
+          message: "You have 24 hours to repay.",
+        });
+      }
     } else if (paymentMethod === "cod") {
-      if (updatedTotalAmount >= 1000) {
+      if (order.totalAmount >= 1000) {
         return res.json({
           error: "COD Limit Exceeded",
-          totalAmount: updatedTotalAmount,
+          totalAmount: order.totalAmount,
         });
       } else {
         return res.json({ cod: true });
       }
     } else if (paymentMethod === "wallet") {
-      if (user.wallet >= updatedTotalAmount) {
-        user.wallet -= updatedTotalAmount;
+      if (user.wallet >= order.totalAmount) {
+        user.wallet -= order.totalAmount;
         const walletHistory = {
           transactionDate: new Date(),
-          transactionAmount: -updatedTotalAmount,
+          transactionAmount: -order.totalAmount,
           transactionDetails: "Order placed",
           transactionType: "debit",
         };
         user.walletHistory.push(walletHistory);
         await Promise.all([
           user.save(),
-          newOrder.updateOne({ paymentStatus: "completed" }),
+          order.updateOne({ paymentStatus: "completed" }),
         ]);
-        return res.json({ order: newOrder, success: true });
+        return res.json({ order, success: true });
       } else {
         return res.json({ error: "Insufficient balance in the wallet" });
       }
@@ -322,6 +276,7 @@ const placeOrder = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 
 const calculateDiscountedTotal = (totalPrice, quantity, discount) => {
@@ -518,34 +473,45 @@ const orderReturnPOST = async (req, res) => {
 
 const repayOrder = async (req, res) => {
   try {
-    const orderId = req.params.orderId;
-
-    // Fetch the order by ID
+    const { orderId } = req.params;
     const order = await Order.findById(orderId);
 
-    // Check if the order exists and has a status of "Payment Failed"
-    if (!order || order.status !== "Payment Failed") {
-      return res
-        .status(404)
-        .json({ error: "Order not found or cannot be repaid" });
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
     }
 
-    // Implement logic to process the repayment here (e.g., retry payment)
+    // Check if the order is within the 24-hour repayment window
+    const currentTime = new Date();
+    const paymentFailedTime = new Date(order.updatedAt); // Assuming updatedAt is set when the order status changes to "Payment Failed"
+    const timeDifference = (currentTime - paymentFailedTime) / (1000 * 60 * 60); // Difference in hours
 
-    // Once repayment is successful, update the order status and payment status
-    order.status = "pending ";
-    order.paymentStatus = "pending"; // Assuming payment needs to be attempted again
-    await order.save();
+    if (timeDifference > 24) {
+      return res.status(400).json({ error: "Repayment window has expired" });
+    }
 
-    return res
-      .status(200)
-      .json({ message: "Repayment initiated successfully", order });
+    // Generate new Razorpay order for repayment
+    const options = {
+      amount: order.totalAmount * 100,
+      currency: "INR",
+      receipt: orderId,
+    };
+
+    const razorpayOrder = await new Promise((resolve, reject) => {
+      razorpayInstance.orders.create(options, (err, order) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(order);
+        }
+      });
+    });
+
+    return res.json({ razorpayOrder });
   } catch (error) {
-    console.error("Error repaying order:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
-
 
 
 

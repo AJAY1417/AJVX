@@ -369,11 +369,10 @@ const productList = async (req, res) => {
 // ============================  SHOP PAGE LOADING  =======================================
 const shopLoad = async (req, res) => {
   try {
-    const productsPerPage = 6; // Adjusted to display 6 products per page
+    const productsPerPage = 6; 
     const currentPage = parseInt(req.query.page) || 1;
-    const searchQuery = req.query.q || ""; // Get search query or empty string if not provided
-
-    // Fetch only active (not deleted) products
+    const searchQuery = req.query.q || "";
+    
     const products = await Product.find({ is_deleted: false })
       .populate("category")
       .skip((currentPage - 1) * productsPerPage)
