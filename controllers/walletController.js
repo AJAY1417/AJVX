@@ -2,11 +2,15 @@ const User = require("../models/userModel");
 const Razorpay = require("razorpay");
 const dotenv = require("dotenv");
 const crypto = require("crypto");
-dotenv.config();
+require('dotenv').config();
+
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: RAZORPAY_SECRET_KEY,
+  key_secret: process.env.RAZORPAY_SECRET_KEY,
 });
+
+// Now you can use razorpayInstance for your operations
+
 
 //================================================================================================================================================================================================//
 

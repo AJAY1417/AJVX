@@ -1,11 +1,9 @@
 const mongoose = require("mongoose");
-const dotenv= require("dotenv").config();
+const dotenv = require("dotenv").config();
 mongoose.connect(
   "mongodb+srv://testajay65:U0iIVbuqA2ps57Ye@cluster0.bpcezno.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 );
 const morgan = require("morgan");
-
-app.use(morgan("combined"));
 
 const express = require("express");
 const session = require("express-session");
@@ -24,7 +22,6 @@ app.use(
     secret: config.sessionSecret, // replace with a secure secret
     resave: false,
     saveUninitialized: true,
-  
   })
 );
 
@@ -61,7 +58,5 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 const PORT = 3002;
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`
-);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
-
