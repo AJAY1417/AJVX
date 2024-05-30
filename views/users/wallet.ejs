@@ -64,9 +64,14 @@
     </div>
 </main>
 
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+let addedAmount;
+
     const err = document.getElementById('err');
     document.getElementById('wallet-form').addEventListener('submit', (e) => {
         e.preventDefault();
@@ -78,7 +83,7 @@
             console.log('No amount entered');
             return; // Exit early if amount is empty
         }
-        if (amount < 0) {
+        if (amount <= 0) {
             console.log('Amount is negative');
             err.innerText = 'Amount cannot be negative!';
             return; // Exit early if amount is negative
@@ -91,7 +96,7 @@
             success: (res) => {
                 if (res.status) {
                     console.log('Opening Razorpay', res.payment);
-                    razorpay(res.payment);
+                    razorpay(res.payment, addedAmount);
                 } else {
                     console.log('Failed to retrieve payment details');
                 }
@@ -102,9 +107,9 @@
         });
     });
 
-    function razorpay(order) {
+    function razorpay(order,addedAmount) {
         var options = {
-            key: "rzp_test_Rr5LK4XJjm8rxm", 
+            key: "<%= process.env.RAZORPAY_KEY_ID %>", 
             amount: order.amount, 
             currency: "INR",
             name: "AJVX",
@@ -112,7 +117,7 @@
             image: "/public/user/assets/images/demos/demo-5/logo.png",
             order_id: order.id,
             handler: function (response) {
-                verifyPayment(response, order);
+                verifyPayment(response, order,addedAmount);
             },
             prefill: {
                 name: "AJVX",
@@ -131,7 +136,7 @@
         rzp1.open();
     }
 
-    function verifyPayment(payment, order) {
+    function verifyPayment(payment, order,addedAmount) {
         $.ajax({
             url: '/verifyWalletpayment',
             method: 'post',
@@ -141,7 +146,15 @@
             },
             success: (res) => {
                 if (res.status) {
-                    location.href = '/view-wallet';
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Amount Added!',
+                        text: `₹${addedAmount} has been added to your wallet.` 
+                    }).then(() => {
+                        location.href = '/view-wallet'; 
+                    });
+
+                    
                 } else {
                     console.log('Payment verification failed');
                     alert('Payment Failed');

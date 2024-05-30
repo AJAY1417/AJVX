@@ -68,59 +68,64 @@ const addMoneyWallet = async (req, res) => {
   }
 };
 
+//----------------------------------------------- Verify Wallet Payment  -----------------------------------------------------
+ const verifyWalletpayment = async (req, res) => {
+   try {
+     const userId = req.session.user_id;
+     const details = req.body;
+     const amount = details.order.amount;
 
-// Verify Wallet Payment
-const verifyWalletpayment = async (req, res) => {
-  try {
-    console.log("kjkeljkljkljlkjkljkl");
+     let hmac = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET_KEY);
+     hmac.update(
+       details.payment.razorpay_order_id +
+         "|" +
+         details.payment.razorpay_payment_id
+     );
+     hmac = hmac.digest("hex");
 
-    const userData = await User.findOne({ firstName: "Ajay" });
-    console.log("aaaaaa", userData);
-    const userId = userData._id;
+     if (hmac === details.payment.razorpay_signature) {
+       const userData = await User.findById(userId);
 
-    const details = req.body;
-    console.log("kkkkkkkkkkkkkkkk", details);
+       if (!userData) {
+         return res
+           .status(404)
+           .json({ status: false, message: "User not found" });
+       }
 
-    const amount = details.order.amount;
-    console.log("amount", amount);
+       const walletHistory = {
+         transactionDate: new Date(),
+         transactionDetails: "Deposited via Razorpay",
+         transactionType: "Credit",
+         transactionAmount: amount / 100,
+         currentBalance: (userData.wallet || 0) + amount / 100, // Use userData.wallet
+       };
 
-    let hmac = crypto.createHmac("sha256", "f4QOCHAFThYVJH9z8lX8OPhN");
-    console.log("hmaccccccccccccccc", hmac);
-    hmac.update(
-      details.payment.razorpay_order_id +
-        "|" +
-        details.payment.razorpay_payment_id
-    );
-    hmac = hmac.digest("hex");
-    console.log("hhhhhhhhhhhhhhhhhhhhhh", hmac);
-    if (hmac == details.payment.razorpay_signature) {
-      const walletHistory = {
-        transactionDate: new Date(),
-        transactionDetails: "Deposited via Razorpay",
-        transactionType: "Credit",
-        transactionAmount: amount,
-        currentBalance: !isNaN(userId.wallet) ? userId.wallet + amount : amount,
-      };
-      await User.findOneAndUpdate(
-        { firstName: "Ajay" },
-        {
-          $inc: {
-            wallet: amount,
-          },
-          $push: {
-            walletHistory,
-          },
-        }
-      );
-      res.json({ status: true });
-    } else {
-      res.json({ status: false });
-    }
-  } catch (error) {
-    console.log(error);
-    res.render("500");
-  }
-};
+       await User.findByIdAndUpdate(
+         userId, // Use userId here
+         {
+           $inc: {
+             wallet: amount / 100,
+           },
+           $push: {
+             walletHistory,
+           },
+         }
+       );
+       res.json({ status: true });
+     } else {
+       console.error("Razorpay Signature Verification Failed");
+       res.json({ status: false, message: "Payment Verification Failed" });
+     }
+   } catch (error) {
+     console.error("Error in verifyWalletpayment:", error);
+     res.status(500).json({ status: false, message: "An error occurred" });
+   }
+ };
+
+//-------------------------------------------------------------------------------------------------------
+
+
+
 
 // Load Wallet History
 const loadHistory = async (req, res) => {
