@@ -9,8 +9,7 @@ const nocache = require("nocache");
 const app = express();
 const config = require("./config/config");
 const path = require("path");
-const flash = require("express-flash");
-app.use(flash());
+const flash = require("connect-flash"); 
 // Import userRoutes
 const userRoute = require("./routes/userRoute");
 
@@ -25,6 +24,10 @@ app.use(
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+
+
+app.use(flash());
 
 // Middleware to disable back button caching
 const disableBackButton = (req, res, next) => {

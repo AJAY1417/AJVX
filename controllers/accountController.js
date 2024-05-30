@@ -37,6 +37,7 @@ const loadMyAccount = async (req, res) => {
       User: user, //userdb = user
       walletBalance: walletBalance,
       walletHistory: walletHistory,
+      messages: req.flash(),
     });
   } catch (error) {
     console.log(error.message);
@@ -187,9 +188,17 @@ const userDetails = async (req, res) => {
     );
 
     console.log(updatedUser);
-    res.redirect("/profile");
+    if (updatedUser) {
+      req.flash("success", "User details updated successfully!");
+      res.redirect("/profile");
+    } else {
+      req.flash("error", "Failed to update user details");
+      res.redirect("/profile");
+    }
   } catch (error) {
-    console.log(error.message);
+    console.error(error);
+    req.flash("error", "An error occurred!");
+    res.redirect("/profile");
   }
 };
 

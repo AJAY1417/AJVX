@@ -72,39 +72,35 @@
                         <!-- Dashboard Content -->
                         <div class="col-md-8 col-lg-9">
                             <div class="tab-content">
-                                <!-- Dashboard Tab Pane -->
                                 <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel"
                                     aria-labelledby="tab-dashboard-link">
-                                    <form method="post" action="/updateDetails" id="accountForm">
+                                    <form method="post" action="/updateDetails" id="accountForm"
+                                        onsubmit="return validateForm()">
                                         <h3>Account Info</h3>
                                         <div class="text-right">
-                                            <!-- Edit Button -->
                                             <button type="button" class="btn btn-link" id="editIcon"
                                                 style="color: red;">
                                                 <i class="fas fa-edit"></i> Edit
                                             </button>
                                         </div>
                                         <div class="form-group">
-                                            <!-- First Name Input -->
-                                            <label for="name">First Name:</label>
-                                            <input type="text" class="form-control" id="name" name="firstName"
-                                                value="<%= User.firstName %>" disabled>
+                                            <label for="firstName">First Name:</label>
+                                            <input type="text" class="form-control" id="firstName" name="firstName"
+                                                value="<%= User.firstName %>" disabled required>
+                                            <small id="firstNameError" class="text-danger"></small>
                                         </div>
                                         <div class="form-group">
-                                            <!-- Last Name Input -->
-                                            <label for="name">Last Name:</label>
-                                            <input type="text" class="form-control" id="name" name="lastName"
-                                                value="<%= User.lastName %>" disabled>
+                                            <label for="lastName">Last Name:</label>
+                                            <input type="text" class="form-control" id="lastName" name="lastName"
+                                                value="<%= User.lastName %>" disabled required>
+                                            <small id="lastNameError" class="text-danger"></small>
                                         </div>
                                         <div class="form-group">
-                                            <!-- Mobile Input -->
                                             <label for="mobile">Mobile:</label>
                                             <input type="tel" class="form-control" id="mobile" name="mobile"
-                                                value="<%= User.mobile %>" disabled>
+                                                value="<%= User.mobile %>" disabled required pattern="[0-9]{10}">
+                                            <small id="mobileError" class="text-danger"></small>
                                         </div>
-
-
-
                                         <button type="submit" class="btn btn-primary">Submit Changes</button>
                                     </form>
 
@@ -114,265 +110,277 @@
                                             <%= User.referralCode %>
                                         </p>
                                     </div>
-
                                 </div><!-- .End .tab-pane -->
-                                <!----------------------------------------------------------- DASHBOARD ENDS ----------------------------------------------------------->
+                            </div>
+                        </div>
+                        <!----------------------------------------------------------- DASHBOARD ENDS ----------------------------------------------------------->
 
-                                <!----------------------------------------------------------- ORDERS STARTS ----------------------------------------------------------->
-                                <div class="tab-pane fade" id="tab-orders" role="tabpanel"
-                                    aria-labelledby="tab-orders-link">
-                                    <!-- Orders Table -->
-                                    <table class="table table-cart table-mobile">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 40%;">Product</th>
-                                                <th style="width: 15%;">Price</th>
-                                                <th style="width: 20%;">Order Status</th>
-                                                <th style="width: 25%;">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Loop through order data -->
-                                            <% for (let j=0; j < orderData.length; j++) { %>
-                                                <% let product=orderData[j].products %>
-                                                    <% for (let i=0; i < product.length; i++) { %>
-                                                        <% const value=product[i].product; %>
-                                                            <!-- Individual Order Row -->
-                                                            <tr>
-                                                                <!-- Product Column -->
-                                                                <td class="product-col">
-                                                                    <div class="product">
-                                                                        <figure class="product-media">
-                                                                            <a href="#">
-                                                                                <img src="/public/images/products/<%= value.images[0] %>"
-                                                                                    alt="Product image">
-                                                                            </a>
-                                                                        </figure>
-                                                                        <h3 class="product-title">
-                                                                            <a href="#">
-                                                                                <%= value.name %>
-                                                                            </a>
-                                                                        </h3>
-                                                                    </div>
-                                                                </td>
+                        <!----------------------------------------------------------- ORDERS STARTS ----------------------------------------------------------->
+                        <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+                            <!-- Orders Table -->
+                            <table class="table table-cart table-mobile">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40%;">Product</th>
+                                        <th style="width: 15%;">Price</th>
+                                        <th style="width: 20%;">Order Status</th>
+                                        <th style="width: 25%;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Loop through order data -->
+                                    <% for (let j=0; j < orderData.length; j++) { %>
+                                        <% let product=orderData[j].products %>
+                                            <% for (let i=0; i < product.length; i++) { %>
+                                                <% const value=product[i].product; %>
+                                                    <!-- Individual Order Row -->
+                                                    <tr>
+                                                        <!-- Product Column -->
+                                                        <td class="product-col">
+                                                            <div class="product">
+                                                                <figure class="product-media">
+                                                                    <a href="#">
+                                                                        <img src="/public/images/products/<%= value.images[0] %>"
+                                                                            alt="Product image">
+                                                                    </a>
+                                                                </figure>
+                                                                <h3 class="product-title">
+                                                                    <a href="#">
+                                                                        <%= value.name %>
+                                                                    </a>
+                                                                </h3>
+                                                            </div>
+                                                        </td>
 
-                                                                <!-- Price Column -->
-                                                                <td class="price-col">₹<%= product[i].total %>
-                                                                </td>
+                                                        <!-- Price Column -->
+                                                        <td class="price-col">₹<%= product[i].total %>
+                                                        </td>
 
-                                                                <!-- Order Status Column -->
-                                                                <td class="status-col">
-                                                                    <%= orderData[j].status %>
-                                                                </td>
+                                                        <!-- Order Status Column -->
+                                                        <td class="status-col">
+                                                            <%= orderData[j].status %>
+                                                        </td>
 
-                                                                <!-- Actions Column -->
-                                                                <style>
-                                                                    .btn {
-                                                                        margin-right: 3px;
-                                                                    }
-                                                                </style>
+                                                        <!-- Actions Column -->
+                                                        <style>
+                                                            .btn {
+                                                                margin-right: 3px;
+                                                            }
+                                                        </style>
 
-                                                                <td class="actions-col">
-                                                                    <div class="d-flex justify-content-start">
-                                                                        <% if (orderData[j].status==='Delivered' ) { %>
-                                                                            <!-- Return Order Button -->
-                                                                            <a href="#"
-                                                                                class="btn btn-outline-primary-2 btn-sm return-button"
-                                                                                data-order-id="<%= orderData[j]._id %>">
-                                                                                RETURN
-                                                                            </a>
-                                                                            <% } else if
-                                                                                (orderData[j].status==='Payment Failed'
-                                                                                ) { %>
-                                                                                <form action="/placeOrder"
-                                                                                    method="POST">
-                                                                                    <input type="hidden" name="orderId"
-                                                                                        value="<%= orderData[j]._id %>">
-                                                                                    <input type="hidden"
-                                                                                        name="payment-method"
-                                                                                        value="online">
-                                                                                    <button type="submit"
-                                                                                        class="btn btn-outline-primary-2 btn-sm repay-button">
-                                                                                        REPAY
-                                                                                    </button>
-                                                                                </form>
-                                                                                <% } else if (orderData[j].status
-                                                                                    !=='cancelled' ) { %>
-                                                                                    <!-- Cancel Order Button -->
-                                                                                    <a href="#" data-type="order"
-                                                                                        data-id="<%= orderData[j]._id %>"
-                                                                                        class="btn btn-outline-primary-2 btn-sm cancel-button">CANCEL</a>
-                                                                                    <% } %>
-                                                                                        <!-- Generate Invoice Button -->
-                                                                                        <a href="/generateInvoice/<%= orderData[j]._id %>"
-                                                                                            class="btn btn-outline-primary-2 btn-sm invoice-button mr-1">
-                                                                                            <i
-                                                                                                class="fas fa-file-invoice"></i>
-                                                                                        </a>
-                                                                                        <!-- View Order Details Button -->
-                                                                                        <a href="/orderDetails/<%= orderData[j]._id %>"
-                                                                                            class="btn btn-outline-primary-2 btn-sm order-details-button mr-1">
-                                                                                            <i
-                                                                                                 class="fas fa-info-circle"></i>
-                                                                                        </a>
-                                                                    </div>
-                                                                </td>
-
-                                                            </tr>
-                                                            <% } %>
-                                                                <% } %>
-                                        </tbody>
-                                    </table>
-                                </div><!-- .End .tab-pane -->
-
-                                <!----------------------------------------------------------- WALLET STARTS ----------------------------------------------------------->
-
-                                <div class="tab-pane fade" id="tab-wallet" role="tabpanel"
-                                    aria-labelledby="tab-wallet-link">
-
-                                    <h5 class="card-title">Wallet Balance :<%= User.wallet %> <span
-                                                class="text-success">/-</span></h5><br>
-                                    <p>Wallet History</p>
-
-                                    <div class="card-body">
-
-
-
-                                        <!-- Add money to the wallet form -->
-                                        <div class="wallet-container">
-                                            <h5>Add Money to Wallet:</h5>
-                                            <form id="addMoneyForm" class="narrow-form">
-                                                <div class="form-group">
-                                                    <label for="addMoneyAmount">Amount:</label>
-                                                    <input type="number" class="form-control" id="addMoneyAmount" />
-                                                </div>
-                                                <button type="button" onclick="addMoney()" id="addMoneyButton"
-                                                    class="btn btn-dark">Add Money</button>
-
-                                            </form>
-                                            <input type="hidden" id="userId" value="<%= User._id %>" />
-
-                                        </div>
-
-                                    </div>
-                                </div>
-
-
-                                <!----------------------------------------------------------- WALLET ENDS ----------------------------------------------------------->
-                                <!-- Downloads Tab Pane -->
-                                <div class="tab-pane fade" id="tab-downloads" role="tabpanel"
-                                    aria-labelledby="tab-downloads-link">
-                                    <p>No downloads available yet.</p>
-                                    <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i
-                                            class="icon-long-arrow-right"></i></a>
-                                </div><!-- .End .tab-pane -->
-
-                                <!----------------------------------------------------------- ADDRESS STARTS ----------------------------------------------------------->
-                                <!-- Address Tab Pane -->
-                                <div class="tab-pane fade" id="tab-address" role="tabpanel"
-                                    aria-labelledby="tab-address-link">
-                                    <p>The following addresses will be used on the checkout page by default.</p>
-                                    <!-- Add Address Button -->
-                                    <a href="/addAddress">
-                                        <button type="submit" class="btn btn-outline-primary-2 float-right">
-                                            <span>+ ADD ADDRESS</span>
-                                            <i class="icon-long-arrow-right"></i>
-                                        </button>
-                                    </a>
-                                    <div class="row">
-                                        <!-- Loop through User addresses -->
-                                        <% if (UserAddress && UserAddress.length> 0) { %>
-                                            <% for (let i=0; i < UserAddress.length; i++) { %>
-                                                <div class="col-lg-6">
-                                                    <div class="card card-dashboard">
-                                                        <div class="card-body">
-                                                            <!-- Delete Address Button -->
-                                                            <a href="/deleteAddress?id=<%= UserAddress[i]._id %>"><i
-                                                                    class="bi bi-trash3 float-right"></i></a>
-
-                                                            <!-- Billing Address Title -->
-                                                            <h3 class="card-title">Billing Address</h3>
-                                                            <!-- Iterate through the address array -->
-                                                            <% if (UserAddress[i].address &&
-                                                                UserAddress[i].address.length> 0) { %>
-                                                                <% for (let j=0; j < UserAddress[i].address.length; j++)
-                                                                    { %>
-                                                                    <!-- Address Details -->
-                                                                    <p>
-                                                                        <%= UserAddress[i].address[j].firstName %><br>
-                                                                            <%= UserAddress[i].address[j].lastName %>
-                                                                                <br>
-                                                                                <%= UserAddress[i].address[j].mobile %>
-                                                                                    <br>
-                                                                                    <%= UserAddress[i].address[j].email
-                                                                                        %><br>
-                                                                                        <%= UserAddress[i].address[j].houseNo
-                                                                                            %><br>
-                                                                                            <%= UserAddress[i].address[j].city
-                                                                                                %><br>
-                                                                                                <%= UserAddress[i].address[j].state
-                                                                                                    %><br>
-                                                                                                    <%= UserAddress[i].address[j].zipcode
-                                                                                                        %><br>
-                                                                                                        <%= UserAddress[i].address[j].additionalDetails
-                                                                                                            %><br>
-                                                                    </p>
-                                                                    <!-- Edit Address Button -->
-                                                                    <a href="/editAddress?id=<%= UserAddress[i]._id %>">Edit
-                                                                        <i class="icon-edit"></i></a>
-                                                                    <% } %>
-                                                                        <% } else { %>
-                                                                            <p>No billing address found.</p>
+                                                        <td class="actions-col">
+                                                            <div class="d-flex justify-content-start">
+                                                                <% if (orderData[j].status==='Delivered' ) { %>
+                                                                    <!-- Return Order Button -->
+                                                                    <a href="#"
+                                                                        class="btn btn-outline-primary-2 btn-sm return-button"
+                                                                        data-order-id="<%= orderData[j]._id %>">
+                                                                        RETURN
+                                                                    </a>
+                                                                    <% } else if (orderData[j].status==='Payment Failed'
+                                                                        ) { %>
+                                                                        <form action="/placeOrder" method="POST">
+                                                                            <input type="hidden" name="orderId"
+                                                                                value="<%= orderData[j]._id %>">
+                                                                            <input type="hidden" name="payment-method"
+                                                                                value="online">
+                                                                            <button type="submit"
+                                                                                class="btn btn-outline-primary-2 btn-sm repay-button">
+                                                                                REPAY
+                                                                            </button>
+                                                                        </form>
+                                                                        <% } else if (orderData[j].status !=='cancelled'
+                                                                            ) { %>
+                                                                            <!-- Cancel Order Button -->
+                                                                            <a href="#" data-type="order"
+                                                                                data-id="<%= orderData[j]._id %>"
+                                                                                class="btn btn-outline-primary-2 btn-sm cancel-button">CANCEL</a>
                                                                             <% } %>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <% } %>
-                                                    <% } else { %>
-                                                        <p>No User addresses found.</p>
+                                                                                <!-- Generate Invoice Button -->
+                                                                                <a href="/generateInvoice/<%= orderData[j]._id %>"
+                                                                                    class="btn btn-outline-primary-2 btn-sm invoice-button mr-1">
+                                                                                    <i class="fas fa-file-invoice"></i>
+                                                                                </a>
+                                                                                <!-- View Order Details Button -->
+                                                                                <a href="/orderDetails/<%= orderData[j]._id %>"
+                                                                                    class="btn btn-outline-primary-2 btn-sm order-details-button mr-1">
+                                                                                    <i class="fas fa-info-circle"></i>
+                                                                                </a>
+                                                            </div>
+                                                        </td>
+
+                                                    </tr>
+                                                    <% } %>
                                                         <% } %>
-                                    </div>
-                                </div><!-- .End .tab-pane -->
-                                <!----------------------------------------------------------- ADDRESS ENDS ----------------------------------------------------------->
-                                <!------------------------------------- Reset Password Section ------------------------------------->
-                                <div class="tab-pane fade" id="tab-reset-password" role="tabpanel"
-                                    aria-labelledby="tab-reset-password-link">
-                                    <div class="container">
-                                        <h2 class="section-title">Reset Password</h2>
-                                        <form method="post" action="/resetPassword">
-                                            <!-- Current Password Input -->
-                                            <div class="form-group">
-                                                <label for="currentPassword">Current Password:</label>
-                                                <input type="password" class="form-control" id="currentPassword"
-                                                    name="currentPassword" required>
-                                                <span id="currentPasswordValidationMsg" style="color: red;"></span>
-                                            </div>
-                                            <!-- New Password Input -->
-                                            <div class="form-group">
-                                                <label for="newPassword">New Password:</label>
-                                                <input type="password" class="form-control" id="newPassword"
-                                                    name="newPassword" required maxlength="12">
-                                                <span id="passwordValidationMsg" style="color: red;"></span>
-                                            </div>
-                                            <!-- Confirm Password Input -->
-                                            <div class="form-group">
-                                                <label for="confirmPassword">Confirm Password:</label>
-                                                <input type="password" class="form-control" id="confirmPassword"
-                                                    name="confirmPassword" required maxlength="12">
-                                                <span id="confirmPasswordValidationMsg" style="color: red;"></span>
-                                            </div>
-                                            <!-- Submit Button -->
-                                            <button type="submit" class="btn btn-primary">Reset Password</button>
-                                        </form>
-                                    </div>
+                                </tbody>
+                            </table>
+                        </div><!-- .End .tab-pane -->
+
+                        <!----------------------------------------------------------- WALLET STARTS ----------------------------------------------------------->
+
+                        <div class="tab-pane fade" id="tab-wallet" role="tabpanel" aria-labelledby="tab-wallet-link">
+
+                            <h5 class="card-title">Wallet Balance :<%= User.wallet %> <span
+                                        class="text-success">/-</span></h5><br>
+                            <p>Wallet History</p>
+
+                            <div class="card-body">
+
+
+
+                                <!-- Add money to the wallet form -->
+                                <div class="wallet-container">
+                                    <h5>Add Money to Wallet:</h5>
+                                    <form id="addMoneyForm" class="narrow-form">
+                                        <div class="form-group">
+                                            <label for="addMoneyAmount">Amount:</label>
+                                            <input type="number" class="form-control" id="addMoneyAmount" />
+                                        </div>
+                                        <button type="button" onclick="addMoney()" id="addMoneyButton"
+                                            class="btn btn-dark">Add Money</button>
+
+                                    </form>
+                                    <input type="hidden" id="userId" value="<%= User._id %>" />
+
                                 </div>
 
+                            </div>
+                        </div>
 
-                            </div><!-- End .col-lg-9 -->
-                        </div><!-- End .row -->
-                    </div><!-- End .container -->
-                </div><!-- End .dashboard -->
-            </div><!-- End .page-content -->
+
+                        <!----------------------------------------------------------- WALLET ENDS ----------------------------------------------------------->
+                        <!-- Downloads Tab Pane -->
+                        <div class="tab-pane fade" id="tab-downloads" role="tabpanel"
+                            aria-labelledby="tab-downloads-link">
+                            <p>No downloads available yet.</p>
+                            <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i
+                                    class="icon-long-arrow-right"></i></a>
+                        </div><!-- .End .tab-pane -->
+
+                        <!----------------------------------------------------------- ADDRESS STARTS ----------------------------------------------------------->
+                        <!-- Address Tab Pane -->
+                        <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
+                            <p>The following addresses will be used on the checkout page by default.</p>
+                            <!-- Add Address Button -->
+                            <a href="/addAddress">
+                                <button type="submit" class="btn btn-outline-primary-2 float-right">
+                                    <span>+ ADD ADDRESS</span>
+                                    <i class="icon-long-arrow-right"></i>
+                                </button>
+                            </a>
+                            <div class="row">
+                                <!-- Loop through User addresses -->
+                                <% if (UserAddress && UserAddress.length> 0) { %>
+                                    <% for (let i=0; i < UserAddress.length; i++) { %>
+                                        <div class="col-lg-6">
+                                            <div class="card card-dashboard">
+                                                <div class="card-body">
+                                                    <!-- Delete Address Button -->
+                                                    <a href="/deleteAddress?id=<%= UserAddress[i]._id %>"><i
+                                                            class="bi bi-trash3 float-right"></i></a>
+
+                                                    <!-- Billing Address Title -->
+                                                    <h3 class="card-title">Billing Address</h3>
+                                                    <!-- Iterate through the address array -->
+                                                    <% if (UserAddress[i].address && UserAddress[i].address.length> 0) {
+                                                        %>
+                                                        <% for (let j=0; j < UserAddress[i].address.length; j++) { %>
+                                                            <!-- Address Details -->
+                                                            <p>
+                                                                <%= UserAddress[i].address[j].firstName %><br>
+                                                                    <%= UserAddress[i].address[j].lastName %>
+                                                                        <br>
+                                                                        <%= UserAddress[i].address[j].mobile %>
+                                                                            <br>
+                                                                            <%= UserAddress[i].address[j].email %><br>
+                                                                                <%= UserAddress[i].address[j].houseNo %>
+                                                                                    <br>
+                                                                                    <%= UserAddress[i].address[j].city
+                                                                                        %><br>
+                                                                                        <%= UserAddress[i].address[j].state
+                                                                                            %><br>
+                                                                                            <%= UserAddress[i].address[j].zipcode
+                                                                                                %><br>
+                                                                                                <%= UserAddress[i].address[j].additionalDetails
+                                                                                                    %><br>
+                                                            </p>
+                                                            <!-- Edit Address Button -->
+                                                            <a href="/editAddress?id=<%= UserAddress[i]._id %>">Edit
+                                                                <i class="icon-edit"></i></a>
+                                                            <% } %>
+                                                                <% } else { %>
+                                                                    <p>No billing address found.</p>
+                                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                            <% } else { %>
+                                                <p>No User addresses found.</p>
+                                                <% } %>
+                            </div>
+                        </div><!-- .End .tab-pane -->
+                        <!----------------------------------------------------------- ADDRESS ENDS ----------------------------------------------------------->
+                        <!------------------------------------- Reset Password Section ------------------------------------->
+                        <div class="tab-pane fade" id="tab-reset-password" role="tabpanel"
+                            aria-labelledby="tab-reset-password-link">
+                            <div class="container">
+                                <h2 class="section-title">Reset Password</h2>
+                                <form method="post" action="/resetPassword">
+                                    <!-- Current Password Input -->
+                                    <div class="form-group">
+                                        <label for="currentPassword">Current Password:</label>
+                                        <input type="password" class="form-control" id="currentPassword"
+                                            name="currentPassword" required>
+                                        <span id="currentPasswordValidationMsg" style="color: red;"></span>
+                                    </div>
+                                    <!-- New Password Input -->
+                                    <div class="form-group">
+                                        <label for="newPassword">New Password:</label>
+                                        <input type="password" class="form-control" id="newPassword" name="newPassword"
+                                            required maxlength="12">
+                                        <span id="passwordValidationMsg" style="color: red;"></span>
+                                    </div>
+                                    <!-- Confirm Password Input -->
+                                    <div class="form-group">
+                                        <label for="confirmPassword">Confirm Password:</label>
+                                        <input type="password" class="form-control" id="confirmPassword"
+                                            name="confirmPassword" required maxlength="12">
+                                        <span id="confirmPasswordValidationMsg" style="color: red;"></span>
+                                    </div>
+                                    <!-- Submit Button -->
+                                    <button type="submit" class="btn btn-primary">Reset Password</button>
+                                </form>
+
+                                <% if (messages.success) { %>
+                                    <script>
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Success!',
+                                            text: '<%= messages.success %>'
+                                        });
+                                    </script>
+                                    <% } %>
+
+                                        <% if (messages.error) { %>
+                                            <script>
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Error!',
+                                                    text: '<%= messages.error %>'
+                                                });
+                                            </script>
+                                            <% } %>
+
+                            </div>
+                        </div>
+
+
+                    </div><!-- End .col-lg-9 -->
+                </div><!-- End .row -->
+            </div><!-- End .container -->
+        </div><!-- End .dashboard -->
+        </div><!-- End .page-content -->
     </main><!-- End .main -->
 
     <!-- JavaScript Libraries -->
@@ -380,6 +388,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 
     <!-- Custom Scripts -->
     <script>
@@ -819,6 +828,97 @@
 
 
     </script>
+
+
+
+
+
+    <script>
+  // Display flash messages using SweetAlert 
+  <% if (messages.success) { %>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '<%= messages.success %>'
+            });
+  <% } %>
+
+  <% if (messages.error) { %>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: '<%= messages.error %>'
+            });
+  <% } %>
+    </script>
+
+
+    <script>
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const editButton = document.getElementById('editIcon');
+                const firstNameInput = document.getElementById('firstName');
+                const lastNameInput = document.getElementById('lastName');
+                const mobileInput = document.getElementById('mobile');
+                const firstNameError = document.getElementById('firstNameError');
+                const lastNameError = document.getElementById('lastNameError');
+                const mobileError = document.getElementById('mobileError');
+
+                if (editButton) {
+                    editButton.addEventListener('click', () => {
+                        firstNameInput.disabled = false; // Always enable on click
+                        lastNameInput.disabled = false;
+                        mobileInput.disabled = false;
+                    });
+                }
+
+                // Form Validation (Only if the form exists)
+                const accountForm = document.getElementById('accountForm');
+                if (accountForm) {
+                    accountForm.addEventListener('submit', function (event) {
+                        let isValid = true;
+
+                        // First name validation
+                        if (firstNameInput.value.trim() === "") {
+                            firstNameError.textContent = "First name is required";
+                            isValid = false;
+                        } else if (!/^[a-zA-Z]+$/.test(firstNameInput.value.trim())) {
+                            firstNameError.textContent = "Only letters are allowed in first name";
+                            isValid = false;
+                        } else {
+                            firstNameError.textContent = "";
+                        }
+
+                        // Last name validation
+                        if (lastNameInput.value.trim() === "") {
+                            lastNameError.textContent = "Last name is required";
+                            isValid = false;
+                        } else if (!/^[a-zA-Z]+$/.test(lastNameInput.value.trim())) {
+                            lastNameError.textContent = "Only letters are allowed in last name";
+                            isValid = false;
+                        } else {
+                            lastNameError.textContent = "";
+                        }
+
+                        // Mobile number validation
+                        if (mobileInput.value.trim() === "") {
+                            mobileError.textContent = "Mobile number is required";
+                            isValid = false;
+                        } else if (!/^[0-9]{10}$/.test(mobileInput.value.trim())) {
+                            mobileError.textContent = "Please enter a valid 10-digit mobile number";
+                            isValid = false;
+                        } else {
+                            mobileError.textContent = "";
+                        }
+
+                        if (!isValid) {
+                            event.preventDefault(); // Prevent form submission if not valid
+                        }
+                    });
+                }
+            }); 
+    </script>
+
 
 
 

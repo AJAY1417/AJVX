@@ -7,14 +7,14 @@ const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
 const razorpaySecretKey = process.env.RAZORPAY_SECRET_KEY;
 const mongodbUri = process.env.MONGODB_URI;
 
-console.log({
-  sessionSecret,
-  emailUser,
-  emailPassword,
-  razorpayKeyId,
-  razorpaySecretKey,
-  mongodbUri,
-});
+// console.log({
+//   sessionSecret,
+//   emailUser,
+//   emailPassword,
+//   razorpayKeyId,
+//   razorpaySecretKey,
+//   mongodbUri,
+// });
 
 module.exports = {
   sessionSecret,
