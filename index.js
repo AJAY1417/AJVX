@@ -9,7 +9,7 @@ const nocache = require("nocache");
 const app = express();
 const config = require("./config/config");
 const path = require("path");
-const flash = require("connect-flash");
+const flash = require("connect-flash"); 
 // Import userRoutes
 const userRoute = require("./routes/userRoute");
 
@@ -24,6 +24,8 @@ app.use(
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+
 
 app.use(flash());
 
