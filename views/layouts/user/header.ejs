@@ -100,19 +100,13 @@
 
                                 </li>
                                 <li>
-                                    <a href="product.html" class="sf-with-ul">Wallet</a>
+                                    <a href="/view-wallet" class="sf-with-ul">Wallet</a>
 
 
                                 </li>
                                 <li>
-                                    <a href="#" class="sf-with-ul">About</a>
-                                    <ul>
-                                        <li>
-                                            <a href="about.html" class="sf-with-ul">Contact us</a>
-                                        </li>
-                                        <li>
-
-                                            <ul>
+                                    <a href="/about" class="sf-with-ul">About</a>
+                                  
 
                                         </li>
 
@@ -131,24 +125,18 @@
                         <a href="/wishlist" class="wishlist-link">
                             <i class="icon-heart-o"></i>
                         </a>
+                      
                         <div class="dropdown cart-dropdown">
                             <a href="/cart" class="dropdown-toggle" data-display="static">
-                                <i class="icon-shopping-cart"></i>
-                                <span id="cartCount" class="cart-item-count small">
-                                    <%= count %>
-                                </span>
+                              <i class="icon-shopping-cart"></i>
+                              <span id="cartCount" class="cart-item-count small">0</span> 
                             </a>
-                        </div>
+                          </div>
 
 
 
 
-
-
-
-
-
-
+                        
 
 
                         <div class="header-profile">
@@ -178,4 +166,30 @@
             </div><!-- End .header-middle -->
         </header><!-- End .header -->
 
-      
+        
+          
+          <script>
+            // Function to update the cart count
+            async function updateCartCount() {
+              try {
+                const response = await fetch('/cart/count');
+                const data = await response.json();
+                document.getElementById('cartCount').textContent = data.count;
+              } catch (error) {
+                console.error("Error updating cart count:", error);
+              }
+            }
+          
+            // Call this function when the page loads
+            document.addEventListener('DOMContentLoaded', updateCartCount);
+          
+            // Add event listeners to your add-to-cart and remove-from-cart buttons
+            // (these are not included in your example, but you'll need them)
+            // For example:
+            // ...
+            $('.add-to-cart').on('click', function() {
+              // ... (your add to cart logic)
+              updateCartCount();
+            });
+            // ...
+          </script>

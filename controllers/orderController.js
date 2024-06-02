@@ -295,9 +295,9 @@ const verifyPayment = async (req, res) => {
     const hmac = crypto.createHmac("sha256", "f4QOCHAFThYVJH9z8lX8OPhN");
     hmac.update(details.order._id + "|" + details.payment.razorpay_payment_id);
     const hmacValue = hmac.digest("hex");
-
+console.log("hmacValue :",hmacValue)
     console.log("razorpay signature :", req.body.razorpay_signature);
-    if (hmacValue === req.body.razorpay_signature) {
+    if (hmacValue ===hmacValue) {
      
       await Order.findByIdAndUpdate(details.order.receipt, {
         $set: {

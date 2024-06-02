@@ -117,8 +117,24 @@
 
                                 </div><!-- .End .tab-pane -->
                                 <!----------------------------------------------------------- DASHBOARD ENDS ----------------------------------------------------------->
+
+
+                                <style>
+                                    .action-buttons a {
+                                        margin-right: 10px;
+                                        /* Adjust the value to control the gap between buttons */
+                                    }
+
+                                    .action-buttons a:last-child {
+                                        margin-right: 0;
+                                        /* Remove margin from the last button */
+                                    }
+                                </style>
+
                                 <!----------------------------------------------------------- ORDERS STARTS ----------------------------------------------------------->
-                                <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+                                <!----------------------------------------------------------- ORDERS STARTS ----------------------------------------------------------->
+                                <div class="tab-pane fade" id="tab-orders" role="tabpanel"
+                                    aria-labelledby="tab-orders-link">
                                     <!-- Orders Table -->
                                     <table class="table table-cart table-mobile">
                                         <thead>
@@ -131,61 +147,72 @@
                                         </thead>
                                         <tbody>
                                             <!-- Loop through order data -->
-                                            <% for (let j = 0; j < orderData.length; j++) { %>
-                                                <% let product = orderData[j].products %>
-                                                <% for (let i = 0; i < product.length; i++) { %>
-                                                    <% const value = product[i].product; %>
-                                                    <!-- Individual Order Row -->
-                                                    <tr>
-                                                        <!-- Product Column -->
-                                                        <td class="product-col">
-                                                            <div class="product">
-                                                                <figure class="product-media">
-                                                                    <a href="#">
-                                                                        <img src="/public/images/products/<%= value.images[0] %>" alt="Product image">
-                                                                    </a>
-                                                                </figure>
-                                                                <h3 class="product-title">
-                                                                    <a href="#"><%= value.name %></a>
-                                                                </h3>
-                                                            </div>
-                                                        </td>
-                                
-                                                        <!-- Price Column -->
-                                                        <td class="price-col">₹<%= product[i].total %></td>
-                                
-                                                        <!-- Order Status Column -->
-                                                        <td class="status-col"><%= orderData[j].status %></td>
-                                
-                                                        <!-- Actions Column -->
-                                                        <td class="actions-col">
-                                                            <div class="d-flex justify-content-start">
-                                                                <% if (orderData[j].status === 'Delivered') { %>
-                                                                    <!-- Return Order Button -->
-                                                                    <a href="#" class="btn btn-outline-primary-2 btn-sm return-button" data-order-id="<%= orderData[j]._id %>">
-                                                                        RETURN
-                                                                    </a>
-                                                                <% } else { %>
-                                                                    <!-- Cancel Order Button -->
-                                                                    <a href="#" data-type="order" data-id="<%= orderData[j]._id %>" class="btn btn-outline-primary-2 btn-sm cancel-button">CANCEL</a>
+                                            <% for (let j=0; j < orderData.length; j++) { %>
+                                                <% let product=orderData[j].products %>
+                                                    <% for (let i=0; i < product.length; i++) { %>
+                                                        <% const value=product[i].product; %>
+                                                            <!-- Individual Order Row -->
+                                                            <tr>
+                                                                <!-- Product Column -->
+                                                                <td class="product-col">
+                                                                    <div class="product">
+                                                                        <figure class="product-media">
+                                                                            <a href="#">
+                                                                                <img src="/public/images/products/<%= value.images[0] %>"
+                                                                                    alt="Product image">
+                                                                            </a>
+                                                                        </figure>
+                                                                        <h3 class="product-title">
+                                                                            <a href="#">
+                                                                                <%= value.name %>
+                                                                            </a>
+                                                                        </h3>
+                                                                    </div>
+                                                                </td>
+
+                                                                <!-- Price Column -->
+                                                                <td class="price-col">₹<%= product[i].total %>
+                                                                </td>
+
+                                                                <!-- Order Status Column -->
+                                                                <td class="status-col">
+                                                                    <%= orderData[j].status %>
+                                                                </td>
+
+                                                                <!-- Actions Column -->
+                                                                <td class="actions-col">
+                                                                    <div
+                                                                        class="d-flex justify-content-start action-buttons">
+                                                                        <% if (orderData[j].status==='Delivered' ) { %>
+                                                                            <!-- Return Order Button -->
+                                                                            <a href="#"
+                                                                                class="btn btn-outline-primary-2 btn-sm return-button"
+                                                                                data-order-id="<%= orderData[j]._id %>">RETURN</a>
+                                                                            <% } else if (orderData[j].status
+                                                                                !=='Canceled' ) { %>
+                                                                                <!-- Cancel Order Button -->
+                                                                                <a href="#" data-type="order"
+                                                                                    data-id="<%= orderData[j]._id %>"
+                                                                                    class="btn btn-outline-primary-2 btn-sm cancel-button">CANCEL</a>
+                                                                                <% } %>
+                                                                                    <!-- Generate Invoice Button -->
+                                                                                    <a href="/generateInvoice/<%= orderData[j]._id %>"
+                                                                                        class="btn btn-outline-primary-2 btn-sm invoice-button"><i
+                                                                                            class="fas fa-file-invoice"></i></a>
+                                                                                    <!-- View Order Details Button -->
+                                                                                    <a href="/orderDetails/<%= orderData[j]._id %>"
+                                                                                        class="btn btn-outline-primary-2 btn-sm order-details-button"><i
+                                                                                            class="fas fa-info-circle"></i></a>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <% } %>
                                                                 <% } %>
-                                                                <!-- Generate Invoice Button -->
-                                                                <a href="/generateInvoice/<%= orderData[j]._id %>" class="btn btn-outline-primary-2 btn-sm invoice-button mr-1">
-                                                                    <i class="fas fa-file-invoice"></i>
-                                                                </a>
-                                                                <!-- View Order Details Button -->
-                                                                <a href="/orderDetails/<%= orderData[j]._id %>" class="btn btn-outline-primary-2 btn-sm order-details-button mr-1">
-                                                                    <i class="fas fa-info-circle"></i>
-                                                                </a>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                <% } %>
-                                            <% } %>
                                         </tbody>
                                     </table>
                                 </div><!-- .End .tab-pane -->
-                                
+
+
                                 <!----------------------------------------------------------- WALLET STARTS ----------------------------------------------------------->
 
                                 <div class="tab-pane fade" id="tab-wallet" role="tabpanel"
@@ -340,7 +367,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-   
+
 
 
     <script>
@@ -427,6 +454,8 @@
             });
         });
 
+
+
         $(document).ready(function () {
             console.log('Cancel button clicked');
             // Handle the cancel button click event
@@ -435,6 +464,7 @@
 
                 const type = $button.data('type');
                 const id = $button.data('id');
+                const $statusColumn = $button.parent().prev('.status-col');
 
                 // Display SweetAlert confirmation dialog
                 const result = await Swal.fire({
@@ -475,6 +505,9 @@
                             const statusColumn = $button.parent().prev('.status-col');
                             statusColumn.text(type === 'order' ? 'Order Status: cancelled' : 'Product Status: cancelled');
 
+
+                            $button.hide();
+                            localStorage.setItem(`cancelled_${id}`, true); // Store cancellation status
                             // Show a success message
                             Swal.fire({
                                 icon: 'success',
@@ -483,8 +516,7 @@
                                 timer: 1500
                             });
 
-                            // Hide the cancel button
-                            $button.hide();
+
                         } else {
                             Swal.fire('Error!', `Failed to cancel ${type}.`, 'error');
                         }
@@ -870,6 +902,8 @@
                 }
             }); 
     </script>
+
+   
 
 
 

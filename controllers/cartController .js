@@ -59,6 +59,7 @@ const loadCart = async (req, res) => {
   }
 };
 
+
 const addToCart = async (req, res) => {
   try {
     const { id: productId } = req.body;
@@ -147,6 +148,24 @@ const addToCart = async (req, res) => {
   } catch (error) {
     console.error("Error in addToCart:", error.message);
     res.status(500).json({ error: "An error occurred" });
+  }
+};
+
+
+const cartCount =  async (req, res) => {
+  try {
+    if (!req.session.user_id) {
+      return res.json({ count: 0 });
+    }
+
+    const userId = req.session.user_id;
+    const cart = await Cart.findOne({ user: userId });
+    const count = cart ? cart.products.length : 0;
+
+    res.json({ count: count });
+  } catch (error) {
+    console.error('Error fetching cart count:', error);
+    res.status(500).json({ error: 'Error fetching cart count' });
   }
 };
 
@@ -261,6 +280,7 @@ const removeCartProduct = async (req, res) => {
 module.exports = {
   loadCart,
   addToCart,
+  cartCount,
   updateCartQuantity,
   removeCartProduct,
 };

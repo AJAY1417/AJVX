@@ -1,406 +1,124 @@
 <%- include('../layouts/user/header.ejs') %>
 
 <main class="main">
-    <div class="intro-slider-container mb-0">
-        <div class="intro-slider owl-carousel owl-theme owl-nav-inside owl-light" data-toggle="owl" data-owl-options='{"nav": false, "dots": false}'>
-            <div class="intro-slide" style="background-image: url(/public/user/assets/images/demos/demo-5/slider/slide.jpg);">
-                <div class="container intro-content text-center">
-                    <h3 class="intro-subtitle text-white">Don’t Miss</h3><!-- End .h3 intro-subtitle -->
-                    <h1 class="intro-title text-white">Mystery Deals</h1><!-- End .intro-title -->
-                    <div class="intro-text text-white">Online Only</div><!-- End .intro-text -->
-                    <a href="category.html" class="btn btn-primary">Discover NOW</a>
-                </div><!-- End .intro-content -->
-            </div><!-- End .intro-slide -->
+  <div class="intro-slider-container mb-0">
+    <div class="intro-slider owl-carousel owl-theme owl-nav-inside owl-light" data-toggle="owl"
+      data-owl-options='{"nav": false, "dots": false}'>
+      <div class="intro-slide" style="background-image: url(/public/user/assets/images/demos/demo-5/slider/slide.jpg);">
+        <div class="container intro-content text-center">
+          <h3 class="intro-subtitle text-white">Don’t Miss</h3>
+          <h1 class="intro-title text-white">Mystery Deals</h1>
+          <div class="intro-text text-white">Online Only</div>
+          <a href="/shop" class="btn btn-primary">Discover NOW</a>
+        </div>
+      </div>
+    </div>
+    <span class="slider-loader text-white"></span>
+  </div>
 
-            <!-- <div class="intro-slide" style="background-image: url(/public/user/assets/images/demos/demo-5/slider/slide-2.jpg);">
-                <div class="container intro-content text-center">
-                    <h3 class="intro-subtitle text-white">Limited time only</h3><!-- End .h3 intro-subtitle -->
-                    <h1 class="intro-title text-white">Treat your self</h1><!-- End .intro-title -->
-                    <div class="intro-text text-white">Up to 50% off</div><!-- End .intro-text -->
-                    <a href="category.html" class="btn btn-primary">Shop NOW</a>
-                </div><!-- End .intro-content -->
-            </div><!-- End .intro-slide -->
-        <!-- </div>End .intro-slider owl-carousel owl-theme -->
+  <div class="mb-5"></div>
 
-        <span class="slider-loader text-white"></span><!-- End .slider-loader -->
-    </div><!-- End .intro-slider-container -->
+  <div class="container pt-6 new-arrivals">
+    <div class="heading heading-center mb-3">
+      <h2 class="title">New Arrivals</h2>
 
-
-
-
-
-
-
-    <div class="mb-5"></div><!-- End .mb-5 -->
-
-
-
-
-    <div class="container pt-6 new-arrivals">
-        <div class="heading heading-center mb-3">
-            <h2 class="title">New Arrivals</h2><!-- End .title -->
-
-            <ul class="nav nav-pills justify-content-center" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="new-all-link" data-toggle="tab" href="#new-all-tab" role="tab" aria-controls="new-all-tab" aria-selected="true">All</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="new-cloth-link" data-toggle="tab" href="#new-cloth-tab" role="tab" aria-controls="new-cloth-tab" aria-selected="false">Clothing</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="new-shoes-link" data-toggle="tab" href="#new-shoes-tab" role="tab" aria-controls="new-shoes-tab" aria-selected="false">Shoes & Boots</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="new-access-link" data-toggle="tab" href="#new-access-tab" role="tab" aria-controls="new-access-tab" aria-selected="false">Accessories</a>
-                </li>
-            </ul>
-        </div><!-- End .heading -->
-
-        <div class="tab-content">
-            <div class="tab-pane p-0 fade show active" id="new-all-tab" role="tabpanel" aria-labelledby="new-all-link">
-                
-                <div class="products">
-                    <div class="row justify-content-center">
-                        <% if (products && products.length > 0){ %>
-                            <% for(let i=0 ;i< products.length;i++){ %>
-                                <div class="col-6 col-md-4 col-lg-3">
-                                    <div class="product product-2">
-                                        <figure class="product-media">
-                                            <a href="product.html">
-                                                <img src="/public/images/products/<%= products[i].images[0]%>" alt="Product image" class="product-image">
-                                            <img src="/public/images/products/<%= products[i].images[1]%>" alt="Product image" class="product-image-hover">
-                                            </a>
-                
-                                            <div class="product-action-vertical">
-                                                <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a>
-                                            </div><!-- End .product-action -->
-                
-                                            <div class="product-action product-action-transparent">
-                                                <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                            </div><!-- End .product-action -->
-                                        </figure><!-- End .product-media -->
-                
-                                        <div class="product-body">
-                                            <div class="product-cat">
-                                                <a href="#">Clothing</a>
-                                            </div><!-- End .product-cat -->
-                                            <h3 class="product-title"><a href="product.html">Linen-blend dress</a></h3><!-- End .product-title -->
-                                            <div class="product-price">
-                                                $60.00
-                                            </div><!-- End .product-price -->
-                                            <div class="product-nav product-nav-dots">
-                                                <a href="#" class="active" style="background: #e5dcb1;"><span class="sr-only">Color name</span></a>
-                                                <a href="#" style="background: #b9cbd8;"><span class="sr-only">Color name</span></a>
-                                            </div><!-- End .product-nav -->
-                                        </div><!-- End .product-body -->
-                                    </div><!-- End .product -->
-                                </div><!-- End .col-6 col-md-4 col-lg-3 -->
-                            <% } %>
-                        <% } %>
-                    </div><!-- End .row -->
-                </div><!-- End .products -->
-                
-                        
-                    </div><!-- End .row -->
-                </div><!-- End .products -->
-            </div><!-- .End .tab-pane -->
-            <div class="tab-pane p-0 fade" id="new-cloth-tab" role="tabpanel" aria-labelledby="new-cloth-link">
-                <div class="products">
-                    <div class="row justify-content-center">
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <div class="product product-2">
-                                <figure class="product-media">
-                                    <a href="product.html">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-5-1.jpg" alt="Product image" class="product-image">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-5-2.jpg" alt="Product image" class="product-image-hover">
-                                    </a>
-
-                                    <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a>
-                                    </div><!-- End .product-action -->
-
-                                    <div class="product-action product-action-transparent">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                    </div><!-- End .product-action -->
-                                </figure><!-- End .product-media -->
-
-                                <div class="product-body">
-                                    <div class="product-cat">
-                                        <a href="#">Clothing</a>
-                                    </div><!-- End .product-cat -->
-                                    <h3 class="product-title"><a href="product.html">Linen-blend dress</a></h3><!-- End .product-title -->
-                                    <div class="product-price">
-                                        $60.00
-                                    </div><!-- End .product-price -->
-                                    <div class="product-nav product-nav-dots">
-                                        <a href="#" class="active" style="background: #e5dcb1;"><span class="sr-only">Color name</span></a>
-                                        <a href="#" style="background: #b9cbd8;"><span class="sr-only">Color name</span></a>
-                                    </div><!-- End .product-nav -->
-                                </div><!-- End .product-body -->
-                            </div><!-- End .product -->
-                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <div class="product product-2">
-                                <figure class="product-media">
-                                    <a href="product.html">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-7-1.jpg" alt="Product image" class="product-image">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-7-2.jpg" alt="Product image" class="product-image-hover">
-                                    </a>
-
-                                    <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a>
-                                    </div><!-- End .product-action -->
-
-                                    <div class="product-action product-action-transparent">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                    </div><!-- End .product-action -->
-                                </figure><!-- End .product-media -->
-
-                                <div class="product-body">
-                                    <div class="product-cat">
-                                        <a href="#">Clothing</a>
-                                    </div><!-- End .product-cat -->
-                                    <h3 class="product-title"><a href="product.html">Paper bag trousers</a></h3><!-- End .product-title -->
-                                    <div class="product-price">
-                                        $60.00
-                                    </div><!-- End .product-price -->
-                                    <div class="product-nav product-nav-dots">
-                                        <a href="#" class="active" style="background: #9fac76;"><span class="sr-only">Color name</span></a>
-                                        <a href="#" style="background: #333333;"><span class="sr-only">Color name</span></a>
-                                    </div><!-- End .product-nav -->
-                                </div><!-- End .product-body -->
-                            </div><!-- End .product -->
-                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <div class="product product-2">
-                                <figure class="product-media">
-                                    <a href="product.html">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-10-1.jpg" alt="Product image" class="product-image">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-10-2.jpg" alt="Product image" class="product-image-hover">
-                                    </a>
-
-                                    <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a>
-                                    </div><!-- End .product-action -->
-
-                                    <div class="product-action product-action-transparent">
-                                        <a href="/cart" class="btn-product btn-cart"><span>add to cart</span></a>
-                                    </div><!-- End .product-action -->
-                                </figure><!-- End .product-media -->
-
-                                <div class="product-body">
-                                    <div class="product-cat">
-                                        <a href="#">Clothing</a>
-                                    </div><!-- End .product-cat -->
-                                    <h3 class="product-title"><a href="product.html">Silk-blend kaftan</a></h3><!-- End .product-title -->
-                                    <div class="product-price">
-                                        Now $370.00
-                                    </div><!-- End .product-price -->
-                                </div><!-- End .product-body -->
-                            </div><!-- End .product -->
-                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <div class="product product-2">
-                                <figure class="product-media">
-                                    <a href="product.html">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-11-1.jpg" alt="Product image" class="product-image">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-11-2.jpg" alt="Product image" class="product-image-hover">
-                                    </a>
-
-                                    <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a>
-                                    </div><!-- End .product-action -->
-
-                                    <div class="product-action product-action-transparent">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                    </div><!-- End .product-action -->
-                                </figure><!-- End .product-media -->
-
-                                <div class="product-body">
-                                    <div class="product-cat">
-                                        <a href="#">Clothing</a>
-                                    </div><!-- End .product-cat -->
-                                    <h3 class="product-title"><a href="product.html">Linen-blend jumpsuit</a></h3><!-- End .product-title -->
-                                    <div class="product-price">
-                                        $595.00
-                                    </div><!-- End .product-price -->
-                                </div><!-- End .product-body -->
-                            </div><!-- End .product -->
-                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                    </div><!-- End .row -->
-                </div><!-- End .products -->
-            </div><!-- .End .tab-pane -->
-            <div class="tab-pane p-0 fade" id="new-shoes-tab" role="tabpanel" aria-labelledby="new-shoes-link">
-                <div class="products">
-                    <div class="row justify-content-center">
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <div class="product product-2">
-                                <figure class="product-media">
-                                    <a href="product.html">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-6-1.jpg" alt="Product image" class="product-image">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-6-2.jpg" alt="Product image" class="product-image-hover">
-                                    </a>
-
-                                    <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a>
-                                    </div><!-- End .product-action -->
-
-                                    <div class="product-action product-action-transparent">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                    </div><!-- End .product-action -->
-                                </figure><!-- End .product-media -->
-
-                                <div class="product-body">
-                                    <div class="product-cat">
-                                        <a href="#">Shoes</a>
-                                    </div><!-- End .product-cat -->
-                                    <h3 class="product-title"><a href="product.html">Sandals with lacing</a></h3><!-- End .product-title -->
-                                    <div class="product-price">
-                                        <span class="new-price">Now $70.00</span>
-                                        <span class="old-price">Was $155.00</span>
-                                    </div><!-- End .product-price -->
-                                </div><!-- End .product-body -->
-                            </div><!-- End .product -->
-                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <div class="product product-2">
-                                <figure class="product-media">
-                                    <a href="product.html">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-12-1.jpg" alt="Product image" class="product-image">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-12-2.jpg" alt="Product image" class="product-image-hover">
-                                    </a>
-
-                                    <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a>
-                                    </div><!-- End .product-action -->
-
-                                    <div class="product-action product-action-transparent">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                    </div><!-- End .product-action -->
-                                </figure><!-- End .product-media -->
-
-                                <div class="product-body">
-                                    <div class="product-cat">
-                                        <a href="#">Shoes</a>
-                                    </div><!-- End .product-cat -->
-                                    <h3 class="product-title"><a href="product.html">Sandals</a></h3><!-- End .product-title -->
-                                    <div class="product-price">
-                                        <span class="new-price">Now $120.00</span>
-                                        <span class="old-price">Was $140.00</span>
-                                    </div><!-- End .product-price -->
-                                </div><!-- End .product-body -->
-                            </div><!-- End .product -->
-                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                    </div><!-- End .row -->
-                </div><!-- End .products -->
-            </div><!-- .End .tab-pane -->
-            <div class="tab-pane p-0 fade" id="new-access-tab" role="tabpanel" aria-labelledby="new-access-link">
-                <div class="products">
-                    <div class="row justify-content-center">
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <div class="product product-2">
-                                <figure class="product-media">
-                                    <a href="product.html">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-8-1.jpg" alt="Product image" class="product-image">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-8-2.jpg" alt="Product image" class="product-image-hover">
-                                    </a>
-
-                                    <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a>
-                                    </div><!-- End .product-action -->
-
-                                    <div class="product-action product-action-transparent">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                    </div><!-- End .product-action -->
-                                </figure><!-- End .product-media -->
-
-                                <div class="product-body">
-                                    <div class="product-cat">
-                                        <a href="#">Handbags</a>
-                                    </div><!-- End .product-cat -->
-                                    <h3 class="product-title"><a href="product.html">Paper straw shopper</a></h3><!-- End .product-title -->
-                                    <div class="product-price">
-                                        $398.00
-                                    </div><!-- End .product-price -->
-                                </div><!-- End .product-body -->
-                            </div><!-- End .product -->
-                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <div class="product product-2">
-                                <figure class="product-media">
-                                    <a href="product.html">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-9-1.jpg" alt="Product image" class="product-image">
-                                        <img src="/public/user/assets/images/demos/demo-5/products/product-9-2.jpg" alt="Product image" class="product-image-hover">
-                                    </a>
-
-                                    <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a>
-                                    </div><!-- End .product-action -->
-
-                                    <div class="product-action product-action-transparent">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
-                                    </div><!-- End .product-action -->
-                                </figure><!-- End .product-media -->
-
-                                <div class="product-body">
-                                    <div class="product-cat">
-                                        <a href="#">Handbags</a>
-                                    </div><!-- End .product-cat -->
-                                    <h3 class="product-title"><a href="product.html">Bucket bag</a></h3><!-- End .product-title -->
-                                    <div class="product-price">
-                                        $350.00
-                                    </div><!-- End .product-price -->
-                                    <div class="product-nav product-nav-dots">
-                                        <a href="#" class="active" style="background: #e3a84d;"><span class="sr-only">Color name</span></a>
-                                        <a href="#" style="background: #f48a5b;"><span class="sr-only">Color name</span></a>
-                                        <a href="#" style="background: #333333;"><span class="sr-only">Color name</span></a>
-                                    </div><!-- End .product-nav -->
-                                </div><!-- End .product-body -->
-                            </div><!-- End .product -->
-                        </div><!-- End .col-sm-6 col-md-4 col-lg-3 -->
-                    </div><!-- End .row -->
-                </div><!-- End .products -->
-            </div><!-- .End .tab-pane -->
-        </div><!-- End .tab-content -->
-
-        <div class="more-container text-center mt-1 mb-3">
-            <a href="#" class="btn btn-outline-primary-2 btn-round btn-more">Load more</a>
-        </div><!-- End .more-container -->
-    </div><!-- End .container -->
-        
-    <div class="mb-2"></div><!-- End .mb-2 -->
-
-    <div class="container">
-        <div class="cta cta-separator mb-5">
-            <div class="row">
-                <div class="col-lg-6">
-                   
-                </div><!-- End .col-lg-6 -->
-<!-- hi
-                <div class="col-lg-6">
-                    <div class="cta-wrapper text-center">
-                        <h3 class="cta-title">Get the Latest Deals</h3><!-- End .cta-title -->
-                        <!-- <p class="cta-desc">and <br>receive <span class="text-primary">$20 coupon</span> for first shopping</p><!-- End .cta-desc -->
-                
-                        <!-- <form action="#">
-                            <div class="input-group">
-                                <input type="email" class="form-control" placeholder="Enter your Email Address" aria-label="Email Adress" required>
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary btn-rounded" type="submit"><i class="icon-long-arrow-right"></i></button>
-                                </div><!-- .End .input-group-append -->
-                            </div><!-- .End .input-group -->
-                        <!-- </form> -->
-                    </div><!-- End .cta-wrapper -->
-                <!-- </div>End .col-lg-6 --> 
-
-                <!-- hi --> 
-
-
-            </div><!-- End .row -->
-        </div><!-- End .cta -->
+      <ul class="nav nav-pills justify-content-center" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="new-all-link" data-toggle="tab" href="#new-all-tab" role="tab" aria-controls="new-all-tab" aria-selected="true">All</a>
+        </li>
+        <li class="nav-item">
+      </ul>
     </div>
 
-    
-</main><!-- End .main -->
+    <div class="tab-content">
+      <div class="tab-pane p-0 fade show active" id="new-all-tab" role="tabpanel" aria-labelledby="new-all-link">
+        <div class="products">
+          <div class="row justify-content-center">
+            <% if (products && products.length > 0) { %>
+              <% products.forEach((product, i) => { %>
 
+                <%  // Find applicable discount INSIDE the loop
+                    const productDiscount = renderData.discPrice.find(x => x.product.toString() === product._id.toString());
+                    
+                    // Calculate the discounted price (if any) INSIDE the loop
+                    let finalPrice = product.price; 
+                    let discountPercentage = 0;
+
+                    if (productDiscount) {
+                        if (product.discountPricepro) {
+                          finalPrice = product.discountPricepro;
+                        } else if (product.discountPricecat) {
+                          finalPrice = product.discountPricecat;
+                        }
+                        discountPercentage = Math.round(((product.price - finalPrice) / product.price) * 100);
+                    } 
+                %>
+
+                <div class="col-6 col-md-4 col-lg-3">
+                  <div class="product product-2">
+                    <figure class="product-media">
+                      <a href="/productDetail?id=<%= product._id %>"> 
+                        <img src="/public/images/products/<%= product.images[0] %>" alt="Product image" class="product-image">
+                        <img src="/public/images/products/<%= product.images[1] %>" alt="Product image" class="product-image-hover">
+                      </a>
+                      <!-- <div class="product-action-vertical">
+                        <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"><span>add to wishlist</span></a>
+                      </div>
+                      <div class="product-action product-action-transparent">
+                        <a href="/cart" 
+                           onclick="addToCart('<%= product._id %>'); return false;" // Add onclick
+                           class="btn-product btn-cart">
+                          <span>add to cart</span>
+                        </a>
+                      </div> -->
+                    </figure>
+                    <div class="product-body">
+                      <div class="product-cat">
+                        <a href="#">
+                          <%= product.category ? product.category.name : 'Uncategorized' %>
+                        </a>
+                      </div>
+                      <h3 class="product-title"><a href="product.html">
+                          <%= product.name %>
+                        </a></h3>
+                      <div class="product-price <%= discountPercentage > 0 ? 'text-danger' : '' %>" style="font-weight: bold; font-size: 18px;">
+                        <% if (discountPercentage > 0) { %>
+                          <del style="color: #999; font-size: 14px;">₹<%= product.price %></del>
+                          <span class="discount-percentage" style="color: green; font-size: 12px;">-<%= discountPercentage %>% off</span>
+                        <% } %>
+                        ₹<%= finalPrice %>
+                      </div>
+                      <div class="product-nav product-nav-dots">
+                        <a href="#" class="active" style="background: #e5dcb1;"><span class="sr-only">Color name</span></a>
+                        <a href="#" style="background: #b9cbd8;"><span class="sr-only">Color name</span></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <p>No products found.</p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <% /* ... Your existing code for other tabs ... */ %>
+
+    </div>
+    <div class="more-container text-center mt-1 mb-3">
+      <a href="#" class="btn btn-outline-primary-2 btn-round btn-more">Load more</a>
+    </div>
+  </div>
+  <div class="mb-2"></div>
+  <div class="container">
+    <div class="cta cta-separator mb-5">
+      <div class="row">
+        <div class="col-lg-6">
+
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
 <%- include('../layouts/user/footer.ejs') %>

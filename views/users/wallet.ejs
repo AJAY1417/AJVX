@@ -38,30 +38,30 @@
 
     <!-- Wallet Add Modal -->
     <div class="modal fade" id="form" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content" style="margin-top: 154px;">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="exampleModalLabel">Add amount to wallet</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="wallet-form">
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="email1">Enter Amount</label>
-                                <input type="number" class="form-control" id="amount" aria-describedby="emailHelp" placeholder="e.g. 1000">
-                                <p id="err" class="text-danger"></p>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn rounded" style="background-color: grey;" data-bs-dismiss="modal">CANCEL</button>
-                            <button type="submit" class="btn rounded" style="background-color: rgb(0, 104, 179);">ADD</button>
-                        </div>
-                    </form>
-                </div>
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content" style="border-radius: 10px; box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);">
+            <div class="modal-header" style="background-color: #f8f9fa; border-bottom: none; border-top-left-radius: 10px; border-top-right-radius: 10px;">    
+              <h4 class="modal-title text-center w-100" id="exampleModalLabel">Add amount to wallet</h4>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div class="modal-body">
+              <form id="wallet-form">
+                <div class="modal-body"> 
+                  <div class="form-group">
+                    <label for="amount" class="form-label">Enter Amount (₹)</label>
+                    <input type="number" class="form-control" id="amount" aria-describedby="emailHelp" placeholder="e.g. 1000">
+                    <p id="err" class="text-danger"></p>
+                  </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                  <button type="button" class="btn btn-secondary rounded me-2" data-bs-dismiss="modal">CANCEL</button>
+                  <button type="submit" class="btn btn-primary rounded">ADD</button>
+                </div>
+              </form>
+            </div>
+          </div> 
         </div>
-    </div>
+      </div>
 </main>
 
 
@@ -75,15 +75,15 @@ let addedAmount;
     const err = document.getElementById('err');
     document.getElementById('wallet-form').addEventListener('submit', (e) => {
         e.preventDefault();
-
+        err.innerText = '';
         const amountInRupees = document.getElementById('amount').value.trim();
         
         const amountInPaise = parseFloat(amountInRupees);
-        if (!amount) {
+        if (!amountInRupees) {
             console.log('No amount entered');
             return; // Exit early if amount is empty
         }
-        if (amount <= 0) {
+        if (amountInRupees <= 0) {
             console.log('Amount is negative');
             err.innerText = 'Amount cannot be negative!';
             return; // Exit early if amount is negative

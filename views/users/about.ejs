@@ -1,0 +1,109 @@
+<%- include('../layouts/user/header.ejs') %>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - AJVX Emmercé</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+    integrity="sha512-r0DPLgO1f6TPhISGRqWzw7c0QI6OSZYOaM/Zs5sw+07IccIZoK4y1P2hLBCvjnnN7zUXK+k2E08t6QFmSbJcDQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    .hero {
+      background-image: url("your-hero-image.jpg"); /* Replace with your image */
+      background-size: cover;
+      background-position: center;
+    }
+
+    .about img {
+      width: 100%;
+      height: auto;
+    }
+
+    .about h2,
+    .about h3 {
+      font-weight: 700;
+    }
+
+    .about p {
+      line-height: 1.6;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 font-sans">
+  <section class="hero bg-gray-100 py-20">
+    <div class="container mx-auto text-center">
+      <h1 class="text-4xl font-bold text-gray-800 mb-4">About AJVX Emmercé</h1>
+      <p class="text-lg text-gray-600 mb-8">
+        Discover the story behind AJVX Emmercé, a company driven by passion for quality and innovation.
+      </p>
+      <a href="#mission" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+        Our Mission
+      </a>
+    </div>
+  </section>
+
+  <section class="about py-16">
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div>
+        <h2 class="text-3xl font-bold mb-4">Our Story</h2>
+        <h3 class="text-3xl font-bold mb-4"> From Humble Beginnings to a Passion for Quality</h3>
+
+        <p class="text-lg text-gray-600">
+           
+            AJVX started as a simple dream: to empower individuals to express themselves through fashion. It all began with [mention the founder's name], someone who always felt a deep connection to clothing as a form of self-expression. Inspired by [mention a specific inspiration, e.g., street style, vintage fashion, cultural influences, etc.], [Founder's name] saw a gap in the market for clothing that embraced individuality and allowed people to tell their unique stories through their style.
+AJVX began as a small collection of [mention the initial product types, e.g., t-shirts, accessories, etc.] designed to make a statement. Each piece was carefully curated to be both stylish and comfortable, encouraging people to feel confident and empowered in their own skin. The response was incredible, with customers resonating with the brand's message of individuality and self-acceptance.
+Today, AJVX has grown into a vibrant online community, where style becomes a platform for self-expression. We offer a curated selection of clothing and accessories designed to help individuals embrace their unique personalities and inspire others. AJVX is not just about buying clothes; it's about building a community of individuals who share a passion for style and self-discovery.
+We're driven by a commitment to [mention your core values, e.g., quality, ethical sourcing, inclusivity, sustainability, etc.]. We believe that fashion should be accessible, empowering, and a reflection of who you are, not a cookie-cutter template.
+Join us as we continue to champion individuality, pushing boundaries, and creating a world where everyone feels confident and empowered to express their authentic selves through their style.        </p>
+      </div>
+
+      <br>
+      <br>
+      <div>
+        <img src="/public/user/assets/images/demos/demo-5/pexels-pixabay-269077.png" alt="Brand Image" class="rounded-md">
+      </div>
+    </div>
+  </section>
+  <br><br><br>
+
+  <section class="values py-16" id="mission">
+    <div class="container mx-auto">
+      <h2 class="text-3xl font-bold text-center mb-8">Our Mission</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center">
+            <br><br>
+          <h3>1</h3>
+          <p>To curate a diverse and inspiring collection of clothing that empowers individuals to embrace their unique style and express their authentic selves through fashion. We are committed to providing high-quality, ethically sourced pieces that celebrate individuality and foster a sense of confidence and empowerment.</p>
+        </div>
+        <div class="text-center">
+            <br><br>
+          <h3>2</h3>
+          <p>To build a global community where style becomes a platform for self-expression and connection. We strive to create a welcoming space where everyone feels comfortable exploring their unique style, sharing their passion for fashion, and connecting with others who share a similar vision.</p>
+        </div>
+        <br><br>
+        <div class="text-center">
+          <h3>3</h3>
+          <p>To challenge traditional notions of beauty and fashion, promoting inclusivity and celebrating diversity. We believe that fashion should be accessible and empowering for everyone, regardless of size, shape, gender, or background. We are committed to sourcing materials ethically and sustainably, ensuring that our practices align with our values of inclusivity and environmental responsibility.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <br><br><br><br>
+
+  <footer class="bg-gray-900 text-white py-8 mt-20">
+    <div class="container mx-auto text-center">
+      <p>© 2024 AJVX Emmercé. All rights reserved.</p>
+      <a href="#" class="hover:text-gray-300">Privacy Policy</a>
+      <a href="#" class="hover:text-gray-300">Terms of Service</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
+<%- include('../layouts/user/footer.ejs') %>

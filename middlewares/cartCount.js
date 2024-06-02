@@ -13,12 +13,9 @@ const cartMiddleware = async (req, res, next) => {
 
       const cart = await Cart.findOne({ user: userId });
       const count = cart ? cart.products.length : 0;
-
-
-      res.locals.count = count;
-     
+      res.locals.cartCount = count;
     } else {
-      res.locals.count = 0;
+      res.locals.cartCount = 0;
     }
     next();
   } catch (error) {

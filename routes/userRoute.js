@@ -37,7 +37,9 @@ user_route.use(addUserToResponse);
 
 // ============================ HOME =======================================
 user_route.get("/", userController.loadHome);
+user_route.get("/about", userController.aboutLoad);
 
+;
 // ============================ REGISTER =======================================
 user_route.get("/register", userController.loadRegister);
 user_route.post("/register", userController.insertUser);
@@ -69,6 +71,7 @@ user_route.get("/deleteWishlistProduct", userController.deleteWishlistproduct);
 // ============================ CART =======================================
 user_route.get("/cart", cartController.loadCart);
 user_route.post("/addTocart", cartController.addToCart);
+user_route.get("/cart/count", cartController.cartCount);
 user_route.post("/updateCartQuantity", cartController.updateCartQuantity);
 user_route.get("/removeCartProduct", cartController.removeCartProduct);
 

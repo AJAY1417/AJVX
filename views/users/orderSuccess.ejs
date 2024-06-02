@@ -23,20 +23,21 @@
     }
 
     .success-message {
-      font-size: 1.5rem;
+      font-size: 1.75rem;
       color: #334155;
-      font-weight: 600;
-      margin-bottom: 1rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
       text-align: center;
     }
 
     .order-details {
       color: #7F8C9A;
-      margin-bottom: 2rem;
+      margin-bottom: 2.5rem;
     }
 
-    .order-details p {  /* Target all p elements within .order-details */
+    .order-details p {
       text-align: center;
+      margin-bottom: 0.5rem;
     }
 
     .buttons {
@@ -46,10 +47,11 @@
     }
 
     .btn {
-      padding: 10px 20px;
+      padding: 12px 24px;
       border: 1px solid #DCE0E3;
-      border-radius: 4px;
+      border-radius: 5px;
       cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .btn-primary {
@@ -60,29 +62,40 @@
     .btn-primary:hover {
       background-color: #2F855A;
     }
+
+    .btn-secondary {
+      background-color: #f0f4f8;
+      color: #334155;
+    }
+
+    .btn-secondary:hover {
+      background-color: #e2e8f0;
+    }
   </style>
 </head>
 
 <body class="bg-gray-100">
-  <div class="flex justify-center items-center h-screen">
-    <div class="bg-white p-8 rounded-md shadow-md max-w-md">
+  <div class="flex justify-center items-center h-screen p-4">
+    <div class="bg-white p-8 rounded-md shadow-md max-w-md w-full">
       <div class="mb-6 mx-auto player-container">
         <lottie-player src="https://lottie.host/afa054af-389e-4fe0-a5f4-85a699550ac1/AO2GPgFu0g.json"
-          background="#FFFFFF" speed="1" loop autoplay direction="1" mode="normal"></lottie-player>
+          background="#FFFFFF" speed="1" loop autoplay direction="1" mode="normal" aria-label="Order Confirmation Animation"></lottie-player>
       </div>
       <div class="text-center">
         <h3 class="success-message">Success! Your Order is Confirmed</h3>
       </div>
-      <div class="order-details">
+      <section class="order-details">
         <p>Thank you for your order! We've received it and are processing it for shipment.</p>
         <p>You'll receive a confirmation email with tracking details shortly.</p>
-      </div>
-      <div class="buttons">
-        <a href="#" class="btn">Track Your Order</a>
-        <a href="#" class="btn btn-primary">Continue Shopping</a>
-      </div>
+      </section>
+     <!-- Success Page -->
+<div class="buttons">
+  <a href="/shop" class="btn btn-primary">Continue Shopping</a>
+  <a href="/profile?tab-orders" class="btn btn-secondary">Track Your Order</a>
+</div>
+
     </div>
   </div>
-</body>
+ 
 
 </html>

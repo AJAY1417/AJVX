@@ -31,15 +31,23 @@ const securePassword = async (password) => {
 const loadHome = async (req, res) => {
   try {
     const products = await Product.find().populate("category").exec();
-    // Pass the user information to the template
-    res.render("home", { products: products });
+
+    const discount = await Offers.find({}); // Fetch product offers
+    const discountCategory = await categoryOffer.find({}); // Fetch category offers
+
+    // Prepare renderData for home page
+    const renderData = {
+      discPrice: discount, // Product offer data
+      discCat: discountCategory, // Category offer data
+    };
+
+    // Pass both products and renderData to the home template
+    res.render("home", { products: products, renderData: renderData });
   } catch (error) {
     console.log(error.message);
-    // Handle errors appropriately
     res.status(500).send("Internal Server Error");
   }
 };
-
 // ============================  REFERAL CODE GENERATOR  =======================================
 function generateReferalCode() {
   const Rcode = randomString.generate({
@@ -578,6 +586,11 @@ const deleteWishlistproduct = async (req, res) => {
   }
 };
 
+
+const aboutLoad = async(req, res) => {
+  res.render("about"); // Assuming you've configured EJS as the view engine
+};
+
 // =====================================================================================================================================
 
 module.exports = {
@@ -600,4 +613,5 @@ module.exports = {
   loadWishlist,
   addtoWishlist,
   deleteWishlistproduct,
+  aboutLoad
 };
