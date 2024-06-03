@@ -47,7 +47,8 @@ const adminVerifyLogin = async (req, res, next) => {
       if (passwordMatch) {
         req.session.admin_id = adminData._id;
         console.log("Dashboard Redirected");
-        return res.render("dashboard");
+    res.redirect("/admin/dashboard");
+    return;
       } else {
         console.log("Password does not match");
       }

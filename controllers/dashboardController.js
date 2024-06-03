@@ -11,7 +11,7 @@ const loadDashboard = async (req, res, next) => {
     const totalUsers = await User.countDocuments();
     const totalOrders = await Order.countDocuments();
     // ---------------------------- //
-    
+
     const totalRevenueResult = await Order.aggregate([
       {
         $group: {
@@ -21,8 +21,8 @@ const loadDashboard = async (req, res, next) => {
       },
     ]);
     // ---------------------------- //
-    let totalRevenue=0
-     totalRevenue =
+    let totalRevenue = 0;
+    totalRevenue =
       totalRevenueResult.length > 0 ? totalRevenueResult[0].totalRevenue : 0;
 
     const averageOrderValue =
@@ -43,7 +43,6 @@ const loadDashboard = async (req, res, next) => {
       (method) => method.count
     );
     // ---------------------------- //
-
     // Revenue per product
     const revenuePerProduct = await Order.aggregate([
       {
@@ -54,46 +53,56 @@ const loadDashboard = async (req, res, next) => {
           $or: [
             { paymentMethod: "cod", "products.status": "Delivered" },
             {
-              paymentMethod: { $in: ["Razorpay", "Wallet"] },
+              paymentMethod: { $in: ["online", "Wallet"] },
               "products.status": {
-                $in: ["placed", "Shipped", "Delivered"],
+                $in: ["Placed", "Shipped", "Pending", "Delivered"],
               },
             },
           ],
         },
       },
       {
+        $lookup: {
+          from: "products",
+          localField: "products.product",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: "$productDetails",
+      },
+      {
         $group: {
-          _id: "$products.product",
+          _id: "$productDetails._id",
           totalAmount: { $sum: "$products.total" },
+          productName: { $first: "$productDetails.name" },
         },
       },
     ]);
 
-    console.log(revenuePerProduct, "revenue per product");
+    
 
     // All products
     const allProducts = await Product.find({}, "name");
 
-    const productMap = new Map(
-      allProducts.map((product) => [product._id.toString(), product])
-    );
-
+    // Combine products and revenue data
     const productData = allProducts.map((product) => {
       const revenueProduct = revenuePerProduct.find(
         (rp) => rp._id.toString() === product._id.toString()
       );
       return {
         name: product.name,
-        revenue: revenueProduct ? revenueProduct.totalAmount : 0,
+        revenue: revenueProduct ? revenueProduct.totalAmount : 0, // Handle missing revenue data
       };
     });
 
     // Top 3 products
     const sortedProducts = productData.sort((a, b) => b.revenue - a.revenue);
     const top3Products = sortedProducts.slice(0, 3);
-    const productLabels = top3Products.map((product) => product.name);
-    const productRevenues = top3Products.map((product) => product.revenue);
+
+    const productLabels = top3Products.map((product) => product.name); //main data
+    const productRevenues = top3Products.map((product) => product.revenue); //main data
 
     // ---------------------------- //
 
@@ -184,7 +193,9 @@ const loadDashboard = async (req, res, next) => {
             { paymentMethod: "cod", "products.status": "Delivered" },
             {
               paymentMethod: { $in: ["online", "Wallet"] },
-              "products.status": { $in: ["placed", "Shipped", "Delivered"] },
+              "products.status": {
+                $in: ["placed", "Shipped", "Delivered", "pending"],
+              },
             },
           ],
         },
@@ -234,71 +245,80 @@ const loadDashboard = async (req, res, next) => {
     // ---------------------------- //
     // Monthly revenue
     const monthlyRevenueOrders = await Order.aggregate([
-  {
-    $match: {
-      purchaseDate: { $lte: today },
-      $or: [
-        { paymentMethod: "cod", "products.status": "Delivered" },
-        {
-          paymentMethod: { $in: ["online", "Wallet"] },
-          "products.status": {
-            $in: ["placed", "Shipped", "Delivered"],
+      {
+        $match: {
+          purchaseDate: {
+            $gte: new Date(today.getFullYear(), 1, 1), // Start from February 1st
+            $lte: today,
           },
+          $or: [
+            { paymentMethod: "cod", "products.status": "Delivered" },
+            {
+              paymentMethod: { $in: ["online", "Wallet"] },
+              "products.status": {
+                $in: ["placed", "Shipped", "pending", "Delivered"],
+              },
+            },
+          ],
         },
-      ],
-    },
-  },
-  {
-    $group: {
-      _id: { $dateToString: { format: "%Y-%m", date: "$purchaseDate" } },
-      totalAmount: { $sum: "$totalAmount" },
-    },
-  },
-  {
-    $sort: {
-      _id: 1,
-    },
-  },
-]);
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$purchaseDate" } },
+          totalAmount: { $sum: "$totalAmount" },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]);
 
-console.log("Monthly Revenue Orders: ", monthlyRevenueOrders);
+    console.log("Monthly Revenue Orders: ", monthlyRevenueOrders);
 
-// Monthly revenue chart data
-const allMonths = [];
-let currentMonthDate = new Date(today.getFullYear(), 0, 5); // Start from January
-console.log(currentMonthDate, "currentMonthDate");
-while (currentMonthDate  <= today) {
-  allMonths.push(currentMonthDate.toISOString().split("T")[0].substring(0, 7)); // Format as "YYYY-MM"
-  currentMonthDate.setMonth(currentMonthDate.getMonth() + 1);
-}
+    // Monthly revenue chart data
+    // ... (Other parts of your code)
 
-console.log(allMonths,"allMonths")
+    // Monthly revenue chart data
+    const allMonths = [];
+    let currentMonthDate = new Date(today.getFullYear(), 2, 2); // Start from February 1st
+    while (
+      currentMonthDate.getFullYear() <= today.getFullYear() &&
+      currentMonthDate.getMonth() <= today.getMonth()
+    ) {
+      // Changed to '<='
+      allMonths.push(
+        currentMonthDate.toISOString().split("T")[0].substring(0, 7)
+      ); // Format as "YYYY-MM"
+      currentMonthDate.setMonth(currentMonthDate.getMonth() + 1);
+    }
 
-const formattedMonthlyRevenueChartData = allMonths.map((month) => {
-  const matchingMonthEntry = monthlyRevenueOrders.find(
-    (entry) => entry._id.toString() === month
-  );
+    // ... (Rest of your code)
+    const formattedMonthlyRevenueChartData = allMonths.map((month) => {
+      const matchingMonthEntry = monthlyRevenueOrders.find(
+        (entry) => entry._id.toString() === month
+      );
 
-  return {
-    month: month,
-    amount: matchingMonthEntry ? matchingMonthEntry.totalAmount : 0,
-  };
-});
+      return {
+        month: month,
+        amount: matchingMonthEntry ? matchingMonthEntry.totalAmount : 0,
+      };
+    });
 
-console.log(
-  formattedMonthlyRevenueChartData,
-  "formattedMonthlyRevenueChartData"
-);
-const monthlyRevenueLabels = formattedMonthlyRevenueChartData.map(
-  (entry) => entry.month
-);
-const monthlyRevenueData = formattedMonthlyRevenueChartData.map(
-  (entry) => entry.amount
-);
-console.log(monthlyRevenueData, "monthlyRevenueData");
+    console.log(
+      formattedMonthlyRevenueChartData,
+      "formattedMonthlyRevenueChartData"
+    );
+    const monthlyRevenueLabels = formattedMonthlyRevenueChartData.map(
+      (entry) => entry.month
+    );
+    const monthlyRevenueData = formattedMonthlyRevenueChartData.map(
+      (entry) => entry.amount
+    );
+    console.log(monthlyRevenueData, "monthlyRevenueData");
 
-
-    // ---------------------------- //
+    //=============================================//
 
     // Yearly revenue
     const yearlyRevenueOrders = await Order.aggregate([
@@ -333,7 +353,9 @@ console.log(monthlyRevenueData, "monthlyRevenueData");
             { paymentMethod: "cod", "products.status": "Delivered" },
             {
               paymentMethod: { $in: ["Razorpay", "Wallet"] },
-              "products.status": { $in: ["Placed", "Shipped", "Delivered"] },
+              "products.status": {
+                $in: ["Placed", "Shipped", "pending", "Delivered"],
+              },
             },
           ],
         },
@@ -351,7 +373,7 @@ console.log(monthlyRevenueData, "monthlyRevenueData");
     // ---------------------------- //
 
     const formattedFiveYearsRevenueChartData = allYearsFiveYears.map((year) => {
-      const matchingYearEntry = fiveYearsRevenueOrders.find(
+      const matchingYearEntry = yearlyRevenueOrders.find(
         (entry) => entry._id === year
       );
       return {
@@ -359,10 +381,9 @@ console.log(monthlyRevenueData, "monthlyRevenueData");
         amount: matchingYearEntry ? matchingYearEntry.totalAmount : 0,
       };
     });
-
     // ---------------------------- //
     const currentYear = today.toISOString().split("T")[0].substring(0, 4);
-    const currentYearRevenue = fiveYearsRevenueOrders.reduce((total, entry) => {
+    const currentYearRevenue = yearlyRevenueOrders.reduce((total, entry) => {
       if (entry._id === currentYear) {
         total += entry.totalAmount;
       }
@@ -375,91 +396,25 @@ console.log(monthlyRevenueData, "monthlyRevenueData");
       amount: currentYearRevenue,
     });
 
-    // ---------------------------- //
-    // Weekly revenue data //
-
-    //   const weeklyRevenueData = await Order.aggregate([
-    //     {
-    //       $match: {
-    //         purchaseDate: {
-    //           $gte: { $subtract: [new Date(), 604800000] }, // 604800000 milliseconds = 7 days
-    //         },
-    //       },
-    //     },
-    //     {
-    //       $group: {
-    //         _id: {
-    //           $dateToString: {
-    //             format: "%Y-%m-%d",
-    //             date: "$purchaseDate",
-    //           },
-    //         },
-    //         totalAmount: { $sum: "$totalAmount" },
-    //       },
-    //     },
-    //     {
-    //       $sort: { _id: 1 }, // Sort by date in ascending order
-    //     },
-    //   ]);
-    // console.log("weeklyRevenueData", weeklyRevenueData);
-
-    // ---------------------------- //
-    // Monthly revenue data
-    //     const monthlyRevenueData = await Order.aggregate([
-    //       {
-    //         $match: {
-    //           purchaseDate: {
-    //             $gte: {
-    //               $subtract: [new Date(), { $multiply: [30, 24, 60, 60, 1000] }],
-    //             }, // 30 days ago
-    //           },
-    //         },
-    //       },
-    //       {
-    //         $group: {
-    //           _id: {
-    //             $dateToString: {
-    //               format: "%Y-%m",
-    //               date: "$purchaseDate",
-    //             },
-    //           },
-    //           totalAmount: { $sum: "$totalAmount" },
-    //         },
-    //       },
-    //       {
-    //         $sort: { _id: 1 }, // Sort by month in ascending order
-    //       },
-    //     ]);
-    // console.log("monthlyRevenueData", monthlyRevenueData);
-    // ---------------------------- //
-    // Yearly revenue data
-    // const yearlyRevenueData = await Order.aggregate([
-    //   {
-    //     $group: {
-    //       _id: {
-    //         $dateToString: {
-    //           format: "%Y",
-    //           date: "$purchaseDate",
-    //         },
-    //       },
-    //       totalAmount: { $sum: "$totalAmount" },
-    //     },
-    //   },
-    //   {
-    //     $sort: { _id: 1 },
-    //   },
-    // ]);
-    // console.log(weeklyRevenueData,' weeklyRevenueData');
     const yearlyRevenueLabels = formattedFiveYearsRevenueChartData.map(
       (entry) => entry.year
     );
     const yearlyRevenueData = formattedFiveYearsRevenueChartData.map(
       (entry) => entry.amount
     );
+    console.log("yearlyRevenueData", yearlyRevenueData);
+    console.log(
+      "productLabels :",
+      productLabels,
+      productRevenues,
+      sortedProducts,
+      top3Products
+    );
+    console.log(revenuePerProduct);
     // ____________________________________________________________________________________________________________________________
 
     res.render("dashboard", {
-      totalUsers:0,
+      totalUsers,
       totalRevenue,
       totalOrders,
       averageOrderValue,
@@ -468,6 +423,7 @@ console.log(monthlyRevenueData, "monthlyRevenueData");
       allProducts,
       revenuePerCategory,
       allCategories,
+      yearlyRevenueOrders,
       yearlyRevenueLabels,
       yearlyRevenueData,
       formattedWeeklyRevenueChartData,
