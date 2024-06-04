@@ -242,6 +242,9 @@ const validateCurrentPassword = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+
+//================== RESET PASSWORD ======================
 const resetPassword = async (req, res) => {
   try {
     console.log("entered the reset");
@@ -266,9 +269,18 @@ const resetPassword = async (req, res) => {
 
     await user.save();
 
-    return res
-      .status(200)
-      .json({ success: true, message: "Password reset successful." });
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error destroying session:", err);
+        return res.status(500).json({ message: "Failed to log out." });
+      }
+
+      res.json({
+        success: true,
+        message:
+          "Password reset successful. You will be redirected to the login page.",
+      });
+    });
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ message: "Internal server error." });

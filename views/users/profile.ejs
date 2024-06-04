@@ -327,7 +327,7 @@
                                     aria-labelledby="tab-reset-password-link">
                                     <div class="container">
                                         <h2 class="section-title">Reset Password</h2>
-                                        <form method="post" action="/resetPassword">
+                                        <form id="resetPasswordForm" method="post" action="/resetPassword">
                                             <!-- Current Password Input -->
                                             <div class="form-group">
                                                 <label for="currentPassword">Current Password:</label>
@@ -362,6 +362,8 @@
                 </div><!-- End .dashboard -->
             </div><!-- End .page-content -->
     </main><!-- End .main -->
+
+
     <!-- JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -663,7 +665,9 @@
                 // Handle the error scenario
             }
         }
+        
     </script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Function to validate password
@@ -729,6 +733,7 @@
                     confirmPasswordInput.classList.add("invalid");
                 }
             });
+            //========================================================
 
             // Event listener for current password input
             var currentPasswordInput = document.getElementById('currentPassword');
@@ -764,51 +769,44 @@
                     });
             });
 
-            const resetPassword = async () => {
-                try {
-                    const newPassword = document.getElementById('newPassword').value;
+            var resetPasswordForm = document.getElementById('resetPasswordForm');
+    resetPasswordForm.addEventListener('submit', async function (event) {
+        event.preventDefault(); // Prevent the default form submission
 
-                    const response = await fetch('/resetPassword', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ newPassword })
-                    });
+        try {
+            const newPassword = document.getElementById('newPassword').value;
+            const response = await fetch('/resetPassword', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ newPassword })
+            });
 
-                    const data = await response.json();
+            const data = await response.json();
 
-                    if (response.ok && data.success) {
-                        // Password reset was successful, show success Swal alert
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Password Reset Successful',
-                            text: data.message
-                        }).then(() => {
-                            // Redirect to the login page
-                            window.location.href = '/login';
-                        });
-                    } else {
-                        // Password reset failed, show error Swal alert
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Password Reset Failed',
-                            text: data.message || 'Password reset failed. Please try again.'
-                        });
-                    }
-                } catch (error) {
-                    // An error occurred, show error Swal alert
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred while resetting the password. Please try again later.'
-                    });
-                }
-            };
-
-
-        });
-
+            if (response.ok && data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Password Reset Successful',
+                    text: data.message
+                }).then(() => {
+                    window.location.href = '/login';
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Password Reset Failed',
+                    text: data.message || 'Password reset failed. Please try again.'
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while resetting the password. Please try again later.'
+            });
+        }
+    });
+});
 
 
     </script>

@@ -201,7 +201,7 @@ const verifyLogin = async (req, res) => {
             userData.email
           );
           console.log("Redirecting to OTP page");
-          res.render("otp", { user: userData.email });
+          res.render("otp", { user: userData.email});
         } else if (userData.is_block == true) {
           console.log("Account is blocked");
           res.render("login", {
@@ -233,6 +233,7 @@ const verifyLogin = async (req, res) => {
 };
 
 // ============================ OTP VERIFICATION =======================================
+
 const verifyOtp = async (req, res, next) => {
   try {
     console.log("Stored OTP:", req.session.otpsend);

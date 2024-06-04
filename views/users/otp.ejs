@@ -8,11 +8,10 @@
                 <div class="container col-6 py-5 p-4">
                     <div class="title pb-3">
                         <h1>OTP Verification</h1>
-                        <% if (Array.isArray(messages) && messages.length > 0) { %>
-
+                        <% if (typeof messages !== 'undefined' && Array.isArray(messages) && messages.length > 0) { %>
                             <% messages.forEach(message => { %>
                                 <h5 class="text-<%= message.type %> text-center"><%= message.text %></h5>
-                            <% }); %>
+                            <% }) %>
                         <% } %>
                     </div>
 
