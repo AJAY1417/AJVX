@@ -83,7 +83,7 @@ const editCoupon = async (req, res) => {
     console.log("fewfe", id);
 
     // Fetch the original coupon data first
-    const coupon = await Coupon.findById(id); 
+    const coupon = await Coupon.findById(id);
     if (!coupon) {
       return res.status(404).send("Coupon not found");
     }
@@ -93,7 +93,10 @@ const editCoupon = async (req, res) => {
       _id: { $ne: id },
     });
     if (existingCoupon) {
-      return res.render("editCoupon", { coupon, error: "Coupon name already exists" });
+      return res.render("editCoupon", {
+        coupon,
+        error: "Coupon name already exists",
+      });
     }
 
     const existingCouponCode = await Coupon.findOne({
@@ -101,18 +104,32 @@ const editCoupon = async (req, res) => {
       _id: { $ne: id },
     });
     if (existingCouponCode) {
-      return res.render("editCoupon", { coupon, error: "Coupon code already exists" });
+      return res.render("editCoupon", {
+        coupon,
+        error: "Coupon code already exists",
+      });
     }
 
-    // ... (rest of your code to update the coupon)
+    // Convert strings to Date objects
+    const activationdate = new Date(req.body.activationdate);
+    const expirydate = new Date(req.body.expirydate);
+
+    // Update the coupon in the database
+    await Coupon.findByIdAndUpdate(id, {
+      couponname: req.body.couponname,
+      couponcode: req.body.couponcode,
+      // ... other fields
+      activationdate: activationdate, // Updated Date object
+      expirydate: expirydate, // Updated Date object
+    });
 
     res.redirect("coupon");
-
   } catch (error) {
     console.log(error.message);
     res.status(500).send("Internal Server Error");
   }
 };
+
 //delete coupon from database
 const deleteCoupon = async (req, res) => {
   try {
@@ -129,6 +146,7 @@ const calculateDiscountedTotal = (totalPrice, discountAmount) => {
   const discountedPrice = totalPrice - discountAmount;
   return discountedPrice;
 };
+
 
 const applyCoupon = async (req, res) => {
   try {

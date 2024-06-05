@@ -185,9 +185,8 @@
                                                                         class="d-flex justify-content-start action-buttons">
                                                                         <% if (orderData[j].status==='Delivered' ) { %>
                                                                             <!-- Return Order Button -->
-                                                                            <a href="#"
-                                                                                class="btn btn-outline-primary-2 btn-sm return-button"
-                                                                                data-order-id="<%= orderData[j]._id %>">RETURN</a>
+                                                                            <a class="btn btn-outline-primary-2 btn-sm return-button" 
+                                                                            data-order-id="<%= orderData[j]._id %>" id="returnButton-<%= j %>">RETURN</a>
                                                                             <% } else if (orderData[j].status
                                                                                 !=='Canceled' ) { %>
                                                                                 <!-- Cancel Order Button -->
@@ -543,7 +542,14 @@
         });
 
 
-
+        $(document).ready(function() {
+  $('.return-button').on('click', function(event) {
+    event.preventDefault(); // Prevent default link behavior
+    $(this).hide(); // Hide the clicked button
+    // Also hide the cancel button for the same order
+    $(this).closest('tr').find('.cancel-button').hide(); 
+  });
+});
 
         // Razorpay Integration
         document.addEventListener('DOMContentLoaded', function () {
