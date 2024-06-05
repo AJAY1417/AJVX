@@ -14,13 +14,15 @@
               <form action="/admin/addOfferCatDB" method="post">
                 <div class="form-group">
                   <label for="categories">Category Name</label>
+
                   <select class="form-control" id="categories" name="categories" required>
                     <% categories.forEach((item) => { %>
-                    <% if (!item.is_block) { %>
-                    <option value="<%= item.name %>"><%= item.name %></option>
-                    <% } %>
+                      <% if (!item.is_block) { %>
+                        <option value="<%= item.name %>"> <%= item.name %></option> 
+                      <% } %>
                     <% }) %>
                   </select>
+
                 </div><!-- End .form-group -->
                 <div class="form-group">
                   <label for="percentage">Percentage of Offers</label>
@@ -58,19 +60,22 @@
     <%- include('../layouts/admin/footer') %>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
-      $(document).ready(function () {
-        $('#EndingDate').on('input', function () {
-          const selectedDate = new Date($(this).val());
-          const currentDate = new Date();
-          if (selectedDate <= currentDate) {
-            $('#submitBtn').prop('disabled', true);
-            $('#dateValidation').text('Selected date must be greater than the current date');
-          } else {
-            $('#submitBtn').prop('disabled', false);
-            $('#dateValidation').text('');
-          }
-        });
-      });
+    $(document).ready(function () {
+  $('#EndingDate').on('input', function () {
+    const selectedDate = new Date($(this).val());
+    const currentDate = new Date();
+    const dateValidation = $('#dateValidation'); 
+
+    if (selectedDate.getTime() <= currentDate.getTime()) {
+      $('#submitBtn').prop('disabled', true);
+      dateValidation.text('Selected date must be greater than today.');
+      dateValidation.css('color', 'red');
+    } else {
+      $('#submitBtn').prop('disabled', false);
+      dateValidation.text('');
+    }
+  });
+});
     </script>
   </div>
 </div>

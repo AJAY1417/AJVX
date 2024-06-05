@@ -128,57 +128,52 @@ const loadAddCategoryOffer = async (req, res) => {
     res.render("addCategoryOffer", { categories });
   } catch (error) {
     console.log(error.message);
+    res.render("categoryOfferManagement", { categoryOffers: [] });
   }
 };
 
 //add offers on category
 const addCategoryOffer = async (req, res) => {
   try {
-    // Find the category based on the provided name
-    const categoryData = await Category.findOne({ name: req.body.categories });
+    const categoryName = req.body.categories; // Store category name
+    const categoryData = await Category.findOne({ name: categoryName });
+
     if (!categoryData) {
-      console.log("Category not found");
+      console.log("Category not found:", categoryName);
       return res.redirect("/admin/offersCat");
     }
 
-    // Extract the percentage discount from the request body
-    const percent = req.body.percentage;
+    const percent = parseFloat(req.body.percentage); // Ensure it's a number
 
-    // Create a new CategoryOffer document
     const newCategoryOffer = new CategoryOffer({
-      categoryname: req.body.categories,
+      categoryname: categoryName,
       category: categoryData._id,
       percentage: percent,
       expiryDate: req.body.EndingDate,
     });
 
-    // Save the new CategoryOffer to the database
     await newCategoryOffer.save();
 
-    // Find all products in the specified category
+    // Fetch products efficiently using the category ID
     const productsInCategory = await Product.find({
-      category: req.body.categories,
+      category: categoryData._id,
     });
 
-    // Update the discounted price for each product in the category
     for (const product of productsInCategory) {
-      // Calculate the discounted price for the current product
-      const offerPrice = Math.floor(
-        product.price - (product.price * percent) / 100
-      );
+      const offerPrice = Math.floor(product.price * (1 - percent / 100));
 
-      // Update the product's discounted price in the database
+      // Use $set to update only discountPricecat
       await Product.updateOne(
         { _id: product._id },
         { $set: { discountPricecat: offerPrice } }
       );
     }
 
-    console.log("Category Offer added successfully");
+    console.log("Category Offer added successfully for:", categoryName);
 
     res.redirect("/admin/offersCat");
   } catch (error) {
-    console.log(error.message);
+    console.error("Error adding category offer:", error); // Detailed error logging
     res.status(500).send("Internal Server Error");
   }
 };
@@ -189,41 +184,37 @@ const addCategoryOffer = async (req, res) => {
 const deleteCategoryOffer = async (req, res) => {
   try {
     const currentData = await CategoryOffer.findOne({ _id: req.query.id });
-console.log("current  data:",currentData)
-    const productDB = await Product.find({
-      
-      category: currentData.categoryname,
-    });
 
-    console.log(productDB);
+    if (!currentData) {
+      return res.status(404).send("Category Offer not found");
+    }
+
+    // 1. Update products in the category
+    const productDB = await Product.find({
+      category: currentData.category, // Use the category ID field
+    });
 
     if (productDB.length > 0) {
       console.log("Offer is not expired");
 
-      // Iterate through each product and update the discountPricecat field
       for (const product of productDB) {
         if (product.discountPricecat) {
-          // Delete the field
           product.discountPricecat = null;
-
-          // Save the updated document
           await product.save();
           console.log(product);
         }
       }
     }
 
+    // 2. Delete the category offer after updating products
     await CategoryOffer.deleteOne({ _id: req.query.id });
 
     res.redirect("/admin/offersCat");
   } catch (error) {
     console.log(error.message);
-    
+    res.status(500).send("Internal Server Error");
   }
 };
-
-
-
 
 
 

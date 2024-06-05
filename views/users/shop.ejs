@@ -95,10 +95,12 @@
 
           <div class="products mb-3">
             <div class="row justify-content-start" id="productList">
+
               <% for (let i=0; i < products.length; i++) { %>
                 <div class="col-6 col-md-4 col-lg-4 mb-4">
                   <div class="product product-7 text-center" data-category="<%= products[i].category %>">
                     <figure class="product-media">
+                      
                       <!-- product discount from here  -->
                       <% const productDiscount=renderData.discPrice.find(x=> x.product.toString() ===
                         products[i]._id.toString()); %>
