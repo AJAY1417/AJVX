@@ -11,6 +11,7 @@ const walletController = require("../controllers/walletController");
 const couponController = require("../controllers/couponController");
 const invoiceController = require("../controllers/InvoiceController");
 const productController = require("../controllers/productController");
+const cartCount = require("../middlewares/cartCount"); // Require the middleware function
 
 user_route.set("view engine", "ejs");
 user_route.set("views", "./views/users");
@@ -25,8 +26,10 @@ user_route.use(
 );
 
 
-const cartCount = require("../middlewares/cartCount");
+
 user_route.use(cartCount)
+
+
 
 // Custom middleware to add user session to every response
 const addUserToResponse = (req, res, next) => {

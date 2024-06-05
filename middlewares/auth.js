@@ -1,4 +1,6 @@
 // Example logs in the isLogin middleware
+const User = require("../models/userModel")
+
 const isLogin = async (req, res, next) => {
   try {
     console.log("isLogin middleware triggered");
@@ -34,14 +36,23 @@ const isLogout = async (req, res, next) => {
 
 };
 
+
+// Middleware to check if user is blocked
 const isBlocked = async (req, res, next) => {
   try {
     // Assuming you have the User model imported
     const user = await User.findOne({ _id: req.session.user_id });
 
     if (user && user.is_block) {
-      // User is blocked, redirect to login page
-      res.redirect("/login");
+      // User is blocked, redirect to login page with a message
+      req.session.destroy((err) => {
+        if (err) {
+          console.error("Error destroying session:", err);
+          res.status(500).send("Internal Server Error");
+        } else {
+          res.redirect("/login?message=You have been blocked. Please contact the administrator.");
+        }
+      });
     } else {
       // User is not blocked, continue to the next middleware or route handler
       next();
@@ -52,6 +63,26 @@ const isBlocked = async (req, res, next) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+
+// const isBlocked = async (req, res, next) => {
+//   try {
+//     // Assuming you have the User model imported
+//     const user = await User.findOne({ _id: req.session.user_id });
+
+//     if (user && user.is_block) {
+//       // User is blocked, redirect to login page
+//       res.redirect("/login");
+//     } else {
+//       // User is not blocked, continue to the next middleware or route handler
+//       next();
+//     }
+//   } catch (error) {
+//     console.log(error.message);
+//     // Handle the error as needed
+//     res.status(500).send("Internal Server Error");
+//   }
+// };
 
 module.exports = {
   isLogin,

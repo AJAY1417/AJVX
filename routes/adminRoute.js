@@ -10,6 +10,8 @@ const salesController = require("../controllers/salesController");
 const dashboardController = require("../controllers/dashboardController");
 
 
+
+
 // Middleware
 admin_route.use(express.urlencoded({ extended: true }));
 admin_route.set("view engine", "ejs");

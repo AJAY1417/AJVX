@@ -159,6 +159,7 @@ const blockUser = async (req, res) => {
 
     req.session.user_id = !isBlocked;
     console.log("User session updated:", req.session.user_id);
+    
 
     res.redirect("/admin/users");
   } catch (error) {
