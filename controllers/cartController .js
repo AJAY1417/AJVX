@@ -136,6 +136,7 @@ const addToCart = async (req, res) => {
       });
       await data.save();
     }
+    
 
     // Remove the product from the wishlist
     await Wishlist.updateOne(

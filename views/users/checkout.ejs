@@ -368,59 +368,58 @@
             } else {
                 // Add discount amount to form data
                 $.ajax({
-                    url: '/orderPlace',
-                    method: 'POST',
-                    data: formData,
-                    success: function (response) {
-                        console.log('Response:', response);
-                        if (response.online === true) {
-                            // Handle online payment
-                            razorpayPayment(response.order);
-                        } else if (response.cod === true || response.success === true) {
-                            // Check if COD limit is exceeded
-                            if (response.cod === true || response.success === true) {
-                                if (selectedPaymentMethod === 'cod' && parseFloat(response.order.totalAmount) >= 1000) {
-                                    // Show a SweetAlert for COD limit exceeded
-                                    Swal.fire({
-                                        icon: 'warning',
-                                        title: 'COD Limit Exceeded!',
-                                        text: 'Cash on delivery is only available for orders under 1000.',
-                                        onClose: () => {
-                                            // Re-enable submit button after the alert is closed
-                                            $('#myform button[type="submit"]').prop('disabled', false);
-                                        }
-                                    });
-                                } else {
-                                    // Handle cash-on-delivery or wallet payment success
-                                    window.location.href = '/orderSuccess';
-                                }
-                            }
-
-                        } else if (response.error === 'Insufficient balance in the wallet') {
-                            // Display SweetAlert for insufficient funds
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Insufficient funds in wallet. Please add funds.',
-                            });
-                        } else {
-                            // Handle other errors
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'An error occurred. Please try again later.',
-                            });
-                        }
-                        // Re-enable submit button
-                        $('#myform button[type="submit"]').prop('disabled', false);
-                    },
-                    error: function (error) {
-                        // Handle AJAX request error
-                        console.error('Error:', error);
-                        // Re-enable submit button
+    url: '/orderPlace',
+    method: 'POST',
+    data: formData,
+    success: function (response) {
+        console.log('Response:', response);
+        if (response.error) {
+            if (response.error === 'COD Limit Exceeded') {
+                // Show a SweetAlert for COD limit exceeded
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'COD Limit Exceeded!',
+                    text: 'Cash on delivery is only available for orders under 1000.',
+                    onClose: () => {
+                        // Re-enable submit button after the alert is closed
                         $('#myform button[type="submit"]').prop('disabled', false);
                     }
                 });
+            } else if (response.error === 'Insufficient balance in the wallet') {
+                // Display SweetAlert for insufficient funds
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Insufficient funds in wallet. Please add funds.',
+                });
+            } else {
+                // Handle other errors
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'An error occurred. Please try again later.',
+                });
+            }
+        } else if (response.online === true) {
+            // Handle online payment
+            razorpayPayment(response.order);
+        } else if (response.cod === true || response.success === true) {
+            // Handle cash-on-delivery or wallet payment success
+            window.location.href = '/orderSuccess';
+        }
+        // Re-enable submit button
+        $('#myform button[type="submit"]').prop('disabled', false);
+        
+    },
+    error: function (error) {
+        // Handle AJAX request error
+        console.error('Error:', error);
+        // Re-enable submit button
+        $('#myform button[type="submit"]').prop('disabled', false);
+    }
+});
+
+
             }
         });
 

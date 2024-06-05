@@ -244,6 +244,7 @@ const placeOrder = async (req, res) => {
     } else if (paymentMethod === "cod") {
       if (order.totalAmount >= 1000) {
         return res.json({
+          cod:false,
           error: "COD Limit Exceeded",
           totalAmount: order.totalAmount,
         });
