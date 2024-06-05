@@ -343,7 +343,7 @@ const salesreportLoad = async (req, res, next) => {
         },
         {
           paymentMethod: { $in: ["online", "wallet"] },
-          "products.status": { $in: ["placed", "Shipped", "Delivered"] },
+          "products.status": { $in: ["placed", "Shipped","pending", "Delivered"] },
           $and: [{ "products.status": { $nin: ["Returned", "cancelled"] } }],
         },
       ],
