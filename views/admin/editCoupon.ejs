@@ -164,7 +164,7 @@
 
         var currentDate = new Date();
         if (isNaN(activationdate.getTime()) || isNaN(expirydate.getTime()) ||
-          activationdate <= currentDate || expirydate <= activationdate) {
+          activationdate >= currentDate || expirydate <= activationdate) {
           showError("activationdate", "Please select valid Activation and Expiry Dates.");
           isValid = false;
         }

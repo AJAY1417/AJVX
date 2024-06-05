@@ -311,13 +311,15 @@
                                 title: 'Coupon Applied!',
                                 text: 'The coupon has been applied successfully.',
                             });
-                        } else if (response.alreadyClaimed === true) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'You have already claimed this coupon.',
-                            });
-                        } else {
+                        } 
+                        // else if (response.alreadyClaimed === true) {
+                        //     Swal.fire({
+                        //         icon: 'error',
+                        //         title: 'Oops...',
+                        //         text: 'You have already claimed this coupon.',
+                        //     });
+                        // }
+                         else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Oops...',
