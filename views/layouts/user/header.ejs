@@ -100,7 +100,10 @@
 
                                 </li>
                                 <li>
-                                    <a href="/view-wallet" class="sf-with-ul">Wallet</a>
+                                    <li>
+                                        <a href="<%= typeof user !== 'undefined' && user ? '/view-wallet' : '/login' %>" class="sf-with-ul">Wallet</a>
+                                    </li>
+                                    
 
 
                                 </li>
